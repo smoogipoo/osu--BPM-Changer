@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Data;
 using System.Linq;
 using System.Globalization;
 using System.Collections.Generic;
@@ -79,6 +80,24 @@ namespace osu__BPM_Changer
 
                 switch (page)
                 {
+                    case -1:
+                        using (OpenFileDialog ofd = new OpenFileDialog())
+                        {
+                            ofd.Title = "Select Beatmap";
+                            if (ofd.ShowDialog() == DialogResult.OK)
+                            {
+                                try
+                                {
+                                    BM = new Beatmap(ofd.FileName);
+                                }
+                                catch (Exception e)
+                                {
+                                    lastText = ("The beatmap could not be parsed. Please post the following error in the forums:\n" + e);
+                                }
+                            }
+                        }
+                        page = 0;
+                        continue;
                     case 0:
                         //Clear directory
                         File.Delete(Environment.CurrentDirectory + "\\temp.wav");
@@ -90,6 +109,7 @@ namespace osu__BPM_Changer
                         Console.WriteLine("(1) Change BPM");
                         Console.WriteLine("(2) Change version");
                         Console.WriteLine("(3) Save beatmap\n");
+                        Console.WriteLine("(0) Select another beatmap\n");
 
                         Console.ForegroundColor=ConsoleColor.White;
                         Console.WriteLine("Option: ");
@@ -101,10 +121,15 @@ namespace osu__BPM_Changer
                             page = 0;
                             continue;
                         }
-                        if (option < 1 || option > 3)
+                        if (option < 0 || option > 3 )
                         {
                             lastText = "Entered option value must be betwee 1 and 3.";
                             page = 0;
+                            continue;
+                        }
+                        if (option == 0)
+                        {
+                            page = -1;
                             continue;
                         }
                         page = option;
@@ -113,18 +138,12 @@ namespace osu__BPM_Changer
                     case 1:
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Enter the BPM increase:");
-                        Console.WriteLine("(Example: +10 or -10)\n");
+                        Console.WriteLine("(Example: +N, -N, *N, /N, +N%, -N%, *N%, /N%, etc)\n");
 
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("BPM: ");
 
-                        double increase;
-                        if (!double.TryParse(Console.ReadLine(), out increase))
-                        {
-                            lastText = "Target BPM must be a numerical value.";
-                            page = 1;
-                            continue;
-                        }
+                        string operations = Console.ReadLine();
 
                         Console.WriteLine("-------------------------------------------------------------------------------");
                         Console.WriteLine("Processing timingpoints...");
@@ -133,10 +152,11 @@ namespace osu__BPM_Changer
                         foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.inheritsBPM == false))
                         {
                             double currentBPM = 60000 / tp.bpmDelay;
-                            double newDelay = 60000 / (currentBPM + increase);
+                            double newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + operations, null));
+                            double newDelay = 60000 / newBPM;
                             if (!setRatio)
                             {
-                                bpmRatio = oldBPM / (currentBPM + increase);
+                                bpmRatio = oldBPM / newBPM;
                                 setRatio = true;
                             }
                             tp.bpmDelay = newDelay;
