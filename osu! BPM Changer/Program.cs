@@ -20,7 +20,9 @@ namespace osu__BPM_Changer
         private static string lastText = "";
         private static double bpmRatio;
         private static double oldBPM;
+        private static string oldVersion;
         private static string oldCreator;
+        private static bool versionSet;
 
         [STAThread]
         static void Main()
@@ -39,6 +41,7 @@ namespace osu__BPM_Changer
                     try
                     {
                         BM = new Beatmap(ofd.FileName);
+                        oldVersion = BM.Version;
 
                         if (settings.ContainsSetting("customCreator"))
                         {
@@ -76,8 +79,7 @@ namespace osu__BPM_Changer
                     Console.WriteLine("-------------------------------------------------------------------------------");
                     lastText = "";
                 }
-                Console.ForegroundColor = ConsoleColor.Green;
-                Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + BM.Version + "]\n");
+                Console.ForegroundColor = ConsoleColor.Green;          
                 double minBPM = double.MaxValue, maxBPM = double.MinValue;
                 foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.inheritsBPM == false))
                 {
@@ -87,12 +89,13 @@ namespace osu__BPM_Changer
                         maxBPM = 60000/tp.bpmDelay;
                 }
                 oldBPM = minBPM;
+                if (versionSet == false)
+                    BM.Version = oldVersion + minBPM + "BPM";
                 Console.ForegroundColor = ConsoleColor.White;
+                Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + BM.Version + "]\n");
                 Console.WriteLine("Map BPM: " + minBPM + (minBPM != maxBPM ? " - " + maxBPM : ""));
                 Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "] with creator " + BM.Creator);
                 Console.WriteLine("-------------------------------------------------------------------------------");
-                Console.WriteLine("Press escape at any time to exit back to the menu.");
-
 
                 string input;
 
@@ -243,7 +246,7 @@ namespace osu__BPM_Changer
                         input = Console.ReadLine();
 
                         BM.Version = input;
-                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("[", StringComparison.InvariantCulture) + 1) + BM.Version + "].osu";
+                        versionSet = true;
                         page = 0;
                         continue;
 
@@ -258,7 +261,7 @@ namespace osu__BPM_Changer
                             page = 0;
                             continue;
                         }
-                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + BM.Version + BM.AudioFilename.Substring(BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture));
+                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + BM.Version + ".wav";
                         Process p = new Process();
                         p.StartInfo.RedirectStandardOutput = true;
                         p.StartInfo.CreateNoWindow = false;
@@ -271,20 +274,20 @@ namespace osu__BPM_Changer
                         p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
                         p.Start();
                         p.WaitForExit();
-                        p.StartInfo.FileName = "lame.exe";
-                        p.StartInfo.Arguments = "temp2.wav temp3.mp3";
-                        p.Start();
-                        p.WaitForExit();
-                        moveFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                        moveFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+
+                        Console.ForegroundColor = ConsoleColor.Green;
+                        Console.WriteLine("Saving beatmap...");
+                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("[", StringComparison.InvariantCulture) + 1) + BM.Version + "].osu";
                         BM.Save(BM.Filename);
 
+                        Console.WriteLine("Cleaning up...");
                         //Clear directory
                         File.Delete(Environment.CurrentDirectory + "\\temp.wav");
                         File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
-                        File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
 
-                        Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("\nDone! Press any key to go to menu.");
+                        
+                        Console.WriteLine("Done! Press any key to go to menu.");
                         Console.ReadKey();
                         page = 0;
                         continue;
