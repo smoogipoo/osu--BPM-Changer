@@ -775,7 +775,6 @@ namespace BMAPI
                                         }
                                         else if (obj.GetType() == typeof(SliderInfo))
                                         {
-                                            combo += 1;
                                             string pointString = "";
                                             foreach (PointInfo p in obj.points)
                                                 pointString += "|" + p.x + ":" + p.y;
