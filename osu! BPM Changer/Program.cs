@@ -15,11 +15,13 @@ namespace osu__BPM_Changer
 {
     class Program
     {
+        private static readonly Settings settings = new Settings();
         private static Beatmap BM;
         private static string lastText = "";
         private static double bpmRatio;
         private static double oldBPM;
-        
+        private static string oldCreator;
+
         [STAThread]
         static void Main()
         {
@@ -37,6 +39,12 @@ namespace osu__BPM_Changer
                     try
                     {
                         BM = new Beatmap(ofd.FileName);
+
+                        if (settings.ContainsSetting("customCreator"))
+                        {
+                            oldCreator = BM.Creator;
+                            BM.Creator = settings.GetSetting("customCreator");
+                        }
                     }
                     catch (Exception e)
                     {
@@ -53,8 +61,7 @@ namespace osu__BPM_Changer
 
         public static void updaterStart()
         {
-            Settings s = new Settings();
-            new Updater(s);
+            new Updater(settings);
         }
         public static void BeginGUI(int page)
         {
@@ -82,8 +89,12 @@ namespace osu__BPM_Changer
                 oldBPM = minBPM;
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Map BPM: " + minBPM + (minBPM != maxBPM ? " - " + maxBPM : ""));
-                Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "]");
+                Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "] with creator " + BM.Creator);
                 Console.WriteLine("-------------------------------------------------------------------------------");
+                Console.WriteLine("Press escape at any time to exit back to the menu.");
+
+
+                string input;
 
                 switch (page)
                 {
@@ -105,58 +116,82 @@ namespace osu__BPM_Changer
                         }
                         page = 0;
                         continue;
+
                     case 0:
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Select option by typing any of the following numbers:");
                         Console.WriteLine("(1) Change BPM");
                         Console.WriteLine("(2) Change version");
                         Console.WriteLine("(3) Save beatmap\n");
+                        Console.WriteLine("(9) Set custom creator");
                         Console.WriteLine("(0) Select another beatmap\n");
 
                         Console.ForegroundColor=ConsoleColor.White;
                         Console.WriteLine("Option: ");
 
                         int option;
-                        if (!int.TryParse(Console.ReadLine(), out option))
+                        ConsoleKeyInfo Kinfo = Console.ReadKey();
+                        if (Kinfo.Key == ConsoleKey.Escape)
+                        {
+                            page = 0;
+                            continue;
+                        }
+                        if (!int.TryParse(Kinfo.KeyChar.ToString(CultureInfo.InvariantCulture), out option))
                         {
                             lastText = "Entered option must be a numerical value.";
                             page = 0;
                             continue;
                         }
-                        if (option < 0 || option > 3 )
+                        switch (option)
                         {
-                            lastText = "Entered option value must be betwee 1 and 3.";
-                            page = 0;
-                            continue;
+                            case 0:
+                                page = -1;
+                                continue;
+                            case 1: case 2: case 3: case 9:
+                                page = option;
+                                continue;
+                            default:
+                                lastText = "Entered option value must be betwee 1 and 3.";
+                                page = 0;
+                                continue;
                         }
-                        if (option == 0)
-                        {
-                            page = -1;
-                            continue;
-                        }
-                        page = option;
-                        continue;
-
                     case 1:
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Enter the BPM increase:");
-                        Console.WriteLine("(Example: +N, -N, *N, /N, +N%, -N%, *N%, /N%, etc)\n");
+                        Console.WriteLine("(Example: N, +N, -N, *N, /N)\n");
 
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("BPM: ");
 
-                        string operations = Console.ReadLine();
+                        input = Console.ReadLine();
 
                         Console.WriteLine("-------------------------------------------------------------------------------");
                         Console.WriteLine("Processing timingpoints...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         bool setRatio = false;
+                        bool error = false;
                         foreach (TimingPointInfo tp in BM.TimingPoints)
                         {
                             if (tp.inheritsBPM == false)
                             {
                                 double currentBPM = 60000 / tp.bpmDelay;
-                                double newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + operations, null));
+                                double tempDbl;
+                                double newBPM = 0.0;
+                                if (double.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
+                                    newBPM = tempDbl;
+                                else
+                                {
+                                    try
+                                    {
+                                        newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + input, null));
+                                    }
+                                    catch
+                                    {
+                                        lastText = "BPM requires a numerical value or function.";
+                                        error = true;
+                                        break;
+                                    }
+                                }
                                 double newDelay = 60000 / newBPM;
                                 if (!setRatio)
                                 {
@@ -172,11 +207,15 @@ namespace osu__BPM_Changer
                                 tp.bpmDelay = tp.bpmDelay * bpmRatio;
                             }
                         }
-
+                        if (error)
+                        {
+                            page = 0;
+                            continue;
+                        }
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("Processing events...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        foreach(dynamic e in (IEnumerable<dynamic>)BM.Events)
+                        foreach (dynamic e in (IEnumerable<dynamic>)BM.Events)
                         {
                             e.startTime = (int)(e.startTime * bpmRatio);
                             if (e.GetType() == typeof(BreakInfo))
@@ -200,7 +239,10 @@ namespace osu__BPM_Changer
                         Console.WriteLine("Enter the version:\n");
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("Version: ");
-                        BM.Version = Console.ReadLine();
+
+                        input = Console.ReadLine();
+
+                        BM.Version = input;
                         BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("[", StringComparison.InvariantCulture) + 1) + BM.Version + "].osu";
                         page = 0;
                         continue;
@@ -242,8 +284,36 @@ namespace osu__BPM_Changer
                         File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
 
                         Console.ForegroundColor = ConsoleColor.Green;
-                        Console.WriteLine("\nDone! Press any key to go back.");
+                        Console.WriteLine("\nDone! Press any key to go to menu.");
                         Console.ReadKey();
+                        page = 0;
+                        continue;
+                    case 9:
+                        Console.ForegroundColor = ConsoleColor.Yellow;
+                        Console.WriteLine("Enter a custom creator name. This creator will be used for every single map version created with this program.");
+                        Console.WriteLine("Enter /reset to remove custom creator.\n");
+
+                        Console.ForegroundColor = ConsoleColor.White;
+                        Console.WriteLine("Creator: ");
+
+                        input = Console.ReadLine();
+
+                        if (input == "/reset")
+                        {
+                            BM.Creator = oldCreator;
+                            if (settings.ContainsSetting("customCreator"))
+                            {
+                                settings.DeleteSetting("customCreator");
+                                settings.Save();
+                            }
+
+                        }
+                        else
+                        {
+                            settings.AddSetting("customCreator", input);
+                            settings.Save();
+                            BM.Creator = input;
+                        }
                         page = 0;
                         continue;
                 }
