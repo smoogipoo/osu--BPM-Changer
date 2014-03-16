@@ -5,6 +5,7 @@ using System.Globalization;
 using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
 using BMAPI;
@@ -23,8 +24,9 @@ namespace osu__BPM_Changer
         static void Main()
         {
             Application.CurrentCulture = new CultureInfo("en-US", false);
-            Settings s = new Settings();
-            new Updater(s);
+            Thread updaterThread = new Thread(updaterStart);
+            updaterThread.IsBackground = true;
+            updaterThread.Start();
 
             Console.ForegroundColor = ConsoleColor.White;
             using (OpenFileDialog ofd = new OpenFileDialog())
@@ -49,6 +51,11 @@ namespace osu__BPM_Changer
             }
         }
 
+        public static void updaterStart()
+        {
+            Settings s = new Settings();
+            new Updater(s);
+        }
         public static void BeginGUI(int page)
         {
             while (true)
@@ -99,11 +106,6 @@ namespace osu__BPM_Changer
                         page = 0;
                         continue;
                     case 0:
-                        //Clear directory
-                        File.Delete(Environment.CurrentDirectory + "\\temp.wav");
-                        File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
-                        File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
-
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Select option by typing any of the following numbers:");
                         Console.WriteLine("(1) Change BPM");
@@ -149,18 +151,26 @@ namespace osu__BPM_Changer
                         Console.WriteLine("Processing timingpoints...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         bool setRatio = false;
-                        foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.inheritsBPM == false))
+                        foreach (TimingPointInfo tp in BM.TimingPoints)
                         {
-                            double currentBPM = 60000 / tp.bpmDelay;
-                            double newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + operations, null));
-                            double newDelay = 60000 / newBPM;
-                            if (!setRatio)
+                            if (tp.inheritsBPM == false)
                             {
-                                bpmRatio = oldBPM / newBPM;
-                                setRatio = true;
+                                double currentBPM = 60000 / tp.bpmDelay;
+                                double newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + operations, null));
+                                double newDelay = 60000 / newBPM;
+                                if (!setRatio)
+                                {
+                                    bpmRatio = oldBPM / newBPM;
+                                    setRatio = true;
+                                }
+                                tp.bpmDelay = newDelay;
+                                tp.time = (int)(tp.time * bpmRatio);
                             }
-                            tp.bpmDelay = newDelay;
-                            tp.time = (int)(tp.time * bpmRatio);
+                            else
+                            {
+                                tp.time = (int)(tp.time * bpmRatio);
+                                tp.bpmDelay = tp.bpmDelay * bpmRatio;
+                            }
                         }
 
                         Console.ForegroundColor = ConsoleColor.White;
@@ -216,7 +226,7 @@ namespace osu__BPM_Changer
                         p.Start();
                         p.WaitForExit();
                         p.StartInfo.FileName = "soundstretch.exe";
-                        p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (1 - bpmRatio > 0 ? (1 - bpmRatio) * 200 : (1 - bpmRatio) * 50);
+                        p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
                         p.Start();
                         p.WaitForExit();
                         p.StartInfo.FileName = "lame.exe";
@@ -225,6 +235,12 @@ namespace osu__BPM_Changer
                         p.WaitForExit();
                         moveFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
                         BM.Save(BM.Filename);
+
+                        //Clear directory
+                        File.Delete(Environment.CurrentDirectory + "\\temp.wav");
+                        File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
+                        File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
+
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("\nDone! Press any key to go back.");
                         Console.ReadKey();
