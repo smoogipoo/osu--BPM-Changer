@@ -138,6 +138,12 @@ namespace osu__BPM_Changer
                                 try
                                 {
                                     BM = new Beatmap(ofd.FileName);
+                                    oldVersion = BM.Version;
+                                    if (settings.ContainsSetting("customCreator"))
+                                    {
+                                        oldCreator = BM.Creator;
+                                        BM.Creator = settings.GetSetting("customCreator");
+                                    }
                                 }
                                 catch (Exception e)
                                 {
