@@ -17,7 +17,7 @@ namespace osu__BPM_Changer
     {
         private static readonly Settings settings = new Settings();
         private static bool updateExists;
-        private static Updater u = new Updater();
+        private static readonly Updater u = new Updater();
         private static Beatmap BM;
         private static string lastText = "";
         private static double bpmRatio;
@@ -113,12 +113,13 @@ namespace osu__BPM_Changer
                     if (60000/tp.bpmDelay > maxBPM)
                         maxBPM = 60000/tp.bpmDelay;
                 }
-                oldBPM = minBPM;
+                if (Math.Abs(oldBPM) <= 0)
+                    oldBPM = minBPM;
                 if (versionSet == false)
                     BM.Version = oldVersion + minBPM + "BPM";
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + BM.Version + "]\n");
-                Console.WriteLine("Map BPM: " + minBPM + (minBPM != maxBPM ? " - " + maxBPM : ""));
+                Console.WriteLine("Map BPM: " + minBPM + (Math.Abs(minBPM - maxBPM) > 0 ? " - " + maxBPM : ""));
                 Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "] with creator " + BM.Creator);
                 Console.WriteLine("-------------------------------------------------------------------------------");
 
@@ -213,7 +214,7 @@ namespace osu__BPM_Changer
                             {
                                 double currentBPM = 60000 / tp.bpmDelay;
                                 double tempDbl;
-                                double newBPM = 0.0;
+                                double newBPM;
                                 if (double.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
                                     newBPM = tempDbl;
                                 else
