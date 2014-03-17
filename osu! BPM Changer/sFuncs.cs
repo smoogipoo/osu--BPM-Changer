@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Windows.Forms.VisualStyles;
 
 namespace smgiFuncs
 {
     #region "Updater"
     public class Updater
     {
-        public Updater(Settings settings)
+        public event EventHandler updateReady;
+
+        public void Start(Settings settings)
         {
             foreach (string f in System.IO.Directory.GetFiles(Environment.CurrentDirectory, "*.*", System.IO.SearchOption.TopDirectoryOnly))
             {
@@ -61,6 +64,8 @@ namespace smgiFuncs
                             {
                                 wc.DownloadFile("http://repo.smgi.me/" + Assembly.GetExecutingAssembly().GetName().Name + onlinepath, Environment.CurrentDirectory + localpath);
                                 settings.AddSetting("v_" + name, version);
+                                if (updateReady != null)
+                                    updateReady(null, new EventArgs());
                             }
                             else
                             {
@@ -73,6 +78,8 @@ namespace smgiFuncs
                                     System.IO.File.Move(Environment.CurrentDirectory + localpath, Environment.CurrentDirectory + localpath + ".old");
                                     wc.DownloadFile("http://repo.smgi.me/" + Assembly.GetExecutingAssembly().GetName().Name + onlinepath, Environment.CurrentDirectory + localpath);
                                     settings.AddSetting("v_" + name, version);
+                                    if (updateReady != null)
+                                        updateReady(null, new EventArgs());
                                 }
                             }
                         }

@@ -16,6 +16,8 @@ namespace osu__BPM_Changer
     class Program
     {
         private static readonly Settings settings = new Settings();
+        private static bool updateExists;
+        private static Updater u = new Updater();
         private static Beatmap BM;
         private static string lastText = "";
         private static double bpmRatio;
@@ -28,7 +30,7 @@ namespace osu__BPM_Changer
         static void Main()
         {
             Application.CurrentCulture = new CultureInfo("en-US", false);
-            Thread updaterThread = new Thread(updaterStart);
+            Thread updaterThread = new Thread(UpdaterStart);
             updaterThread.IsBackground = true;
             updaterThread.Start();
 
@@ -62,16 +64,39 @@ namespace osu__BPM_Changer
             }
         }
 
-        public static void updaterStart()
+        public static void UpdaterStart()
         {
-            new Updater(settings);
+            u.updateReady += UpdateCB;
+            u.Start(settings);
         }
+
+        public static void UpdateCB(object sender, EventArgs e)
+        {
+            updateExists = true;
+            DisplayUpdateString();
+        }
+
+        public static void DisplayUpdateString()
+        {
+            ConsoleColor previousColor = Console.ForegroundColor;
+            Console.ForegroundColor = ConsoleColor.Cyan;
+            int previousX = Console.CursorLeft;
+            int previousY = Console.CursorTop;
+            Console.CursorTop = Console.WindowTop + Console.WindowHeight - 1;
+            Console.Write("Update ready - restart application to apply.");
+            Console.SetCursorPosition(previousX, previousY);
+            Console.ForegroundColor = previousColor;  
+        }
+
         public static void BeginGUI(int page)
         {
             while (true)
             {
                 //Main GUI
                 Console.Clear();
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine(settings.ContainsSetting("v_osu! BPM Changer.exe")? "osu! BPM Changer v" + settings.GetSetting("v_osu! BPM Changer.exe") : "osu! BPM Changer v1.0.0");
+
                 if (lastText != "")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
@@ -96,6 +121,9 @@ namespace osu__BPM_Changer
                 Console.WriteLine("Map BPM: " + minBPM + (minBPM != maxBPM ? " - " + maxBPM : ""));
                 Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "] with creator " + BM.Creator);
                 Console.WriteLine("-------------------------------------------------------------------------------");
+
+                if (updateExists)
+                    DisplayUpdateString();
 
                 string input;
 
