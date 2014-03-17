@@ -6,7 +6,6 @@ using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
-using System.Threading.Tasks;
 using System.IO;
 using BMAPI;
 using smgiFuncs;
@@ -287,7 +286,7 @@ namespace osu__BPM_Changer
                     case 3:
                         try
                         {
-                            moveFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp.mp3").Wait();
+                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp.mp3");
                         }
                         catch
                         {
@@ -308,7 +307,7 @@ namespace osu__BPM_Changer
                         p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
                         p.Start();
                         p.WaitForExit();
-                        moveFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                        CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Saving beatmap...");
@@ -358,13 +357,15 @@ namespace osu__BPM_Changer
             }
         }
 
-        public static async Task moveFile(string src, string dst)
+        public static void CopyFile(string src, string dst)
         {
             using (FileStream srcStream = File.Open(src, FileMode.Open))
             {
                 using (FileStream dstStream = File.Create(dst))
                 {
-                    await srcStream.CopyToAsync(dstStream);
+                    byte[] buffer = new byte[srcStream.Length];
+                    srcStream.Read(buffer, 0, buffer.Length);
+                    dstStream.Write(buffer,0,buffer.Length);
                 }
             }
         }
