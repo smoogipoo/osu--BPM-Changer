@@ -207,7 +207,6 @@ namespace osu__BPM_Changer
                             else
                             {
                                 tp.time = (int)(tp.time * bpmRatio);
-                                tp.bpmDelay = tp.bpmDelay * bpmRatio;
                             }
                         }
                         if (error)
