@@ -1,11 +1,14 @@
 osu! BPM Changer/bin/Debug/lame.exe
 osu! BPM Changer/bin/Debug/osu! BPM Changer.exe
 osu! BPM Changer/bin/Debug/osu! BPM Changer.exe.config
+osu! BPM Changer/bin/Debug/osu! BPM Changer.exe.old
 osu! BPM Changer/bin/Debug/osu! BPM Changer.pdb
 osu! BPM Changer/bin/Debug/osu! BPM Changer.vshost.exe
 osu! BPM Changer/bin/Debug/osu! BPM Changer.vshost.exe.config
 osu! BPM Changer/bin/Debug/osu! BPM Changer.vshost.exe.manifest
+osu! BPM Changer/bin/Debug/settings.dat
 osu! BPM Changer/bin/Debug/soundstretch.exe
+osu! BPM Changer/bin/Debug/temp.mp3
 osu! BPM Changer/obj/Debug/DesignTimeResolveAssemblyReferencesInput.cache
 osu! BPM Changer/obj/Debug/osu! BPM Changer.csproj.FileListAbsolute.txt
 osu! BPM Changer/obj/Debug/osu! BPM Changer.csprojResolveAssemblyReference.cache
@@ -14,12 +17,3 @@ osu! BPM Changer/obj/Debug/osu! BPM Changer.pdb
 osu! BPM Changer/obj/Debug/TemporaryGeneratedFile_036C0B5B-1481-4323-8D20-8F5ADCB23D92.cs
 osu! BPM Changer/obj/Debug/TemporaryGeneratedFile_5937a670-0e60-4077-877b-f7221da3dda1.cs
 osu! BPM Changer/obj/Debug/TemporaryGeneratedFile_E7A71F73-0F8D-4B9B-B56E-8E70B10BC5D3.cs
-osu! BPM Changer/bin/Debug/settings.dat
-osu! BPM Changer/bin/Debug/temp.mp3
-osu! BPM Changer/bin/Debug/temp3.mp3
-osu! BPM Changer/bin/Debug/osu! BPM Changer.exe.old
-osu! BPM Changer.v11.suo
-osu! BPM Changer.v11.suo.BASE.1392.suo
-osu! BPM Changer.v11.suo.LOCAL.1392.suo
-osu! BPM Changer.v11.suo.REMOTE.1392.suo
-osu! BPM Changer.v11.suo
