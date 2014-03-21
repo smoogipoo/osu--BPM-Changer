@@ -140,6 +140,7 @@ namespace osu__BPM_Changer
                                 {
                                     BM = new Beatmap(ofd.FileName);
                                     oldVersion = BM.Version;
+                                    oldBPM = 0;
                                     if (settings.ContainsSetting("customCreator"))
                                     {
                                         oldCreator = BM.Creator;
@@ -206,8 +207,8 @@ namespace osu__BPM_Changer
                         Console.WriteLine("-------------------------------------------------------------------------------");
                         Console.WriteLine("Processing timingpoints...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        bool setRatio = false;
                         bool error = false;
+                        bool setRatio = false;
                         foreach (TimingPointInfo tp in BM.TimingPoints)
                         {
                             if (tp.inheritsBPM == false)
@@ -216,12 +217,24 @@ namespace osu__BPM_Changer
                                 double tempDbl;
                                 double newBPM;
                                 if (double.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
+                                {
+                                    if (!setRatio)
+                                    {
+                                        bpmRatio = oldBPM / tempDbl;
+                                        setRatio = !setRatio;
+                                    }
                                     newBPM = tempDbl;
+                                }
                                 else
                                 {
                                     try
                                     {
                                         newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + input, null));
+                                        if (!setRatio)
+                                        {
+                                            bpmRatio = oldBPM / Convert.ToDouble(new DataTable().Compute(oldBPM + input, null));
+                                            setRatio = !setRatio;
+                                        }
                                     }
                                     catch
                                     {
@@ -231,11 +244,6 @@ namespace osu__BPM_Changer
                                     }
                                 }
                                 double newDelay = 60000 / newBPM;
-                                if (!setRatio)
-                                {
-                                    bpmRatio = oldBPM / newBPM;
-                                    setRatio = true;
-                                }
                                 tp.bpmDelay = newDelay;
                                 tp.time = (int)(tp.time * bpmRatio);
                             }
@@ -249,6 +257,8 @@ namespace osu__BPM_Changer
                             page = 0;
                             continue;
                         }
+
+
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("Processing events...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
