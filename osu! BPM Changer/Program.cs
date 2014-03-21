@@ -51,9 +51,9 @@ namespace osu__BPM_Changer
                             oldCreator = BM.Creator;
                             BM.Creator = settings.GetSetting("customCreator");
                         }
-                        if (settings.ContainsSetting("saveAsMP3"))
+                        if (settings.ContainsSetting("customSaveAsMP3"))
                         {
-                            saveAsMP3 = Convert.ToBoolean(Convert.ToInt32(settings.GetSetting("saveAsMP3")));
+                            saveAsMP3 = Convert.ToBoolean(Convert.ToInt32(settings.GetSetting("customSaveAsMP3")));
                         }
                     }
                     catch (Exception e)
@@ -360,7 +360,7 @@ namespace osu__BPM_Changer
 
                     case 8:
                         saveAsMP3 = !saveAsMP3;
-                        settings.AddSetting("saveAsMP3", Convert.ToInt32(saveAsMP3).ToString(CultureInfo.InvariantCulture));
+                        settings.AddSetting("customSaveAsMP3", Convert.ToInt32(saveAsMP3).ToString(CultureInfo.InvariantCulture));
                         settings.Save();
                         page = 0;
                         continue;
