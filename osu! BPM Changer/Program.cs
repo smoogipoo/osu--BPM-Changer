@@ -19,11 +19,12 @@ namespace osu__BPM_Changer
         private static bool updateExists;
         private static readonly Updater u = new Updater();
         private static Beatmap BM;
-        private static string lastText = "";
+        private static string errorText = "";
         private static double bpmRatio;
         private static double oldBPM;
         private static string oldVersion;
         private static string oldCreator;
+        private static bool saveAsMP3 = true;
         private static bool versionSet;
 
         [STAThread]
@@ -49,6 +50,10 @@ namespace osu__BPM_Changer
                         {
                             oldCreator = BM.Creator;
                             BM.Creator = settings.GetSetting("customCreator");
+                        }
+                        if (settings.ContainsSetting("saveAsMP3"))
+                        {
+                            saveAsMP3 = Convert.ToBoolean(Convert.ToInt32(settings.GetSetting("saveAsMP3")));
                         }
                     }
                     catch (Exception e)
@@ -97,12 +102,12 @@ namespace osu__BPM_Changer
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine(settings.ContainsSetting("v_osu! BPM Changer.exe")? "osu! BPM Changer v" + settings.GetSetting("v_osu! BPM Changer.exe") : "osu! BPM Changer v1.0.0");
 
-                if (lastText != "")
+                if (errorText != "")
                 {
                     Console.ForegroundColor = ConsoleColor.Red;
-                    Console.WriteLine(lastText);
+                    Console.WriteLine(errorText);
                     Console.WriteLine("-------------------------------------------------------------------------------");
-                    lastText = "";
+                    errorText = "";
                 }
                 Console.ForegroundColor = ConsoleColor.Green;          
                 double minBPM = double.MaxValue, maxBPM = double.MinValue;
@@ -119,8 +124,13 @@ namespace osu__BPM_Changer
                     BM.Version = oldVersion + minBPM + "BPM";
                 Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + BM.Version + "]\n");
-                Console.WriteLine("Map BPM: " + minBPM + (Math.Abs(minBPM - maxBPM) > 0 ? " - " + maxBPM : ""));
-                Console.WriteLine("Beatmap will be saved as version: [" + BM.Version + "] with creator " + BM.Creator);
+
+                Console.ForegroundColor = ConsoleColor.Green;
+                Console.WriteLine("BPM: " + minBPM + (Math.Abs(minBPM - maxBPM) > 0 ? " - " + maxBPM : ""));
+                Console.WriteLine("Version: [" + BM.Version + "]");
+                Console.WriteLine("Creator: " + BM.Creator);
+                Console.WriteLine("Song format: " + (saveAsMP3 ? "MP3" : "WAV"));
+                Console.ForegroundColor = ConsoleColor.White;
                 Console.WriteLine("-------------------------------------------------------------------------------");
 
                 if (updateExists)
@@ -149,7 +159,7 @@ namespace osu__BPM_Changer
                                 }
                                 catch (Exception e)
                                 {
-                                    lastText = ("The beatmap could not be parsed. Please post the following error in the forums:\n" + e);
+                                    errorText = ("The beatmap could not be parsed. Please post the following error in the forums:\n" + e);
                                 }
                             }
                         }
@@ -162,6 +172,7 @@ namespace osu__BPM_Changer
                         Console.WriteLine("(1) Change BPM");
                         Console.WriteLine("(2) Change version");
                         Console.WriteLine("(3) Save beatmap\n");
+                        Console.WriteLine("(8) Change song format");
                         Console.WriteLine("(9) Set custom creator");
                         Console.WriteLine("(0) Select another beatmap\n");
 
@@ -177,7 +188,7 @@ namespace osu__BPM_Changer
                         }
                         if (!int.TryParse(Kinfo.KeyChar.ToString(CultureInfo.InvariantCulture), out option))
                         {
-                            lastText = "Entered option must be a numerical value.";
+                            errorText = "Entered option must be a numerical value.";
                             page = 0;
                             continue;
                         }
@@ -186,11 +197,11 @@ namespace osu__BPM_Changer
                             case 0:
                                 page = -1;
                                 continue;
-                            case 1: case 2: case 3: case 9:
+                            case 1: case 2: case 3: case 8: case 9:
                                 page = option;
                                 continue;
                             default:
-                                lastText = "Entered option value must be betwee 1 and 3.";
+                                errorText = "Entered option value must be a valid option.";
                                 page = 0;
                                 continue;
                         }
@@ -238,7 +249,7 @@ namespace osu__BPM_Changer
                                     }
                                     catch
                                     {
-                                        lastText = "BPM requires a numerical value or function.";
+                                        errorText = "BPM requires a numerical value or function.";
                                         error = true;
                                         break;
                                     }
@@ -261,6 +272,7 @@ namespace osu__BPM_Changer
 
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("Processing events...");
+
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         foreach (dynamic e in (IEnumerable<dynamic>)BM.Events)
                         {
@@ -284,6 +296,7 @@ namespace osu__BPM_Changer
                     case 2:
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Enter the version:\n");
+
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("Version: ");
 
@@ -301,11 +314,11 @@ namespace osu__BPM_Changer
                         }
                         catch
                         {
-                            lastText = "Please make sure the beatmap set is not selected in the osu! menu and try again.";
+                            errorText = "Please make sure the beatmap set is not selected in the osu! menu and try again.";
                             page = 0;
                             continue;
                         }
-                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + BM.Version + ".wav";
+                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + BM.Version + (saveAsMP3? ".mp3" : ".wav");
                         Process p = new Process();
                         p.StartInfo.RedirectStandardOutput = true;
                         p.StartInfo.CreateNoWindow = false;
@@ -318,21 +331,37 @@ namespace osu__BPM_Changer
                         p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
                         p.Start();
                         p.WaitForExit();
-                        CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                        if (saveAsMP3)
+                        {
+                            p.StartInfo.FileName = "lame.exe";
+                            p.StartInfo.Arguments = "temp2.wav temp3.mp3";
+                            p.Start();
+                            p.WaitForExit(); 
+                            CopyFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                        }
+                        else
+                            CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Saving beatmap...");
-                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("[", StringComparison.InvariantCulture) + 1) + BM.Version + "].osu";
+                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.Artist + " - " + BM.Title + " (" + BM.Creator + ")" + " [" + BM.Version + "].osu";
                         BM.Save(BM.Filename);
 
                         Console.WriteLine("Cleaning up...");
-                        //Clear directory
-                        File.Delete(Environment.CurrentDirectory + "\\temp.wav");
+                        File.Delete(Environment.CurrentDirectory + "\\temp.mp3");
                         File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
+                        File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
 
                         
                         Console.WriteLine("Done! Press any key to go to menu.");
                         Console.ReadKey();
+                        page = 0;
+                        continue;
+
+                    case 8:
+                        saveAsMP3 = !saveAsMP3;
+                        settings.AddSetting("saveAsMP3", Convert.ToInt32(saveAsMP3).ToString(CultureInfo.InvariantCulture));
+                        settings.Save();
                         page = 0;
                         continue;
                     case 9:
