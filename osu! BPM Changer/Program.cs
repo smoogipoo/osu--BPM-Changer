@@ -318,7 +318,7 @@ namespace osu__BPM_Changer
                             page = 0;
                             continue;
                         }
-                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + BM.Version + (saveAsMP3? ".mp3" : ".wav");
+                        BM.AudioFilename = BM.AudioFilename.Substring(0, BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + NormalizeText(BM.Version) + (saveAsMP3 ? ".mp3" : ".wav");
                         Process p = new Process();
                         p.StartInfo.RedirectStandardOutput = true;
                         p.StartInfo.CreateNoWindow = false;
@@ -344,11 +344,12 @@ namespace osu__BPM_Changer
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Saving beatmap...");
-                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.Artist + " - " + BM.Title + " (" + BM.Creator + ")" + " [" + BM.Version + "].osu";
+                        BM.Filename = BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + NormalizeText(BM.Artist) + " - " + NormalizeText(BM.Title) + " (" + NormalizeText(BM.Creator) + ")" + " [" + NormalizeText(BM.Version) + "].osu";
                         BM.Save(BM.Filename);
 
                         Console.WriteLine("Cleaning up...");
                         File.Delete(Environment.CurrentDirectory + "\\temp.mp3");
+                        File.Delete(Environment.CurrentDirectory + "\\temp.wav");
                         File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
                         File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
 
@@ -395,6 +396,11 @@ namespace osu__BPM_Changer
                 }
                 break;
             }
+        }
+
+        public static string NormalizeText(string str)
+        {
+            return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
         }
 
         public static async Task CopyFile(string src, string dst)
