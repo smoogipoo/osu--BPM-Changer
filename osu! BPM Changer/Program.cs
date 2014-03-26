@@ -123,7 +123,7 @@ namespace osu__BPM_Changer
                 if (versionSet == false)
                     BM.Version = oldVersion + minBPM + "BPM";
                 Console.ForegroundColor = ConsoleColor.White;
-                Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + BM.Version + "]\n");
+                Console.WriteLine("Loaded beatmap " + BM.Source + (BM.Source != "" ? " (" + BM.Artist + ")" : BM.Artist) + " - " + BM.Title + " [" + oldVersion + "]\n");
 
                 Console.ForegroundColor = ConsoleColor.Green;
                 Console.WriteLine("BPM: " + minBPM + (Math.Abs(minBPM - maxBPM) > 0 ? " - " + maxBPM : ""));
