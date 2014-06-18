@@ -7,6 +7,7 @@ namespace BMAPI
         //Info
         public int? Format = null;
         public string Filename;
+        public string BeatmapHash;
 
         //General
         public string AudioFilename;
@@ -52,15 +53,30 @@ namespace BMAPI
         public int? BeatmapSetID = null;
 
         //Difficulty
-        public int? HPDrainRate = null;
-        public int? CircleSize = null;
-        public int? OverallDifficulty = null;
-        public int? ApproachRate = null;
-        public double? SliderMultiplier = null;
-        public double? SliderTickRate = null;
+        public double HPDrainRate = 5;
+        private double p_CircleSize = 5;
+        public double CircleSize
+        {
+            get
+            {
+                return p_CircleSize;
+            }
+            set
+            {
+                p_CircleSize = value;
+                foreach (BaseCircle hO in HitObjects)
+                {
+                    hO.Radius = 40 - 4 * (value - 2);
+                }
+            }
+        }
+        public double OverallDifficulty = 5;
+        public double ApproachRate = 5;
+        public double SliderMultiplier = 1.4;
+        public double SliderTickRate = 1;
 
         //Events
-        public List<dynamic> Events = new List<dynamic>();
+        public List<BaseEvent> Events = new List<BaseEvent>();
 
         //Timingpoints
         public List<TimingPointInfo> TimingPoints = new List<TimingPointInfo>();
@@ -70,6 +86,6 @@ namespace BMAPI
         public ColourInfo SliderBorder = new ColourInfo();
 
         //Hitobjects
-        public List<dynamic> HitObjects = new List<dynamic>();
+        public List<BaseCircle> HitObjects = new List<BaseCircle>();
     }
 }

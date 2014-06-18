@@ -35,6 +35,18 @@
     <Prefer32Bit>false</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="NAudio, Version=1.7.0.15, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\NAudio.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis, Version=0.8.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\NVorbis.dll</HintPath>
+    </Reference>
+    <Reference Include="NVorbis.NAudioSupport, Version=0.5.6.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\NVorbis.NAudioSupport.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -46,10 +58,11 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BMAPI\BackgroundInfo.cs" />
+    <Compile Include="BMAPI\BaseCircle.cs" />
+    <Compile Include="BMAPI\BaseEvent.cs" />
     <Compile Include="BMAPI\BeatmapInfo.cs" />
     <Compile Include="BMAPI\BMAPI.cs" />
     <Compile Include="BMAPI\BreakInfo.cs" />
-    <Compile Include="BMAPI\CircleInfo.cs" />
     <Compile Include="BMAPI\ColourInfo.cs" />
     <Compile Include="BMAPI\ComboInfo.cs" />
     <Compile Include="BMAPI\Enums.cs" />

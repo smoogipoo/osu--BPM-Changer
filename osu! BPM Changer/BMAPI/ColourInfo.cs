@@ -1,11 +1,9 @@
-﻿
-namespace BMAPI
+﻿namespace BMAPI
 {
-    public class ColourInfo
+    public class ColourInfo : BaseEvent
     {
-        public int? startTime = null;
-        public int r = 0;
-        public int g = 0;
-        public int b = 0;
+        public int R { get; set; }
+        public int G { get; set; }
+        public int B { get; set; }
     }
 }

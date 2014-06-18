@@ -3,6 +3,7 @@ using System.Data;
 using System.Linq;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Runtime.InteropServices;
 using System.Windows.Forms;
 using System.Diagnostics;
 using System.Threading;
@@ -111,12 +112,12 @@ namespace osu__BPM_Changer
                 }
                 Console.ForegroundColor = ConsoleColor.Green;          
                 double minBPM = double.MaxValue, maxBPM = double.MinValue;
-                foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.inheritsBPM == false))
+                foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.InheritsBPM == false))
                 {
-                    if (60000/tp.bpmDelay < minBPM)
-                        minBPM = 60000/tp.bpmDelay;
-                    if (60000/tp.bpmDelay > maxBPM)
-                        maxBPM = 60000/tp.bpmDelay;
+                    if (60000/tp.BpmDelay < minBPM)
+                        minBPM = 60000 / tp.BpmDelay;
+                    if (60000 / tp.BpmDelay > maxBPM)
+                        maxBPM = 60000 / tp.BpmDelay;
                 }
                 if (Math.Abs(oldBPM) <= 0)
                     oldBPM = minBPM;
@@ -222,9 +223,9 @@ namespace osu__BPM_Changer
                         bool setRatio = false;
                         foreach (TimingPointInfo tp in BM.TimingPoints)
                         {
-                            if (tp.inheritsBPM == false)
+                            if (tp.InheritsBPM == false)
                             {
-                                double currentBPM = 60000 / tp.bpmDelay;
+                                double currentBPM = 60000 / tp.BpmDelay;
                                 double tempDbl;
                                 double newBPM;
                                 if (double.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
@@ -255,12 +256,12 @@ namespace osu__BPM_Changer
                                     }
                                 }
                                 double newDelay = 60000 / newBPM;
-                                tp.bpmDelay = newDelay;
-                                tp.time = (int)(tp.time * bpmRatio);
+                                tp.BpmDelay = newDelay;
+                                tp.Time = (int)(tp.Time * bpmRatio);
                             }
                             else
                             {
-                                tp.time = (int)(tp.time * bpmRatio);
+                                tp.Time = (int)(tp.Time * bpmRatio);
                             }
                         }
                         if (error)
@@ -274,21 +275,22 @@ namespace osu__BPM_Changer
                         Console.WriteLine("Processing events...");
 
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        foreach (dynamic e in (IEnumerable<dynamic>)BM.Events)
+
+                        foreach (BaseEvent e in BM.Events)
                         {
-                            e.startTime = (int)(e.startTime * bpmRatio);
+                            e.StartTime = (int)(e.StartTime * bpmRatio);
                             if (e.GetType() == typeof(BreakInfo))
-                                e.endTime = (int)(e.endTime * bpmRatio);
+                                ((BreakInfo)e).EndTime = (int)(((BreakInfo)e).EndTime * bpmRatio);
                         }
 
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("\nProcessing hitobjects...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        foreach (dynamic hO in (IEnumerable<dynamic>)BM.HitObjects)
+                        foreach (BaseCircle hO in BM.HitObjects)
                         {
-                            hO.startTime = (int)(hO.startTime * bpmRatio);
+                            hO.StartTime = (int)(hO.StartTime * bpmRatio);
                             if (hO.GetType() == typeof(SpinnerInfo))
-                                hO.endTime = (int)(hO.endTime * bpmRatio);
+                                ((SpinnerInfo)hO).EndTime = (int)(((SpinnerInfo)hO).EndTime * bpmRatio);
                         }
                         page = 0;
                         continue;
@@ -308,9 +310,10 @@ namespace osu__BPM_Changer
                         continue;
 
                     case 3:
+                        string ext = BM.AudioFilename.Substring(BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture));
                         try
                         {
-                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp.mp3").Wait();
+                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp" + ext).Wait();
                         }
                         catch
                         {
@@ -327,6 +330,7 @@ namespace osu__BPM_Changer
                         p.StartInfo.Arguments = "--decode temp.mp3 temp.wav";
                         p.Start();
                         p.WaitForExit();
+
                         p.StartInfo.FileName = "soundstretch.exe";
                         p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
                         p.Start();
@@ -412,6 +416,16 @@ namespace osu__BPM_Changer
                     await srcStream.CopyToAsync(dstStream);
                 }
             }
+        }
+
+        [StructLayout(LayoutKind.Explicit)]
+        public struct FloatByte
+        {
+            [FieldOffset(0)]
+            public Byte[] Bytes;
+
+            [FieldOffset(0)]
+            public float[] Floats;
         }
     }
 }
