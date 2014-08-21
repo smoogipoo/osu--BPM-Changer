@@ -1,0 +1,4 @@
+[submodule "osu! BPM Changer/BMAPI"]
+	path = osu! BPM Changer/BMAPI
+	url = git@github.com:smoogipooo/osu-BMAPI.git
+	branch = master

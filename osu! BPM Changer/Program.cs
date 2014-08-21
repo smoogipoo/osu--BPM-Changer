@@ -9,7 +9,9 @@ using System.Diagnostics;
 using System.Threading;
 using System.Threading.Tasks;
 using System.IO;
-using BMAPI;
+using BMAPI.v1;
+using BMAPI.v1.Events;
+using BMAPI.v1.HitObjects;
 using smgiFuncs;
 
 namespace osu__BPM_Changer
@@ -112,7 +114,7 @@ namespace osu__BPM_Changer
                 }
                 Console.ForegroundColor = ConsoleColor.Green;          
                 double minBPM = double.MaxValue, maxBPM = double.MinValue;
-                foreach (TimingPointInfo tp in BM.TimingPoints.Where(tp => tp.InheritsBPM == false))
+                foreach (TimingPoint tp in BM.TimingPoints.Where(tp => tp.InheritsBPM == false))
                 {
                     if (60000/tp.BpmDelay < minBPM)
                         minBPM = 60000 / tp.BpmDelay;
@@ -221,14 +223,14 @@ namespace osu__BPM_Changer
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         bool error = false;
                         bool setRatio = false;
-                        foreach (TimingPointInfo tp in BM.TimingPoints)
+                        foreach (TimingPoint tp in BM.TimingPoints)
                         {
                             if (tp.InheritsBPM == false)
                             {
-                                double currentBPM = 60000 / tp.BpmDelay;
-                                double tempDbl;
-                                double newBPM;
-                                if (double.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
+                                float currentBPM = 60000 / tp.BpmDelay;
+                                float tempDbl;
+                                float newBPM;
+                                if (float.TryParse(input, out tempDbl) && !input.Contains("+") && !input.Contains("-"))
                                 {
                                     if (!setRatio)
                                     {
@@ -241,7 +243,7 @@ namespace osu__BPM_Changer
                                 {
                                     try
                                     {
-                                        newBPM = Convert.ToDouble(new DataTable().Compute(currentBPM + input, null));
+                                        newBPM = (float)Convert.ToDouble(new DataTable().Compute(currentBPM + input, null));
                                         if (!setRatio)
                                         {
                                             bpmRatio = oldBPM / Convert.ToDouble(new DataTable().Compute(oldBPM + input, null));
@@ -255,7 +257,7 @@ namespace osu__BPM_Changer
                                         break;
                                     }
                                 }
-                                double newDelay = 60000 / newBPM;
+                                float newDelay = 60000 / newBPM;
                                 tp.BpmDelay = newDelay;
                                 tp.Time = (int)(tp.Time * bpmRatio);
                             }
@@ -276,21 +278,21 @@ namespace osu__BPM_Changer
 
                         Console.ForegroundColor = ConsoleColor.Yellow;
 
-                        foreach (BaseEvent e in BM.Events)
+                        foreach (EventBase e in BM.Events)
                         {
                             e.StartTime = (int)(e.StartTime * bpmRatio);
-                            if (e.GetType() == typeof(BreakInfo))
-                                ((BreakInfo)e).EndTime = (int)(((BreakInfo)e).EndTime * bpmRatio);
+                            if (e.GetType() == typeof(BreakEvent))
+                                ((BreakEvent)e).EndTime = (int)(((BreakEvent)e).EndTime * bpmRatio);
                         }
 
                         Console.ForegroundColor = ConsoleColor.White;
                         Console.WriteLine("\nProcessing hitobjects...");
                         Console.ForegroundColor = ConsoleColor.Yellow;
-                        foreach (BaseCircle hO in BM.HitObjects)
+                        foreach (CircleObject hO in BM.HitObjects)
                         {
                             hO.StartTime = (int)(hO.StartTime * bpmRatio);
-                            if (hO.GetType() == typeof(SpinnerInfo))
-                                ((SpinnerInfo)hO).EndTime = (int)(((SpinnerInfo)hO).EndTime * bpmRatio);
+                            if (hO.GetType() == typeof(SpinnerObject))
+                                ((SpinnerObject)hO).EndTime = (int)(((SpinnerObject)hO).EndTime * bpmRatio);
                         }
                         page = 0;
                         continue;

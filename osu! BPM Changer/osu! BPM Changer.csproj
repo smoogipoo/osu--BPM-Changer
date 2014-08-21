@@ -47,6 +47,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>bin\Debug\NVorbis.NAudioSupport.dll</HintPath>
     </Reference>
+    <Reference Include="osu!BMAPI">
+      <HintPath>BMAPI\obj\Debug\osu!BMAPI.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Windows.Forms" />
@@ -57,20 +60,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BMAPI\BackgroundInfo.cs" />
-    <Compile Include="BMAPI\BaseCircle.cs" />
-    <Compile Include="BMAPI\BaseEvent.cs" />
-    <Compile Include="BMAPI\BeatmapInfo.cs" />
-    <Compile Include="BMAPI\BMAPI.cs" />
-    <Compile Include="BMAPI\BreakInfo.cs" />
-    <Compile Include="BMAPI\ColourInfo.cs" />
-    <Compile Include="BMAPI\ComboInfo.cs" />
-    <Compile Include="BMAPI\Enums.cs" />
-    <Compile Include="BMAPI\PointInfo.cs" />
-    <Compile Include="BMAPI\SliderInfo.cs" />
-    <Compile Include="BMAPI\SpinnerInfo.cs" />
-    <Compile Include="BMAPI\TimingPointInfo.cs" />
-    <Compile Include="BMAPI\VideoInfo.cs" />
     <Compile Include="sFuncs.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
