@@ -313,9 +313,19 @@ namespace osu__BPM_Changer
 
                     case 3:
                         string ext = BM.AudioFilename.Substring(BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture));
+
+                        //temp1: Audio copy
+                        //temp2: Decoded wav
+                        //temp3: stretched file
+                        //temp4: Encoded mp3
+                        string temp1 = getTempFilename("mp3");
+                        string temp2 = getTempFilename("wav");
+                        string temp3 = getTempFilename("wav");
+                        string temp4 = getTempFilename("mp3");
+
                         try
                         {
-                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp" + ext);
+                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, temp1);
                         }
                         catch
                         {
@@ -329,24 +339,24 @@ namespace osu__BPM_Changer
                         p.StartInfo.CreateNoWindow = false;
                         p.StartInfo.UseShellExecute = false;
                         p.StartInfo.FileName = "lame.exe";
-                        p.StartInfo.Arguments = "--decode temp.mp3 temp.wav";
+                        p.StartInfo.Arguments = string.Format("--decode {0} {1}", temp1, temp2);
                         p.Start();
                         p.WaitForExit();
 
                         p.StartInfo.FileName = "soundstretch.exe";
-                        p.StartInfo.Arguments = "temp.wav temp2.wav -tempo=" + (Math.Pow(bpmRatio, -1) - 1) * 100;
+                        p.StartInfo.Arguments = string.Format("{0} {1} -tempo={2}", temp2, temp3, (Math.Pow(bpmRatio, -1) - 1) * 100);
                         p.Start();
                         p.WaitForExit();
                         if (saveAsMP3)
                         {
                             p.StartInfo.FileName = "lame.exe";
-                            p.StartInfo.Arguments = "temp2.wav temp3.mp3";
+                            p.StartInfo.Arguments = string.Format("{0} {1}", temp3, temp4);
                             p.Start();
                             p.WaitForExit();
-                            CopyFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
+                            CopyFile(temp4, BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
                         }
                         else
-                            CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
+                            CopyFile(temp3, BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Saving beatmap...");
@@ -354,10 +364,10 @@ namespace osu__BPM_Changer
                         BM.Save(BM.Filename);
 
                         Console.WriteLine("Cleaning up...");
-                        File.Delete(Environment.CurrentDirectory + "\\temp.mp3");
-                        File.Delete(Environment.CurrentDirectory + "\\temp.wav");
-                        File.Delete(Environment.CurrentDirectory + "\\temp2.wav");
-                        File.Delete(Environment.CurrentDirectory + "\\temp3.mp3");
+                        File.Delete(temp1);
+                        File.Delete(temp2);
+                        File.Delete(temp3);
+                        File.Delete(temp4);
 
                         
                         Console.WriteLine("Done! Press any key to go to menu.");
@@ -402,6 +412,11 @@ namespace osu__BPM_Changer
                 }
                 break;
             }
+        }
+
+        private static string getTempFilename(string ext)
+        {
+            return Path.GetTempPath() + Guid.NewGuid() + '.' + ext;
         }
 
         public static string NormalizeText(string str)
