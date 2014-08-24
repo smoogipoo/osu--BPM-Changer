@@ -315,7 +315,7 @@ namespace osu__BPM_Changer
                         string ext = BM.AudioFilename.Substring(BM.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture));
                         try
                         {
-                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp" + ext).Wait();
+                            CopyFile(BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + BM.AudioFilename, Environment.CurrentDirectory + "\\temp" + ext);
                         }
                         catch
                         {
@@ -342,11 +342,11 @@ namespace osu__BPM_Changer
                             p.StartInfo.FileName = "lame.exe";
                             p.StartInfo.Arguments = "temp2.wav temp3.mp3";
                             p.Start();
-                            p.WaitForExit(); 
-                            CopyFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                            p.WaitForExit();
+                            CopyFile(Environment.CurrentDirectory + "\\temp3.mp3", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
                         }
                         else
-                            CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename).Wait();
+                            CopyFile(Environment.CurrentDirectory + "\\temp2.wav", BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
 
                         Console.ForegroundColor = ConsoleColor.Green;
                         Console.WriteLine("Saving beatmap...");
@@ -409,14 +409,12 @@ namespace osu__BPM_Changer
             return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
         }
 
-        public static async Task CopyFile(string src, string dst)
+        public static void CopyFile(string src, string dst)
         {
-            using (FileStream srcStream = File.Open(src, FileMode.Open))
+            using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
+            using (FileStream dstStream = new FileStream(dst, FileMode.Create))
             {
-                using (FileStream dstStream = File.Create(dst))
-                {
-                    await srcStream.CopyToAsync(dstStream);
-                }
+                srcStream.CopyTo(dstStream);
             }
         }
 
