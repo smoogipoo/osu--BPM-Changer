@@ -339,18 +339,18 @@ namespace osu__BPM_Changer
                         p.StartInfo.CreateNoWindow = false;
                         p.StartInfo.UseShellExecute = false;
                         p.StartInfo.FileName = "lame.exe";
-                        p.StartInfo.Arguments = string.Format("--decode {0} {1}", temp1, temp2);
+                        p.StartInfo.Arguments = string.Format("--decode \"{0}\" \"{1}\"", temp1, temp2);
                         p.Start();
                         p.WaitForExit();
 
                         p.StartInfo.FileName = "soundstretch.exe";
-                        p.StartInfo.Arguments = string.Format("{0} {1} -tempo={2}", temp2, temp3, (Math.Pow(bpmRatio, -1) - 1) * 100);
+                        p.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" -tempo={2}", temp2, temp3, (Math.Pow(bpmRatio, -1) - 1) * 100);
                         p.Start();
                         p.WaitForExit();
                         if (saveAsMP3)
                         {
                             p.StartInfo.FileName = "lame.exe";
-                            p.StartInfo.Arguments = string.Format("{0} {1}", temp3, temp4);
+                            p.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\"", temp3, temp4);
                             p.Start();
                             p.WaitForExit();
                             CopyFile(temp4, BM.Filename.Substring(0, BM.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + BM.AudioFilename);
