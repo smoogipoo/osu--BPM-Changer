@@ -14,7 +14,7 @@ using BMAPI.v1.Events;
 using BMAPI.v1.HitObjects;
 using smgiFuncs;
 
-namespace osu__BPM_Changer
+namespace osu_trainer
 {
     class Program
     {
@@ -34,6 +34,11 @@ namespace osu__BPM_Changer
         static void Main()
         {
             Application.CurrentCulture = new CultureInfo("en-US", false);
+            Application.EnableVisualStyles();
+            Application.SetCompatibleTextRenderingDefault(false);
+            Application.Run(new MainForm());
+
+            return;
             Thread updaterThread = new Thread(UpdaterStart);
             updaterThread.IsBackground = true;
             updaterThread.Start();
@@ -209,6 +214,13 @@ namespace osu__BPM_Changer
                                 continue;
                         }
                     case 1:
+                        // OUT: tp.BpmDelay          for each timing point in beatmap
+                        // OUT: tp.Time              for each timing point in beatmap
+                        // OUT: tp.Time              for each timing point in beatmap
+                        // OUT: event.StartTime      for each event in beatmap
+                        // OUT: event.EndTime        for each break event in beatmap
+                        // OUT: ho.StartTime         for each hit object in beatmap
+                        // OUT: ho.EndTime           for each spinner in beatmap
                         Console.ForegroundColor = ConsoleColor.Yellow;
                         Console.WriteLine("Enter the BPM increase:");
                         Console.WriteLine("(Example: N, +N, -N, *N, /N)\n");
