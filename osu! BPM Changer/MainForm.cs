@@ -1,7 +1,7 @@
-﻿#define DEBUG
-using BMAPI.v1;
+﻿using BMAPI.v1;
 using BMAPI.v1.Events;
 using BMAPI.v1.HitObjects;
+using OsuMemoryDataProvider;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -19,55 +19,46 @@ namespace osu_trainer
 {
     public partial class MainForm : Form
     {
-        private Beatmap OriginalBeatmap;
-        private Beatmap NewBeatmap;
-        private float bpmMultiplier;
+        string UserOsuInstallPath = "C:\\Program Files\\osu!";
+        Beatmap OriginalBeatmap;
+        Beatmap NewBeatmap;
+        float bpmMultiplier = 1.0f;
+        private IOsuMemoryReader osu;
+
         public MainForm()
         {
             InitializeComponent();
+            OsuFolderTextBox.Text = UserOsuInstallPath;
+            BeatmapUpdateTimer.Start();
+
+            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
         }
 
         private void SelectMapButton_Click(object sender, EventArgs e)
         {
-            bool success = false;
             using (OpenFileDialog ofd = new OpenFileDialog())
             {
                 ofd.Title = "Select Beatmap";
-                if (ofd.ShowDialog() == DialogResult.OK)
-                {
-#if !DEBUG
-                    try
-                    {
-#endif
-                        OriginalBeatmap = new Beatmap(ofd.FileName);
-                        NewBeatmap = new Beatmap(ofd.FileName);
-                        success = true;
-#if !DEBUG
-                    }
-
-                    catch (Exception ex)
-                    {
-                        Console.WriteLine("The beatmap could not be parsed. Please post the following error in the forums:\n" + ex);
-                        Application.Exit();
-                    }
-#endif
-                }
+                if (ofd.ShowDialog() != DialogResult.OK)
+                    return;
+                LoadBeatmap(ofd.FileName);
             }
-
-            if (!success)
-                return;
-
-            CurrentSongText.Text = OriginalBeatmap.Filename;
-            GenerateMapButton.Text = "PRESS SPACEBAR TO CREATE SHITMAP";
-            GenerateMapButton.Enabled = true;
         }
 
         private async void GenerateMapButton_Click(object sender, EventArgs e)
         {
+            // pre
             GenerateMapButton.Enabled = false;
             GenerateMapButton.Text = "Working...";
+            var timerWasEnabled = BeatmapUpdateTimer.Enabled;
+            BeatmapUpdateTimer.Stop();
+
             ModifyBeatmapSpeed(NewBeatmap, bpmMultiplier);
             await Task.Run(() => GenerateMap(NewBeatmap, bpmMultiplier));
+
+            // post
+            if (timerWasEnabled)
+                BeatmapUpdateTimer.Start();
             GenerateMapButton.Text = "PRESS SPACEBAR TO CREATE SHITMAP";
             GenerateMapButton.Enabled = true;
 
@@ -78,13 +69,15 @@ namespace osu_trainer
 
         private void ModifyBeatmapSpeed(Beatmap map, float multiplier)
         {
+            if (multiplier == 1)
+                return;
+
             // OUT: map.Version (diff name)
-            var bpms = map.TimingPoints.Where((tp) => !tp.InheritsBPM).Select((tp) => 60000 / tp.BpmDelay).ToList();
-            var bpmsUnique = bpms.Distinct().ToList();
+            var bpmsUnique = GetBpmList(map).Distinct().ToList();
             if (bpmsUnique.Count >= 2)
                 map.Version += $" x{multiplier}";
             else
-                map.Version += $" {(bpmsUnique[0] * multiplier).ToString("0.0")}bpm";
+                map.Version += $" {(bpmsUnique[0] * multiplier).ToString("0")}bpm";
 
             // Want to divide timestamps since high multiplier => shorter time
             // OUT: tp.BpmDelay          for each timing point in beatmap
@@ -127,6 +120,21 @@ namespace osu_trainer
 
         private void GenerateMap(Beatmap map, double multiplier)
         {
+            if (multiplier == 1)
+            {
+
+                string ARODCS = "";
+                if (NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate)
+                    ARODCS += $" AR{NewBeatmap.ApproachRate}";
+                if (NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty)
+                    ARODCS += $" OD{NewBeatmap.OverallDifficulty}";
+                if (NewBeatmap.CircleSize != OriginalBeatmap.CircleSize)
+                    ARODCS += $" CS{NewBeatmap.CircleSize}";
+                map.Version += ARODCS;
+                map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + NormalizeText(map.Artist) + " - " + NormalizeText(map.Title) + " (" + NormalizeText(map.Creator) + ")" + " [" + NormalizeText(map.Version) + "].osu";
+                map.Save(map.Filename);
+                return;
+            }
 
             // make this map searchable in the in-game menus
             map.Tags.Add("osutrainer");
@@ -203,13 +211,125 @@ namespace osu_trainer
 
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
         {
-            bpmMultiplier = (float) BpmMultiplierUpDown.Value;
+            setMultiplier((float)BpmMultiplierUpDown.Value);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            if (GenerateMapButton.Enabled)
+            if (e.KeyCode == Keys.Space && GenerateMapButton.Enabled)
                 GenerateMapButton_Click(null, null);
+        }
+
+        private void OsuFolderTextBox_Click(object sender, EventArgs e)
+        {
+            using (var folderDialog = new OpenFileDialog())
+            {
+                folderDialog.Title = "Select your osu! installation folder";
+                folderDialog.ValidateNames = false;
+                folderDialog.CheckFileExists = false;
+                folderDialog.CheckPathExists = true;
+                folderDialog.FileName = "Select Folder";
+                if (folderDialog.ShowDialog() != DialogResult.OK)
+                    return;
+
+                UserOsuInstallPath = Path.GetDirectoryName(folderDialog.FileName);
+                OsuFolderTextBox.BackColor = SystemColors.Control;
+                OsuFolderTextBox.Text = UserOsuInstallPath;
+            }
+        }
+
+        private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            string beatmapFolder = osu.GetMapFolderName();
+            string beatmapFilename = osu.GetOsuFileName();
+            string absoluteFilename = UserOsuInstallPath + "\\Songs\\" + beatmapFolder + "\\" + beatmapFilename;
+
+            if (OriginalBeatmap == null)
+            {
+                LoadBeatmap(absoluteFilename);
+                return;
+            }
+
+            // Beatmap Changed
+            if (beatmapFilename != Path.GetFileName(OriginalBeatmap.Filename))
+                LoadBeatmap(absoluteFilename);
+        }
+
+        private void LoadBeatmap(string beatmapPath)
+        {
+            try
+            {
+                OriginalBeatmap = new Beatmap(beatmapPath);
+                NewBeatmap = new Beatmap(beatmapPath);
+            }
+            catch (FormatException e)
+            {
+                CurrentSongText.Text = Path.GetFileName(beatmapPath) + " (error)";
+                CurrentSongText.BackColor = Color.Red;
+                return;
+            }
+            // Song Display
+            CurrentSongText.Text = Path.GetFileName(OriginalBeatmap.Filename);
+            CurrentSongText.BackColor = Color.WhiteSmoke;
+
+            // Update BPM Display
+            var originalBpms = GetBpmList(OriginalBeatmap).Select((bpm) => (int)bpm).ToList();
+            OriginalBpmTextBox.Text = string.Join(" → ", originalBpms);
+            var newBpms = GetBpmList(NewBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
+            NewBpmTextBox.Text = string.Join(" → ", newBpms);
+
+            // Scale AR and Update AR Display
+            NewBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier);
+            ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
+            ARUpDown.BackColor = SystemColors.Window;
+
+
+            // Generate Button Ready
+            GenerateMapButton.Text = "PRESS SPACEBAR TO CREATE SHITMAP";
+            GenerateMapButton.Enabled = true;
+        }
+
+        private void AutoDetectMapCheckbox_CheckedChanged(object sender, EventArgs e)
+        {
+            if (AutoDetectMapCheckbox.Checked)
+                BeatmapUpdateTimer.Start();
+            else
+                BeatmapUpdateTimer.Stop();
+        }
+
+        private void setMultiplier(float mult)
+        {
+            bpmMultiplier = mult;
+            BpmMultiplierUpDown.Value = (decimal)mult;
+
+            // Update BPM Display
+            var newBpms = GetBpmList(NewBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
+            NewBpmTextBox.Text = string.Join(" → ", newBpms);
+
+            // Scale AR and Update AR Display
+            NewBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier);
+            ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
+            ARUpDown.BackColor = SystemColors.Window;
+        }
+
+        private List<float> GetBpmList(Beatmap map)
+        {
+            var bpms = map.TimingPoints.Where((tp) => !tp.InheritsBPM).Select((tp) => 60000 / tp.BpmDelay).ToList();
+            var bpmsUnique = bpms.Distinct().ToList();
+            if (bpmsUnique.Count == 1)
+                return bpmsUnique;
+            return bpms;
+        }
+
+        private void ARUpDown_ValueChanged(object sender, EventArgs e)
+        {
+            NewBeatmap.ApproachRate = (float)ARUpDown.Value;
+            if (NewBeatmap.ApproachRate > DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
+                ARUpDown.BackColor = Color.FromArgb(255, 220, 220);
+            else if (NewBeatmap.ApproachRate < DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
+                ARUpDown.BackColor = Color.LightCyan;
+            else
+                ARUpDown.BackColor = SystemColors.Window;
         }
     }
 }

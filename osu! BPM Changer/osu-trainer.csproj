@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DifficultyCalculator.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -77,6 +78,16 @@
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="OsuMemoryDataProvider\OsuMemoryDataProvider.csproj">
+      <Project>{d117800f-072d-4ae4-9679-3e2a129a1a3c}</Project>
+      <Name>OsuMemoryDataProvider</Name>
+    </ProjectReference>
+    <ProjectReference Include="ProcessMemoryDataFinder\ProcessMemoryDataFinder.csproj">
+      <Project>{9960d641-300a-432c-aa04-c351a99b9adb}</Project>
+      <Name>ProcessMemoryDataFinder</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
