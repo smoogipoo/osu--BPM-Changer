@@ -21,7 +21,7 @@ namespace osu_trainer
 {
     public partial class MainForm : Form
     {
-        string UserOsuInstallPath = "C:\\Program Files\\osu!";
+        string UserOsuInstallPath = null;
         Beatmap OriginalBeatmap;
         Beatmap NewBeatmap;
         float bpmMultiplier = 1.0f;
@@ -35,6 +35,7 @@ namespace osu_trainer
         Color labelDisabledColor = Color.FromArgb(136, 134, 144);
         Color accentPink = Color.FromArgb(255, 126, 219);
         Color accentBlue = Color.FromArgb(46, 226, 250);
+        Color accentOrange = Color.FromArgb(246, 122, 44);
 
         // Common Control Lists
         List<Label> labels;
@@ -46,11 +47,13 @@ namespace osu_trainer
             InitializeComponent();
             InitializeControlLists();
 
+            // Init osu memory reader
+            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
+
             // Controls will be enabled when a beatmap is loaded in
             DisableFormControls();
             BeatmapUpdateTimer.Start();
 
-            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
         }
         private void InitializeControlLists()
         {
@@ -201,41 +204,6 @@ namespace osu_trainer
                 GenerateMapButton_Click(null, null);
         }
 
-        private void OsuFolderTextBox_Click(object sender, EventArgs e)
-        {
-            using (var folderDialog = new OpenFileDialog())
-            {
-                folderDialog.Title = "Select your osu! installation folder";
-                folderDialog.ValidateNames = false;
-                folderDialog.CheckFileExists = false;
-                folderDialog.CheckPathExists = true;
-                folderDialog.FileName = "Select Folder";
-                if (folderDialog.ShowDialog() != DialogResult.OK)
-                    return;
-
-                UserOsuInstallPath = Path.GetDirectoryName(folderDialog.FileName);
-            }
-        }
-
-        private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
-        {
-            string beatmapFolder = osu.GetMapFolderName();
-            string beatmapFilename = osu.GetOsuFileName();
-            string absoluteFilename = UserOsuInstallPath + "\\Songs\\" + beatmapFolder + "\\" + beatmapFilename;
-            if (beatmapFilename == "")
-                return;
-
-            if (OriginalBeatmap == null)
-            {
-                LoadBeatmap(absoluteFilename);
-                return;
-            }
-
-            // Beatmap Changed
-            if (beatmapFilename != Path.GetFileName(OriginalBeatmap.Filename))
-                LoadBeatmap(absoluteFilename);
-        }
-
         private bool LoadBeatmap(string beatmapPath)
         {
             try
@@ -256,6 +224,7 @@ namespace osu_trainer
             // Song Display
             SongLabel.Text = $"{NewBeatmap.Artist} - {NewBeatmap.Title}";
             DiffLabel.Text = NewBeatmap.Version;
+            UpdateSongBg(NewBeatmap);
 
             // Update BPM Display
             UpdateBpmDisplay();
@@ -270,6 +239,30 @@ namespace osu_trainer
             FormatAR();
 
             return true;
+        }
+
+        private void UpdateSongBg(Beatmap map)
+        {
+            var imageEvent = map.Events.OfType<ContentEvent>().FirstOrDefault(e => e.Type == ContentType.Image);
+            string imageAbsolutePath = Path.GetDirectoryName(map.Filename) + "\\" + imageEvent.Filename;
+            if (File.Exists(imageAbsolutePath))
+            {
+                // crop height to aspect ratio
+                Image bg = Image.FromFile(imageAbsolutePath);
+                Bitmap bmpImage = new Bitmap(bg);
+                float aspectRatio = BgPanel.Size.Width / BgPanel.Size.Height;
+                int cropHeight = (int)(bmpImage.Width / aspectRatio);
+
+                // pan down to center image
+                int panDown = (bmpImage.Height - cropHeight) / 2;
+
+                BgPanel.BackgroundImage = bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
+            }
+            else
+            {
+                // no background for this map
+                Console.WriteLine($"No image");
+            }
         }
 
         private void AutoDetectMapCheckbox_CheckedChanged(object sender, EventArgs e)
@@ -401,7 +394,7 @@ namespace osu_trainer
         }
         private void EnableSelectMapButton()
         {
-            SelectMapButton.BackColor = accentBlue;
+            SelectMapButton.BackColor = accentOrange;
             SelectMapButton.ForeColor = Color.White;
             SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Bold);
             SelectMapButton.Enabled = true;
@@ -429,5 +422,41 @@ namespace osu_trainer
             NewBpmTextBox.Text = string.Join(" ... ", newBpms);
         }
         #endregion
+        private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
+        {
+            // Try to get osu install folder
+            if (UserOsuInstallPath == null)
+            {
+                // check if osu process is running
+                var processes = Process.GetProcessesByName("osu!");
+                if (processes.Length == 0)
+                    return;
+
+                // check if osu exe exists
+                var osuExePath = processes[0].MainModule.FileName;
+                if (!File.Exists(osuExePath))
+                    return;
+
+                // set path
+                UserOsuInstallPath = Path.GetDirectoryName(osuExePath);
+            }
+
+
+            string beatmapFolder = osu.GetMapFolderName();
+            string beatmapFilename = osu.GetOsuFileName();
+            string absoluteFilename = UserOsuInstallPath + "\\Songs\\" + beatmapFolder + "\\" + beatmapFilename;
+            if (beatmapFilename == "")
+                return;
+
+            if (OriginalBeatmap == null)
+            {
+                LoadBeatmap(absoluteFilename);
+                return;
+            }
+
+            // Beatmap Changed
+            if (beatmapFilename != Path.GetFileName(OriginalBeatmap.Filename))
+                LoadBeatmap(absoluteFilename);
+        }
     }
 }

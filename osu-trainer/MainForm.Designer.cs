@@ -46,11 +46,11 @@
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
             this.ARUpDown = new osu_trainer.NumericUpDownFix();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.DiffLabel = new System.Windows.Forms.TextBox();
             this.SongLabel = new System.Windows.Forms.TextBox();
+            this.BgPanel = new System.Windows.Forms.Panel();
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Middle3Panel.SuspendLayout();
@@ -261,22 +261,13 @@
             this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.TopPanel.Controls.Add(this.SongLabel);
             this.TopPanel.Controls.Add(this.DiffLabel);
-            this.TopPanel.Controls.Add(this.panel1);
+            this.TopPanel.Controls.Add(this.BgPanel);
             this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.TopPanel.Location = new System.Drawing.Point(0, 0);
             this.TopPanel.Name = "TopPanel";
             this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
             this.TopPanel.Size = new System.Drawing.Size(440, 100);
             this.TopPanel.TabIndex = 12;
-            // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
-            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.panel1.Location = new System.Drawing.Point(10, 10);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(420, 62);
-            this.panel1.TabIndex = 0;
             // 
             // ARUpDown
             // 
@@ -363,7 +354,17 @@
             this.SongLabel.ReadOnly = true;
             this.SongLabel.Size = new System.Drawing.Size(275, 14);
             this.SongLabel.TabIndex = 2;
-            this.SongLabel.Text = "SongLabel";
+            this.SongLabel.Text = "Artist - Title";
+            // 
+            // BgPanel
+            // 
+            this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BgPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BgPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.BgPanel.Location = new System.Drawing.Point(10, 10);
+            this.BgPanel.Name = "BgPanel";
+            this.BgPanel.Size = new System.Drawing.Size(420, 62);
+            this.BgPanel.TabIndex = 0;
             // 
             // MainForm
             // 
@@ -420,8 +421,8 @@
         private System.Windows.Forms.Panel Middle3Panel;
         private System.Windows.Forms.Panel Middle2Panel;
         private System.Windows.Forms.Panel Middle1Panel;
-        private System.Windows.Forms.Panel panel1;
         private System.Windows.Forms.TextBox DiffLabel;
         private System.Windows.Forms.TextBox SongLabel;
+        private System.Windows.Forms.Panel BgPanel;
     }
 }
