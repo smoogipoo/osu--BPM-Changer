@@ -8,8 +8,10 @@ using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.Drawing;
+using System.Drawing.Text;
 using System.IO;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -23,15 +25,54 @@ namespace osu_trainer
         Beatmap OriginalBeatmap;
         Beatmap NewBeatmap;
         float bpmMultiplier = 1.0f;
-        private IOsuMemoryReader osu;
+        IOsuMemoryReader osu;
+
+        // Color Theme
+        Color formBg = Color.FromArgb(38, 35, 53);
+        Color textBoxBg = Color.FromArgb(23, 16, 25);
+        Color textBoxFg = Color.FromArgb(224, 224, 224);
+        Font labelFont = new Font("Microsoft Tai Le", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+        Color labelColor = Color.FromArgb(249, 126, 114);
+        Color labelDisabledColor = Color.FromArgb(136, 134, 144);
+        Font numberFont = new Font("Microsoft Tai Le", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+        Color buttonPink = Color.FromArgb(255, 126, 219);
+        Color buttonBlue = Color.FromArgb(54, 249, 246);
+
+        // Common Control Lists
+        List<Label> labels;
+        List<NumericUpDown> updowns;
+        List<TextBox> textboxes;
 
         public MainForm()
         {
             InitializeComponent();
-            OsuFolderTextBox.Text = UserOsuInstallPath;
+            InitializeControlLists();
+
+            // Controls will be enabled when a beatmap is loaded in
+            DisableFormControls();
             BeatmapUpdateTimer.Start();
 
             osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
+        }
+        private void InitializeControlLists()
+        {
+            labels = new List<Label>
+            {
+                label2,
+                label4,
+                label5,
+                label6
+            };
+            updowns = new List<NumericUpDown>
+            {
+                ARUpDown,
+                BpmMultiplierUpDown
+            };
+            textboxes = new List<TextBox>
+            {
+                OriginalBpmTextBox,
+                NewBpmTextBox
+            };
         }
 
         private void SelectMapButton_Click(object sender, EventArgs e)
@@ -48,26 +89,28 @@ namespace osu_trainer
         private async void GenerateMapButton_Click(object sender, EventArgs e)
         {
             // pre
-            GenerateMapButton.Enabled = false;
+            DisableGenerateMapButton();
+            var oldButtonText = GenerateMapButton.Text;
             GenerateMapButton.Text = "Working...";
-            var timerWasEnabled = BeatmapUpdateTimer.Enabled;
             BeatmapUpdateTimer.Stop();
 
-            ModifyBeatmapSpeed(NewBeatmap, bpmMultiplier);
-            await Task.Run(() => GenerateMap(NewBeatmap, bpmMultiplier));
+            // main phase
+            ModifyBeatmapTiming(NewBeatmap, bpmMultiplier);
+            ModifyBeatmapMetadata(NewBeatmap, bpmMultiplier);
+            await Task.Run(() => SongSpeedChanger.GenerateMap(NewBeatmap, bpmMultiplier));
 
             // post
-            if (timerWasEnabled)
+            if (AutoDetectMapCheckbox.Checked)
                 BeatmapUpdateTimer.Start();
-            GenerateMapButton.Text = "PRESS SPACEBAR TO CREATE SHITMAP";
-            GenerateMapButton.Enabled = true;
+
+            EnableGenerateMapButton();
+            GenerateMapButton.Text = oldButtonText;
 
             // reset diff name
             NewBeatmap.Version = OriginalBeatmap.Version;
         }
 
-
-        private void ModifyBeatmapSpeed(Beatmap map, float multiplier)
+        private void ModifyBeatmapTiming(Beatmap map, float multiplier)
         {
             if (multiplier == 1)
                 return;
@@ -117,12 +160,10 @@ namespace osu_trainer
                     ((SpinnerObject)hitobject).EndTime = (int)(((SpinnerObject)hitobject).EndTime / multiplier);
             }
         }
-
-        private void GenerateMap(Beatmap map, double multiplier)
+        private void ModifyBeatmapMetadata(Beatmap map, float multiplier)
         {
             if (multiplier == 1)
             {
-
                 string ARODCS = "";
                 if (NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate)
                     ARODCS += $" AR{NewBeatmap.ApproachRate}";
@@ -138,71 +179,11 @@ namespace osu_trainer
 
             // make this map searchable in the in-game menus
             map.Tags.Add("osutrainer");
-            //temp1: Audio copy
-            //temp2: Decoded wav
-            //temp3: stretched file
-            //temp4: Encoded mp3
-            string temp1 = getTempFilename("mp3");
-            string temp2 = getTempFilename("wav");
-            string temp3 = getTempFilename("wav");
-            string temp4 = getTempFilename("mp3");
-
-            // TODO: try catch
-            CopyFile(map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + map.AudioFilename, temp1);
-
-            map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + NormalizeText(map.Version) + ".mp3";
-
-            // lame.exe
-            Process lame1 = new Process();
-            lame1.StartInfo.FileName = "lame.exe";
-            lame1.StartInfo.Arguments = string.Format("--decode \"{0}\" \"{1}\"", temp1, temp2);
-            lame1.StartInfo.UseShellExecute = false;
-            lame1.StartInfo.CreateNoWindow = true;
-            lame1.Start();
-            lame1.WaitForExit();
-
-            // soundstretch.exe
-            Process soundstretch = new Process();
-            soundstretch.StartInfo.FileName = "soundstretch.exe";
-            soundstretch.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" -tempo={2}", temp2, temp3, (multiplier - 1) * 100);
-            soundstretch.StartInfo.UseShellExecute = false;
-            soundstretch.StartInfo.CreateNoWindow = true;
-            soundstretch.Start();
-            soundstretch.WaitForExit();
-
-            // lame.exe again
-            Process lame2 = new Process();
-            lame2.StartInfo.FileName = "lame.exe";
-            lame2.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\"", temp3, temp4);
-            lame2.StartInfo.UseShellExecute = false;
-            lame2.StartInfo.CreateNoWindow = true;
-            lame2.Start();
-            lame2.WaitForExit();
-
-            CopyFile(temp4, map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + map.AudioFilename);
-
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Saving beatmap...");
-            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + NormalizeText(map.Artist) + " - " + NormalizeText(map.Title) + " (" + NormalizeText(map.Creator) + ")" + " [" + NormalizeText(map.Version) + "].osu";
-            map.Save(map.Filename);
-
-            Console.WriteLine("Cleaning up...");
-            File.Delete(temp1);
-            File.Delete(temp2);
-            File.Delete(temp3);
-            File.Delete(temp4);
         }
+
         private static string getTempFilename(string ext)
         {
             return Path.GetTempPath() + Guid.NewGuid() + '.' + ext;
-        }
-        public static void CopyFile(string src, string dst)
-        {
-            using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (FileStream dstStream = new FileStream(dst, FileMode.Create))
-            {
-                srcStream.CopyTo(dstStream);
-            }
         }
         public static string NormalizeText(string str)
         {
@@ -211,7 +192,9 @@ namespace osu_trainer
 
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
         {
+            Console.WriteLine("Value changed");
             setMultiplier((float)BpmMultiplierUpDown.Value);
+            FormatAR();
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -233,8 +216,6 @@ namespace osu_trainer
                     return;
 
                 UserOsuInstallPath = Path.GetDirectoryName(folderDialog.FileName);
-                OsuFolderTextBox.BackColor = SystemColors.Control;
-                OsuFolderTextBox.Text = UserOsuInstallPath;
             }
         }
 
@@ -243,6 +224,8 @@ namespace osu_trainer
             string beatmapFolder = osu.GetMapFolderName();
             string beatmapFilename = osu.GetOsuFileName();
             string absoluteFilename = UserOsuInstallPath + "\\Songs\\" + beatmapFolder + "\\" + beatmapFilename;
+            if (beatmapFilename == "")
+                return;
 
             if (OriginalBeatmap == null)
             {
@@ -255,7 +238,7 @@ namespace osu_trainer
                 LoadBeatmap(absoluteFilename);
         }
 
-        private void LoadBeatmap(string beatmapPath)
+        private bool LoadBeatmap(string beatmapPath)
         {
             try
             {
@@ -264,37 +247,44 @@ namespace osu_trainer
             }
             catch (FormatException e)
             {
-                CurrentSongText.Text = Path.GetFileName(beatmapPath) + " (error)";
-                CurrentSongText.BackColor = Color.Red;
-                return;
+                Console.WriteLine("Bad .osu file format");
+                return false;
+            }
+            // Check if beatmap was loaded successfully
+            if (NewBeatmap.Filename == null && NewBeatmap.Title == null)
+            {
+                return false;
             }
             // Song Display
-            CurrentSongText.Text = Path.GetFileName(OriginalBeatmap.Filename);
-            CurrentSongText.BackColor = Color.WhiteSmoke;
 
             // Update BPM Display
-            var originalBpms = GetBpmList(OriginalBeatmap).Select((bpm) => (int)bpm).ToList();
-            OriginalBpmTextBox.Text = string.Join(" → ", originalBpms);
-            var newBpms = GetBpmList(NewBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
-            NewBpmTextBox.Text = string.Join(" → ", newBpms);
+            UpdateBpmDisplay();
 
             // Scale AR and Update AR Display
             NewBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier);
             ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
-            ARUpDown.BackColor = SystemColors.Window;
-
+            ARUpDown.BackColor = textBoxBg;
 
             // Generate Button Ready
-            GenerateMapButton.Text = "PRESS SPACEBAR TO CREATE SHITMAP";
-            GenerateMapButton.Enabled = true;
+            EnableGenerateMapButton();
+
+            EnableFormControls();
+
+            return true;
         }
 
         private void AutoDetectMapCheckbox_CheckedChanged(object sender, EventArgs e)
         {
             if (AutoDetectMapCheckbox.Checked)
+            {
+                DisableSelectMapButton();
                 BeatmapUpdateTimer.Start();
+            }
             else
+            {
+                EnableSelectMapButton();
                 BeatmapUpdateTimer.Stop();
+            }
         }
 
         private void setMultiplier(float mult)
@@ -303,13 +293,12 @@ namespace osu_trainer
             BpmMultiplierUpDown.Value = (decimal)mult;
 
             // Update BPM Display
-            var newBpms = GetBpmList(NewBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
-            NewBpmTextBox.Text = string.Join(" → ", newBpms);
+            UpdateBpmDisplay();
 
             // Scale AR and Update AR Display
             NewBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier);
             ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
-            ARUpDown.BackColor = SystemColors.Window;
+            ARUpDown.BackColor = textBoxBg;
         }
 
         private List<float> GetBpmList(Beatmap map)
@@ -324,12 +313,104 @@ namespace osu_trainer
         private void ARUpDown_ValueChanged(object sender, EventArgs e)
         {
             NewBeatmap.ApproachRate = (float)ARUpDown.Value;
+            FormatAR();
+        }
+
+        #region Control State and Appearance
+        private void DisableFormControls()
+        {
+            SelectMapButton.Enabled = false;
+            ARUpDown.Enabled = false;
+            BpmMultiplierUpDown.Enabled = false;
+            GenerateMapButton.Enabled = false;
+            foreach (var label in labels)
+                label.ForeColor = labelDisabledColor;
+            foreach (var updown in updowns)
+                updown.BackColor = SystemColors.ControlDark;
+
+            DisableSelectMapButton();
+        }
+        private void EnableFormControls()
+        {
+            ARUpDown.Enabled = true;
+            BpmMultiplierUpDown.Enabled = true;
+            GenerateMapButton.Enabled = true;
+            foreach (var label in labels)
+                label.ForeColor = labelColor;
+            foreach (var updown in updowns)
+                updown.BackColor = textBoxBg;
+
+            if (AutoDetectMapCheckbox.Checked == false)
+                EnableSelectMapButton();
+        }
+        private void EnableGenerateMapButton()
+        {
+            GenerateMapButton.ForeColor = Color.White;
+            GenerateMapButton.BackColor = buttonPink;
+            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Bold);
+            GenerateMapButton.Enabled = true;
+        }
+        private void DisableGenerateMapButton()
+        {
+            GenerateMapButton.ForeColor = Color.DimGray;
+            GenerateMapButton.BackColor = SystemColors.ControlLight;
+            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Regular);
+            GenerateMapButton.Enabled = false;
+        }
+        private void FormatAR()
+        {
+            Font bold = new Font(ARUpDown.Font, FontStyle.Bold);
             if (NewBeatmap.ApproachRate > DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
-                ARUpDown.BackColor = Color.FromArgb(255, 220, 220);
+            {
+                ARUpDown.ForeColor = Color.FromArgb(254, 68, 80);
+                ARUpDown.Font = bold;
+            }
             else if (NewBeatmap.ApproachRate < DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
-                ARUpDown.BackColor = Color.LightCyan;
+            {
+                ARUpDown.ForeColor = Color.FromArgb(114, 241, 184);
+                ARUpDown.Font = bold;
+            }
             else
-                ARUpDown.BackColor = SystemColors.Window;
+            {
+                ARUpDown.ForeColor = Color.FromArgb(224, 224, 224);
+                ARUpDown.Font = numberFont;
+            }
+        }
+        private void EnableSelectMapButton()
+        {
+            SelectMapButton.BackColor = buttonBlue;
+            SelectMapButton.ForeColor = Color.White;
+            SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Bold);
+            SelectMapButton.Enabled = true;
+        }
+        private void DisableSelectMapButton()
+        {
+            SelectMapButton.BackColor = SystemColors.ControlLight;
+            SelectMapButton.ForeColor = Color.DimGray;
+            SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Regular);
+            SelectMapButton.Enabled = false;
+        }
+        private void UpdateBpmDisplay()
+        {
+            var originalBpms = GetBpmList(OriginalBeatmap).Select((bpm) => (int)bpm).ToList();
+            var newBpms = GetBpmList(NewBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
+
+            if (new HashSet<int>(originalBpms).Count == 1)
+            {
+                OriginalBpmTextBox.Text = originalBpms[0].ToString();
+                NewBpmTextBox.Text = newBpms[0].ToString();
+                return;
+            }
+
+            OriginalBpmTextBox.Text = string.Join(" ... ", originalBpms);
+            NewBpmTextBox.Text = string.Join(" ... ", newBpms);
+        }
+        #endregion
+
+        private void BpmMultiplierUpDown_MouseWheel(object sender, MouseEventArgs e)
+        {
+            Console.WriteLine("mouse wheel");
+            BpmMultiplierUpDown.Value -= (decimal)(e.Delta * 0.04);
         }
     }
 }
