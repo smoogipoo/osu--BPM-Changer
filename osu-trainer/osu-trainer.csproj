@@ -40,7 +40,7 @@
     <StartupObject />
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>oof.ico</ApplicationIcon>
+    <ApplicationIcon>resources\oof.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="osu!BMAPI">
@@ -64,7 +64,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="NumericUpDownFix.cs">
+    <Compile Include="funorControls\NumericUpDownFix.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -74,23 +74,23 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="SongSpeedChanger.cs" />
+    <Compile Include="Speed Changer Stuff\SongSpeedChanger.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="audio\match-confirm.wav">
+    <Content Include="resources\match-confirm.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="img\static.gif">
+    <Content Include="resources\static.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="lame.exe">
+    <Content Include="Speed Changer Stuff\lame.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="oof.ico" />
-    <Content Include="soundstretch.exe">
+    <Content Include="resources\oof.ico" />
+    <Content Include="Speed Changer Stuff\soundstretch.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
   </ItemGroup>
@@ -113,6 +113,7 @@
       <Name>ProcessMemoryDataFinder</Name>
     </ProjectReference>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

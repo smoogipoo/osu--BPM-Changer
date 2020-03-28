@@ -11,6 +11,8 @@ namespace osu_trainer
 {
     class SongSpeedChanger
     {
+        // TODO: do we need all these steps? can we do something to improve performance?
+        // TODO: do not save beatmap here, just generate .mp3. Assign new mp3 name outside of this function
         public static void GenerateMap(Beatmap map, double multiplier)
         {
             if (multiplier == 1)
