@@ -38,24 +38,28 @@
             this.NewBpmTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.label6 = new System.Windows.Forms.Label();
-            this.ARUpDown = new System.Windows.Forms.NumericUpDown();
             this.GenerateMapButton = new System.Windows.Forms.Button();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.MiddlePanel = new System.Windows.Forms.Panel();
-            this.BottomPanel = new System.Windows.Forms.Panel();
-            this.TopPanel = new System.Windows.Forms.Panel();
-            this.Middle1Panel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Middle3Panel = new System.Windows.Forms.Panel();
             this.Middle2Panel = new System.Windows.Forms.Panel();
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
+            this.Middle1Panel = new System.Windows.Forms.Panel();
+            this.BottomPanel = new System.Windows.Forms.Panel();
+            this.TopPanel = new System.Windows.Forms.Panel();
+            this.panel1 = new System.Windows.Forms.Panel();
+            this.ARUpDown = new osu_trainer.NumericUpDownFix();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
+            this.DiffLabel = new System.Windows.Forms.TextBox();
+            this.SongLabel = new System.Windows.Forms.TextBox();
             this.MiddlePanel.SuspendLayout();
-            this.BottomPanel.SuspendLayout();
-            this.Middle1Panel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Middle3Panel.SuspendLayout();
             this.Middle2Panel.SuspendLayout();
+            this.Middle1Panel.SuspendLayout();
+            this.BottomPanel.SuspendLayout();
+            this.TopPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -63,7 +67,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label2.Location = new System.Drawing.Point(16, 40);
+            this.label2.Location = new System.Drawing.Point(18, 45);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 17);
@@ -72,12 +76,12 @@
             // 
             // SelectMapButton
             // 
-            this.SelectMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(54)))), ((int)(((byte)(249)))), ((int)(((byte)(246)))));
+            this.SelectMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(246)))), ((int)(((byte)(122)))), ((int)(((byte)(44)))));
             this.SelectMapButton.FlatAppearance.BorderColor = System.Drawing.Color.White;
             this.SelectMapButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.SelectMapButton.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SelectMapButton.ForeColor = System.Drawing.Color.White;
-            this.SelectMapButton.Location = new System.Drawing.Point(114, 28);
+            this.SelectMapButton.Location = new System.Drawing.Point(114, 36);
             this.SelectMapButton.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.SelectMapButton.Name = "SelectMapButton";
             this.SelectMapButton.Size = new System.Drawing.Size(195, 29);
@@ -93,7 +97,7 @@
             this.AutoDetectMapCheckbox.CheckState = System.Windows.Forms.CheckState.Checked;
             this.AutoDetectMapCheckbox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AutoDetectMapCheckbox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.AutoDetectMapCheckbox.Location = new System.Drawing.Point(114, 6);
+            this.AutoDetectMapCheckbox.Location = new System.Drawing.Point(114, 11);
             this.AutoDetectMapCheckbox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.AutoDetectMapCheckbox.Name = "AutoDetectMapCheckbox";
             this.AutoDetectMapCheckbox.Size = new System.Drawing.Size(132, 20);
@@ -104,7 +108,7 @@
             // 
             // BeatmapUpdateTimer
             // 
-            this.BeatmapUpdateTimer.Interval = 500;
+            this.BeatmapUpdateTimer.Interval = 16;
             this.BeatmapUpdateTimer.Tick += new System.EventHandler(this.BeatmapUpdateTimer_Tick);
             // 
             // OriginalBpmTextBox
@@ -112,11 +116,11 @@
             this.OriginalBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.OriginalBpmTextBox.Location = new System.Drawing.Point(7, 6);
+            this.OriginalBpmTextBox.Location = new System.Drawing.Point(4, 6);
             this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
             this.OriginalBpmTextBox.ReadOnly = true;
-            this.OriginalBpmTextBox.Size = new System.Drawing.Size(302, 17);
+            this.OriginalBpmTextBox.Size = new System.Drawing.Size(305, 17);
             this.OriginalBpmTextBox.TabIndex = 8;
             // 
             // label4
@@ -124,7 +128,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label4.Location = new System.Drawing.Point(9, 73);
+            this.label4.Location = new System.Drawing.Point(11, 83);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 16);
@@ -136,11 +140,11 @@
             this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.NewBpmTextBox.Location = new System.Drawing.Point(7, 29);
+            this.NewBpmTextBox.Location = new System.Drawing.Point(4, 29);
             this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.NewBpmTextBox.Name = "NewBpmTextBox";
             this.NewBpmTextBox.ReadOnly = true;
-            this.NewBpmTextBox.Size = new System.Drawing.Size(302, 17);
+            this.NewBpmTextBox.Size = new System.Drawing.Size(304, 17);
             this.NewBpmTextBox.TabIndex = 8;
             // 
             // label5
@@ -148,7 +152,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label5.Location = new System.Drawing.Point(32, 97);
+            this.label5.Location = new System.Drawing.Point(34, 107);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 16);
@@ -160,37 +164,12 @@
             this.label6.AutoSize = true;
             this.label6.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label6.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label6.Location = new System.Drawing.Point(92, 10);
+            this.label6.Location = new System.Drawing.Point(94, 15);
             this.label6.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label6.Name = "label6";
             this.label6.Size = new System.Drawing.Size(25, 16);
             this.label6.TabIndex = 1;
             this.label6.Text = "AR";
-            // 
-            // ARUpDown
-            // 
-            this.ARUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ARUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ARUpDown.DecimalPlaces = 1;
-            this.ARUpDown.Font = new System.Drawing.Font("Microsoft New Tai Lue", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ARUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ARUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ARUpDown.Location = new System.Drawing.Point(7, 6);
-            this.ARUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ARUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ARUpDown.Name = "ARUpDown";
-            this.ARUpDown.Size = new System.Drawing.Size(77, 24);
-            this.ARUpDown.TabIndex = 4;
-            this.ARUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ARUpDown.ValueChanged += new System.EventHandler(this.ARUpDown_ValueChanged);
             // 
             // GenerateMapButton
             // 
@@ -210,6 +189,120 @@
             this.GenerateMapButton.UseVisualStyleBackColor = false;
             this.GenerateMapButton.Click += new System.EventHandler(this.GenerateMapButton_Click);
             // 
+            // MiddlePanel
+            // 
+            this.MiddlePanel.Controls.Add(this.panel2);
+            this.MiddlePanel.Controls.Add(this.Middle1Panel);
+            this.MiddlePanel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
+            this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
+            this.MiddlePanel.Name = "MiddlePanel";
+            this.MiddlePanel.Size = new System.Drawing.Size(440, 131);
+            this.MiddlePanel.TabIndex = 10;
+            // 
+            // panel2
+            // 
+            this.panel2.Controls.Add(this.Middle3Panel);
+            this.panel2.Controls.Add(this.Middle2Panel);
+            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.panel2.Location = new System.Drawing.Point(122, 0);
+            this.panel2.Name = "panel2";
+            this.panel2.Size = new System.Drawing.Size(318, 131);
+            this.panel2.TabIndex = 11;
+            // 
+            // Middle3Panel
+            // 
+            this.Middle3Panel.Controls.Add(this.OriginalBpmTextBox);
+            this.Middle3Panel.Controls.Add(this.NewBpmTextBox);
+            this.Middle3Panel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.Middle3Panel.Location = new System.Drawing.Point(0, 77);
+            this.Middle3Panel.Name = "Middle3Panel";
+            this.Middle3Panel.Size = new System.Drawing.Size(318, 54);
+            this.Middle3Panel.TabIndex = 7;
+            // 
+            // Middle2Panel
+            // 
+            this.Middle2Panel.Controls.Add(this.SelectMapButton);
+            this.Middle2Panel.Controls.Add(this.ARUpDown);
+            this.Middle2Panel.Controls.Add(this.AutoDetectMapCheckbox);
+            this.Middle2Panel.Controls.Add(this.BpmMultiplierUpDown);
+            this.Middle2Panel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.Middle2Panel.Location = new System.Drawing.Point(0, 0);
+            this.Middle2Panel.Name = "Middle2Panel";
+            this.Middle2Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.Middle2Panel.Size = new System.Drawing.Size(318, 77);
+            this.Middle2Panel.TabIndex = 7;
+            // 
+            // Middle1Panel
+            // 
+            this.Middle1Panel.Controls.Add(this.label4);
+            this.Middle1Panel.Controls.Add(this.label6);
+            this.Middle1Panel.Controls.Add(this.label5);
+            this.Middle1Panel.Controls.Add(this.label2);
+            this.Middle1Panel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
+            this.Middle1Panel.Name = "Middle1Panel";
+            this.Middle1Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.Middle1Panel.Size = new System.Drawing.Size(122, 131);
+            this.Middle1Panel.TabIndex = 10;
+            // 
+            // BottomPanel
+            // 
+            this.BottomPanel.Controls.Add(this.GenerateMapButton);
+            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomPanel.Location = new System.Drawing.Point(0, 231);
+            this.BottomPanel.Name = "BottomPanel";
+            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.BottomPanel.Size = new System.Drawing.Size(440, 60);
+            this.BottomPanel.TabIndex = 11;
+            // 
+            // TopPanel
+            // 
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.TopPanel.Controls.Add(this.SongLabel);
+            this.TopPanel.Controls.Add(this.DiffLabel);
+            this.TopPanel.Controls.Add(this.panel1);
+            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TopPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopPanel.Name = "TopPanel";
+            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.TopPanel.Size = new System.Drawing.Size(440, 100);
+            this.TopPanel.TabIndex = 12;
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.panel1.Location = new System.Drawing.Point(10, 10);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(420, 62);
+            this.panel1.TabIndex = 0;
+            // 
+            // ARUpDown
+            // 
+            this.ARUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.ARUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ARUpDown.DecimalPlaces = 1;
+            this.ARUpDown.Font = new System.Drawing.Font("Microsoft New Tai Lue", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ARUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ARUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ARUpDown.Location = new System.Drawing.Point(4, 11);
+            this.ARUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ARUpDown.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ARUpDown.Name = "ARUpDown";
+            this.ARUpDown.Size = new System.Drawing.Size(77, 24);
+            this.ARUpDown.TabIndex = 4;
+            this.ARUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ARUpDown.ValueChanged += new System.EventHandler(this.ARUpDown_ValueChanged);
+            // 
             // BpmMultiplierUpDown
             // 
             this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -222,7 +315,7 @@
             0,
             0,
             131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(7, 36);
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(4, 41);
             this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
             5,
@@ -244,87 +337,40 @@
             0,
             0});
             this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
-            this.BpmMultiplierUpDown.MouseWheel += new System.Windows.Forms.MouseEventHandler(this.BpmMultiplierUpDown_MouseWheel);
             // 
-            // MiddlePanel
+            // DiffLabel
             // 
-            this.MiddlePanel.Controls.Add(this.panel2);
-            this.MiddlePanel.Controls.Add(this.Middle1Panel);
-            this.MiddlePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
-            this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
-            this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(440, 124);
-            this.MiddlePanel.TabIndex = 10;
+            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.DiffLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.DiffLabel.Location = new System.Drawing.Point(291, 78);
+            this.DiffLabel.Name = "DiffLabel";
+            this.DiffLabel.ReadOnly = true;
+            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
+            this.DiffLabel.TabIndex = 2;
+            this.DiffLabel.Text = "Extra";
+            this.DiffLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
             // 
-            // BottomPanel
+            // SongLabel
             // 
-            this.BottomPanel.Controls.Add(this.GenerateMapButton);
-            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 224);
-            this.BottomPanel.Name = "BottomPanel";
-            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.BottomPanel.Size = new System.Drawing.Size(440, 60);
-            this.BottomPanel.TabIndex = 11;
-            // 
-            // TopPanel
-            // 
-            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TopPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Size = new System.Drawing.Size(440, 100);
-            this.TopPanel.TabIndex = 12;
-            // 
-            // Middle1Panel
-            // 
-            this.Middle1Panel.Controls.Add(this.label4);
-            this.Middle1Panel.Controls.Add(this.label6);
-            this.Middle1Panel.Controls.Add(this.label5);
-            this.Middle1Panel.Controls.Add(this.label2);
-            this.Middle1Panel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
-            this.Middle1Panel.Name = "Middle1Panel";
-            this.Middle1Panel.Size = new System.Drawing.Size(122, 124);
-            this.Middle1Panel.TabIndex = 10;
-            // 
-            // panel2
-            // 
-            this.panel2.Controls.Add(this.Middle3Panel);
-            this.panel2.Controls.Add(this.Middle2Panel);
-            this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(122, 0);
-            this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(318, 124);
-            this.panel2.TabIndex = 11;
-            // 
-            // Middle3Panel
-            // 
-            this.Middle3Panel.Controls.Add(this.OriginalBpmTextBox);
-            this.Middle3Panel.Controls.Add(this.NewBpmTextBox);
-            this.Middle3Panel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.Middle3Panel.Location = new System.Drawing.Point(0, 67);
-            this.Middle3Panel.Name = "Middle3Panel";
-            this.Middle3Panel.Size = new System.Drawing.Size(318, 57);
-            this.Middle3Panel.TabIndex = 7;
-            // 
-            // Middle2Panel
-            // 
-            this.Middle2Panel.Controls.Add(this.SelectMapButton);
-            this.Middle2Panel.Controls.Add(this.ARUpDown);
-            this.Middle2Panel.Controls.Add(this.AutoDetectMapCheckbox);
-            this.Middle2Panel.Controls.Add(this.BpmMultiplierUpDown);
-            this.Middle2Panel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.Middle2Panel.Location = new System.Drawing.Point(0, 0);
-            this.Middle2Panel.Name = "Middle2Panel";
-            this.Middle2Panel.Size = new System.Drawing.Size(318, 67);
-            this.Middle2Panel.TabIndex = 7;
+            this.SongLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.SongLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.SongLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.SongLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.SongLabel.Location = new System.Drawing.Point(10, 78);
+            this.SongLabel.Name = "SongLabel";
+            this.SongLabel.ReadOnly = true;
+            this.SongLabel.Size = new System.Drawing.Size(275, 14);
+            this.SongLabel.TabIndex = 2;
+            this.SongLabel.Text = "SongLabel";
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(440, 284);
+            this.ClientSize = new System.Drawing.Size(440, 291);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
@@ -336,18 +382,20 @@
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.MiddlePanel.ResumeLayout(false);
-            this.BottomPanel.ResumeLayout(false);
-            this.BottomPanel.PerformLayout();
-            this.Middle1Panel.ResumeLayout(false);
-            this.Middle1Panel.PerformLayout();
             this.panel2.ResumeLayout(false);
             this.Middle3Panel.ResumeLayout(false);
             this.Middle3Panel.PerformLayout();
             this.Middle2Panel.ResumeLayout(false);
             this.Middle2Panel.PerformLayout();
+            this.Middle1Panel.ResumeLayout(false);
+            this.Middle1Panel.PerformLayout();
+            this.BottomPanel.ResumeLayout(false);
+            this.BottomPanel.PerformLayout();
+            this.TopPanel.ResumeLayout(false);
+            this.TopPanel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -363,7 +411,7 @@
         private System.Windows.Forms.TextBox NewBpmTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Label label6;
-        private System.Windows.Forms.NumericUpDown ARUpDown;
+        private NumericUpDownFix ARUpDown;
         private System.Windows.Forms.Button GenerateMapButton;
         private System.Windows.Forms.Panel MiddlePanel;
         private System.Windows.Forms.Panel BottomPanel;
@@ -372,5 +420,8 @@
         private System.Windows.Forms.Panel Middle3Panel;
         private System.Windows.Forms.Panel Middle2Panel;
         private System.Windows.Forms.Panel Middle1Panel;
+        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.TextBox DiffLabel;
+        private System.Windows.Forms.TextBox SongLabel;
     }
 }

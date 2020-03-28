@@ -31,12 +31,10 @@ namespace osu_trainer
         Color formBg = Color.FromArgb(38, 35, 53);
         Color textBoxBg = Color.FromArgb(23, 16, 25);
         Color textBoxFg = Color.FromArgb(224, 224, 224);
-        Font labelFont = new Font("Microsoft Tai Le", 9.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-        Color labelColor = Color.FromArgb(249, 126, 114);
+        Color label1Color = Color.FromArgb(249, 126, 114);
         Color labelDisabledColor = Color.FromArgb(136, 134, 144);
-        Font numberFont = new Font("Microsoft Tai Le", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-        Color buttonPink = Color.FromArgb(255, 126, 219);
-        Color buttonBlue = Color.FromArgb(54, 249, 246);
+        Color accentPink = Color.FromArgb(255, 126, 219);
+        Color accentBlue = Color.FromArgb(46, 226, 250);
 
         // Common Control Lists
         List<Label> labels;
@@ -256,19 +254,20 @@ namespace osu_trainer
                 return false;
             }
             // Song Display
+            SongLabel.Text = $"{NewBeatmap.Artist} - {NewBeatmap.Title}";
+            DiffLabel.Text = NewBeatmap.Version;
 
             // Update BPM Display
             UpdateBpmDisplay();
 
-            // Scale AR and Update AR Display
+            // Scale Approach Rate
             NewBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier);
-            ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
-            ARUpDown.BackColor = textBoxBg;
-
-            // Generate Button Ready
-            EnableGenerateMapButton();
 
             EnableFormControls();
+
+            // Update Approach Rate Display
+            ARUpDown.Value = (decimal)NewBeatmap.ApproachRate;
+            FormatAR();
 
             return true;
         }
@@ -320,35 +319,60 @@ namespace osu_trainer
         private void DisableFormControls()
         {
             SelectMapButton.Enabled = false;
-            ARUpDown.Enabled = false;
+            DisableARUpDown();
             BpmMultiplierUpDown.Enabled = false;
             GenerateMapButton.Enabled = false;
             foreach (var label in labels)
                 label.ForeColor = labelDisabledColor;
-            foreach (var updown in updowns)
-                updown.BackColor = SystemColors.ControlDark;
+            DisableARUpDown();
+            DisableBpmUpDown();
 
             DisableSelectMapButton();
         }
         private void EnableFormControls()
         {
-            ARUpDown.Enabled = true;
+            EnableARUpDown();
             BpmMultiplierUpDown.Enabled = true;
-            GenerateMapButton.Enabled = true;
+            EnableGenerateMapButton();
             foreach (var label in labels)
-                label.ForeColor = labelColor;
-            foreach (var updown in updowns)
-                updown.BackColor = textBoxBg;
+                label.ForeColor = label1Color;
+            EnableARUpDown();
+            EnableBpmUpDown();
 
             if (AutoDetectMapCheckbox.Checked == false)
                 EnableSelectMapButton();
         }
+        private void EnableARUpDown()
+        {
+            ARUpDown.Enabled = true;
+            ARUpDown.BackColor = textBoxBg;
+            FormatAR();
+        }
+        private void DisableARUpDown()
+        {
+            ARUpDown.Enabled = false;
+            ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Regular);
+            ARUpDown.ForeColor = Color.FromArgb(224, 224, 224);
+            ARUpDown.BackColor = SystemColors.ControlDark;
+        }
+        private void EnableBpmUpDown()
+        {
+            BpmMultiplierUpDown.Enabled = true;
+            BpmMultiplierUpDown.BackColor = textBoxBg;
+        }
+        private void DisableBpmUpDown()
+        {
+            BpmMultiplierUpDown.Enabled = false;
+            BpmMultiplierUpDown.Font = new Font(BpmMultiplierUpDown.Font, FontStyle.Regular);
+            BpmMultiplierUpDown.ForeColor = Color.FromArgb(224, 224, 224);
+            BpmMultiplierUpDown.BackColor = SystemColors.ControlDark;
+        }
         private void EnableGenerateMapButton()
         {
-            GenerateMapButton.ForeColor = Color.White;
-            GenerateMapButton.BackColor = buttonPink;
-            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Bold);
             GenerateMapButton.Enabled = true;
+            GenerateMapButton.ForeColor = Color.White;
+            GenerateMapButton.BackColor = accentPink;
+            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Bold);
         }
         private void DisableGenerateMapButton()
         {
@@ -359,26 +383,25 @@ namespace osu_trainer
         }
         private void FormatAR()
         {
-            Font bold = new Font(ARUpDown.Font, FontStyle.Bold);
             if (NewBeatmap.ApproachRate > DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
             {
                 ARUpDown.ForeColor = Color.FromArgb(254, 68, 80);
-                ARUpDown.Font = bold;
+                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Bold);
             }
             else if (NewBeatmap.ApproachRate < DifficultyCalculator.CalculateNewAR(OriginalBeatmap, bpmMultiplier))
             {
                 ARUpDown.ForeColor = Color.FromArgb(114, 241, 184);
-                ARUpDown.Font = bold;
+                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Bold);
             }
             else
             {
                 ARUpDown.ForeColor = Color.FromArgb(224, 224, 224);
-                ARUpDown.Font = numberFont;
+                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Regular);
             }
         }
         private void EnableSelectMapButton()
         {
-            SelectMapButton.BackColor = buttonBlue;
+            SelectMapButton.BackColor = accentBlue;
             SelectMapButton.ForeColor = Color.White;
             SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Bold);
             SelectMapButton.Enabled = true;
@@ -406,11 +429,5 @@ namespace osu_trainer
             NewBpmTextBox.Text = string.Join(" ... ", newBpms);
         }
         #endregion
-
-        private void BpmMultiplierUpDown_MouseWheel(object sender, MouseEventArgs e)
-        {
-            Console.WriteLine("mouse wheel");
-            BpmMultiplierUpDown.Value -= (decimal)(e.Delta * 0.04);
-        }
     }
 }
