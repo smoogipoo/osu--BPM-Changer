@@ -39,6 +39,9 @@
   <PropertyGroup>
     <StartupObject />
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>oof.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="osu!BMAPI">
       <HintPath>BMAPI\obj\Debug\osu!BMAPI.dll</HintPath>
@@ -77,9 +80,16 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="audio\match-confirm.wav">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="img\static.gif">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="lame.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="oof.ico" />
     <Content Include="soundstretch.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

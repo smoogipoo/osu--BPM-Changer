@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.label2 = new System.Windows.Forms.Label();
             this.SelectMapButton = new System.Windows.Forms.Button();
             this.AutoDetectMapCheckbox = new System.Windows.Forms.CheckBox();
@@ -43,23 +44,26 @@
             this.panel2 = new System.Windows.Forms.Panel();
             this.Middle3Panel = new System.Windows.Forms.Panel();
             this.Middle2Panel = new System.Windows.Forms.Panel();
+            this.ARUpDown = new osu_trainer.NumericUpDownFix();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
-            this.ARUpDown = new osu_trainer.NumericUpDownFix();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
-            this.DiffLabel = new System.Windows.Forms.TextBox();
             this.SongLabel = new System.Windows.Forms.TextBox();
+            this.DiffLabel = new System.Windows.Forms.TextBox();
             this.BgPanel = new System.Windows.Forms.Panel();
+            this.StaticGif = new System.Windows.Forms.PictureBox();
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Middle3Panel.SuspendLayout();
             this.Middle2Panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
+            this.BgPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -108,7 +112,7 @@
             // 
             // BeatmapUpdateTimer
             // 
-            this.BeatmapUpdateTimer.Interval = 16;
+            this.BeatmapUpdateTimer.Interval = 50;
             this.BeatmapUpdateTimer.Tick += new System.EventHandler(this.BeatmapUpdateTimer_Tick);
             // 
             // OriginalBpmTextBox
@@ -197,7 +201,7 @@
             this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(440, 131);
+            this.MiddlePanel.Size = new System.Drawing.Size(440, 127);
             this.MiddlePanel.TabIndex = 10;
             // 
             // panel2
@@ -207,7 +211,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(122, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(318, 131);
+            this.panel2.Size = new System.Drawing.Size(318, 127);
             this.panel2.TabIndex = 11;
             // 
             // Middle3Panel
@@ -217,7 +221,7 @@
             this.Middle3Panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Middle3Panel.Location = new System.Drawing.Point(0, 77);
             this.Middle3Panel.Name = "Middle3Panel";
-            this.Middle3Panel.Size = new System.Drawing.Size(318, 54);
+            this.Middle3Panel.Size = new System.Drawing.Size(318, 50);
             this.Middle3Panel.TabIndex = 7;
             // 
             // Middle2Panel
@@ -232,42 +236,6 @@
             this.Middle2Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.Middle2Panel.Size = new System.Drawing.Size(318, 77);
             this.Middle2Panel.TabIndex = 7;
-            // 
-            // Middle1Panel
-            // 
-            this.Middle1Panel.Controls.Add(this.label4);
-            this.Middle1Panel.Controls.Add(this.label6);
-            this.Middle1Panel.Controls.Add(this.label5);
-            this.Middle1Panel.Controls.Add(this.label2);
-            this.Middle1Panel.Dock = System.Windows.Forms.DockStyle.Left;
-            this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
-            this.Middle1Panel.Name = "Middle1Panel";
-            this.Middle1Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.Middle1Panel.Size = new System.Drawing.Size(122, 131);
-            this.Middle1Panel.TabIndex = 10;
-            // 
-            // BottomPanel
-            // 
-            this.BottomPanel.Controls.Add(this.GenerateMapButton);
-            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 231);
-            this.BottomPanel.Name = "BottomPanel";
-            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.BottomPanel.Size = new System.Drawing.Size(440, 60);
-            this.BottomPanel.TabIndex = 11;
-            // 
-            // TopPanel
-            // 
-            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.TopPanel.Controls.Add(this.SongLabel);
-            this.TopPanel.Controls.Add(this.DiffLabel);
-            this.TopPanel.Controls.Add(this.BgPanel);
-            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TopPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.TopPanel.Size = new System.Drawing.Size(440, 100);
-            this.TopPanel.TabIndex = 12;
             // 
             // ARUpDown
             // 
@@ -329,19 +297,41 @@
             0});
             this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
             // 
-            // DiffLabel
+            // Middle1Panel
             // 
-            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.DiffLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
-            this.DiffLabel.Location = new System.Drawing.Point(291, 78);
-            this.DiffLabel.Name = "DiffLabel";
-            this.DiffLabel.ReadOnly = true;
-            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
-            this.DiffLabel.TabIndex = 2;
-            this.DiffLabel.Text = "Extra";
-            this.DiffLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            this.Middle1Panel.Controls.Add(this.label4);
+            this.Middle1Panel.Controls.Add(this.label6);
+            this.Middle1Panel.Controls.Add(this.label5);
+            this.Middle1Panel.Controls.Add(this.label2);
+            this.Middle1Panel.Dock = System.Windows.Forms.DockStyle.Left;
+            this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
+            this.Middle1Panel.Name = "Middle1Panel";
+            this.Middle1Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
+            this.Middle1Panel.Size = new System.Drawing.Size(122, 127);
+            this.Middle1Panel.TabIndex = 10;
+            // 
+            // BottomPanel
+            // 
+            this.BottomPanel.Controls.Add(this.GenerateMapButton);
+            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomPanel.Location = new System.Drawing.Point(0, 227);
+            this.BottomPanel.Name = "BottomPanel";
+            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.BottomPanel.Size = new System.Drawing.Size(440, 60);
+            this.BottomPanel.TabIndex = 11;
+            // 
+            // TopPanel
+            // 
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.TopPanel.Controls.Add(this.SongLabel);
+            this.TopPanel.Controls.Add(this.DiffLabel);
+            this.TopPanel.Controls.Add(this.BgPanel);
+            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TopPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopPanel.Name = "TopPanel";
+            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.TopPanel.Size = new System.Drawing.Size(440, 100);
+            this.TopPanel.TabIndex = 12;
             // 
             // SongLabel
             // 
@@ -356,32 +346,61 @@
             this.SongLabel.TabIndex = 2;
             this.SongLabel.Text = "Artist - Title";
             // 
+            // DiffLabel
+            // 
+            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.DiffLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.DiffLabel.Location = new System.Drawing.Point(291, 78);
+            this.DiffLabel.Name = "DiffLabel";
+            this.DiffLabel.ReadOnly = true;
+            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
+            this.DiffLabel.TabIndex = 2;
+            this.DiffLabel.Text = "Extra";
+            this.DiffLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
+            // 
             // BgPanel
             // 
-            this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(224)))), ((int)(((byte)(192)))));
+            this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
             this.BgPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BgPanel.Controls.Add(this.StaticGif);
             this.BgPanel.Dock = System.Windows.Forms.DockStyle.Top;
             this.BgPanel.Location = new System.Drawing.Point(10, 10);
             this.BgPanel.Name = "BgPanel";
             this.BgPanel.Size = new System.Drawing.Size(420, 62);
             this.BgPanel.TabIndex = 0;
             // 
+            // StaticGif
+            // 
+            this.StaticGif.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.StaticGif.ErrorImage = null;
+            this.StaticGif.ImageLocation = "img\\static.gif";
+            this.StaticGif.InitialImage = null;
+            this.StaticGif.Location = new System.Drawing.Point(0, 0);
+            this.StaticGif.Name = "StaticGif";
+            this.StaticGif.Size = new System.Drawing.Size(420, 62);
+            this.StaticGif.TabIndex = 0;
+            this.StaticGif.TabStop = false;
+            this.StaticGif.Visible = false;
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(440, 291);
+            this.ClientSize = new System.Drawing.Size(440, 287);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
             this.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "MainForm";
+            this.Text = "Beatmap Speed Changer";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.MiddlePanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
@@ -389,14 +408,16 @@
             this.Middle3Panel.PerformLayout();
             this.Middle2Panel.ResumeLayout(false);
             this.Middle2Panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.Middle1Panel.PerformLayout();
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
             this.TopPanel.ResumeLayout(false);
             this.TopPanel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
+            this.BgPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -424,5 +445,6 @@
         private System.Windows.Forms.TextBox DiffLabel;
         private System.Windows.Forms.TextBox SongLabel;
         private System.Windows.Forms.Panel BgPanel;
+        private System.Windows.Forms.PictureBox StaticGif;
     }
 }
