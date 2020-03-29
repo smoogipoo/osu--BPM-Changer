@@ -56,7 +56,6 @@ namespace osu_trainer
         {
             InitializeComponent();
             InitializeControlLists();
-            LoadResources();
 
             // Init osu memory reader
             osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
@@ -64,12 +63,6 @@ namespace osu_trainer
             // Controls will be enabled when a beatmap is loaded in
             DisableFormControls();
             BeatmapUpdateTimer.Start();
-
-        }
-
-        private void LoadResources()
-        {
-
         }
 
         private void InitializeControlLists()
@@ -266,7 +259,7 @@ namespace osu_trainer
             EnableFormControls();
 
             // Update Approach Rate Display
-            ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
+            //ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
             FormatAR();
 
             return true;
@@ -326,7 +319,7 @@ namespace osu_trainer
 
             // Scale AR and Update AR Display
             newBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier);
-            ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
+            //ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
             ARUpDown.BackColor = textBoxBg;
         }
 
@@ -522,6 +515,11 @@ namespace osu_trainer
             // Beatmap Changed
             if (beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
                 LoadBeatmap(absoluteFilename);
+        }
+
+        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        {
+            optionSlider1.Value = numericUpDown1.Value;
         }
     }
 }

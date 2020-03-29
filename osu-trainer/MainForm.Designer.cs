@@ -43,6 +43,8 @@
             this.MiddlePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Middle3Panel = new System.Windows.Forms.Panel();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
+            this.optionSlider1 = new osu_trainer.OptionSlider();
             this.Middle2Panel = new System.Windows.Forms.Panel();
             this.ARUpDown = new osu_trainer.NumericUpDownFix();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
@@ -53,9 +55,11 @@
             this.DiffLabel = new System.Windows.Forms.TextBox();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
+            this.mainFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Middle3Panel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.Middle2Panel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
@@ -64,6 +68,7 @@
             this.TopPanel.SuspendLayout();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -201,7 +206,7 @@
             this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(440, 127);
+            this.MiddlePanel.Size = new System.Drawing.Size(440, 402);
             this.MiddlePanel.TabIndex = 10;
             // 
             // panel2
@@ -211,18 +216,68 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(122, 0);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(318, 127);
+            this.panel2.Size = new System.Drawing.Size(318, 402);
             this.panel2.TabIndex = 11;
             // 
             // Middle3Panel
             // 
+            this.Middle3Panel.Controls.Add(this.numericUpDown1);
+            this.Middle3Panel.Controls.Add(this.optionSlider1);
             this.Middle3Panel.Controls.Add(this.OriginalBpmTextBox);
             this.Middle3Panel.Controls.Add(this.NewBpmTextBox);
             this.Middle3Panel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Middle3Panel.Location = new System.Drawing.Point(0, 77);
             this.Middle3Panel.Name = "Middle3Panel";
-            this.Middle3Panel.Size = new System.Drawing.Size(318, 50);
+            this.Middle3Panel.Size = new System.Drawing.Size(318, 325);
             this.Middle3Panel.TabIndex = 7;
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.DecimalPlaces = 1;
+            this.numericUpDown1.Increment = new decimal(new int[] {
+            5,
+            0,
+            0,
+            65536});
+            this.numericUpDown1.Location = new System.Drawing.Point(90, 206);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(120, 24);
+            this.numericUpDown1.TabIndex = 10;
+            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
+            // 
+            // optionSlider1
+            // 
+            this.optionSlider1.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.optionSlider1.FillNipple = false;
+            this.optionSlider1.Location = new System.Drawing.Point(29, 97);
+            this.optionSlider1.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.optionSlider1.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.optionSlider1.Name = "optionSlider1";
+            this.optionSlider1.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(84)))), ((int)(((byte)(149)))));
+            this.optionSlider1.NippleDiameter = 10;
+            this.optionSlider1.NippleExpandedDiameter = 15;
+            this.optionSlider1.Size = new System.Drawing.Size(151, 40);
+            this.optionSlider1.TabIndex = 9;
+            this.optionSlider1.Text = "optionSlider1";
+            this.optionSlider1.Thickness = 5;
+            this.optionSlider1.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
             // 
             // Middle2Panel
             // 
@@ -307,14 +362,14 @@
             this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
             this.Middle1Panel.Name = "Middle1Panel";
             this.Middle1Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.Middle1Panel.Size = new System.Drawing.Size(122, 127);
+            this.Middle1Panel.Size = new System.Drawing.Size(122, 402);
             this.Middle1Panel.TabIndex = 10;
             // 
             // BottomPanel
             // 
             this.BottomPanel.Controls.Add(this.GenerateMapButton);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 227);
+            this.BottomPanel.Location = new System.Drawing.Point(0, 502);
             this.BottomPanel.Name = "BottomPanel";
             this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
             this.BottomPanel.Size = new System.Drawing.Size(440, 60);
@@ -384,12 +439,16 @@
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
+            // mainFormBindingSource
+            // 
+            this.mainFormBindingSource.DataSource = typeof(osu_trainer.MainForm);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(440, 287);
+            this.ClientSize = new System.Drawing.Size(440, 562);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
@@ -406,6 +465,7 @@
             this.panel2.ResumeLayout(false);
             this.Middle3Panel.ResumeLayout(false);
             this.Middle3Panel.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.Middle2Panel.ResumeLayout(false);
             this.Middle2Panel.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
@@ -418,6 +478,7 @@
             this.TopPanel.PerformLayout();
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -446,5 +507,8 @@
         private System.Windows.Forms.TextBox SongLabel;
         private System.Windows.Forms.Panel BgPanel;
         private System.Windows.Forms.PictureBox StaticGif;
+        private System.Windows.Forms.BindingSource mainFormBindingSource;
+        private OptionSlider optionSlider1;
+        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }
