@@ -352,6 +352,9 @@ namespace osu_trainer
             DisableARUpDown();
             DisableBpmUpDown();
 
+            // sliders
+            optionSlider1.Enabled = false;
+
             // misc
             DisableSelectMapButton();
 
@@ -371,6 +374,9 @@ namespace osu_trainer
             // updowns
             EnableARUpDown();
             EnableBpmUpDown();
+
+            // sliders
+            optionSlider1.Enabled = true;
 
             // misc
             if (AutoDetectMapCheckbox.Checked == false)
@@ -517,9 +523,11 @@ namespace osu_trainer
                 LoadBeatmap(absoluteFilename);
         }
 
-        private void numericUpDown1_ValueChanged(object sender, EventArgs e)
+        private void optionSlider1_ValueChanged(object sender, EventArgs e)
         {
-            optionSlider1.Value = numericUpDown1.Value;
+            newBeatmap.ApproachRate = (float)optionSlider1.Value;
+            ARUpDown.Value = optionSlider1.Value;
+            FormatAR();
         }
     }
 }

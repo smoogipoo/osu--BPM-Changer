@@ -43,11 +43,7 @@
             this.MiddlePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Middle3Panel = new System.Windows.Forms.Panel();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.optionSlider1 = new osu_trainer.OptionSlider();
             this.Middle2Panel = new System.Windows.Forms.Panel();
-            this.ARUpDown = new osu_trainer.NumericUpDownFix();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
@@ -55,19 +51,21 @@
             this.DiffLabel = new System.Windows.Forms.TextBox();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
+            this.optionSlider1 = new osu_trainer.OptionSlider();
+            this.ARUpDown = new osu_trainer.NumericUpDownFix();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.mainFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Middle3Panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.Middle2Panel.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
@@ -221,7 +219,6 @@
             // 
             // Middle3Panel
             // 
-            this.Middle3Panel.Controls.Add(this.numericUpDown1);
             this.Middle3Panel.Controls.Add(this.optionSlider1);
             this.Middle3Panel.Controls.Add(this.OriginalBpmTextBox);
             this.Middle3Panel.Controls.Add(this.NewBpmTextBox);
@@ -230,54 +227,6 @@
             this.Middle3Panel.Name = "Middle3Panel";
             this.Middle3Panel.Size = new System.Drawing.Size(318, 325);
             this.Middle3Panel.TabIndex = 7;
-            // 
-            // numericUpDown1
-            // 
-            this.numericUpDown1.DecimalPlaces = 1;
-            this.numericUpDown1.Increment = new decimal(new int[] {
-            5,
-            0,
-            0,
-            65536});
-            this.numericUpDown1.Location = new System.Drawing.Point(90, 206);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 24);
-            this.numericUpDown1.TabIndex = 10;
-            this.numericUpDown1.ValueChanged += new System.EventHandler(this.numericUpDown1_ValueChanged);
-            // 
-            // optionSlider1
-            // 
-            this.optionSlider1.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.optionSlider1.FillNipple = false;
-            this.optionSlider1.Location = new System.Drawing.Point(29, 97);
-            this.optionSlider1.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.optionSlider1.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.optionSlider1.Name = "optionSlider1";
-            this.optionSlider1.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(84)))), ((int)(((byte)(149)))));
-            this.optionSlider1.NippleDiameter = 10;
-            this.optionSlider1.NippleExpandedDiameter = 15;
-            this.optionSlider1.Size = new System.Drawing.Size(151, 40);
-            this.optionSlider1.TabIndex = 9;
-            this.optionSlider1.Text = "optionSlider1";
-            this.optionSlider1.Thickness = 5;
-            this.optionSlider1.Value = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
             // 
             // Middle2Panel
             // 
@@ -291,66 +240,6 @@
             this.Middle2Panel.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.Middle2Panel.Size = new System.Drawing.Size(318, 77);
             this.Middle2Panel.TabIndex = 7;
-            // 
-            // ARUpDown
-            // 
-            this.ARUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.ARUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ARUpDown.DecimalPlaces = 1;
-            this.ARUpDown.Font = new System.Drawing.Font("Microsoft New Tai Lue", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ARUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ARUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ARUpDown.Location = new System.Drawing.Point(4, 11);
-            this.ARUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.ARUpDown.Maximum = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ARUpDown.Name = "ARUpDown";
-            this.ARUpDown.Size = new System.Drawing.Size(77, 24);
-            this.ARUpDown.TabIndex = 4;
-            this.ARUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.ARUpDown.ValueChanged += new System.EventHandler(this.ARUpDown_ValueChanged);
-            // 
-            // BpmMultiplierUpDown
-            // 
-            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.BpmMultiplierUpDown.DecimalPlaces = 2;
-            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(4, 41);
-            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
-            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(77, 24);
-            this.BpmMultiplierUpDown.TabIndex = 4;
-            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
             // 
             // Middle1Panel
             // 
@@ -439,6 +328,103 @@
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
+            // optionSlider1
+            // 
+            this.optionSlider1.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.optionSlider1.FillDraggingNipple = true;
+            this.optionSlider1.FillNipple = false;
+            this.optionSlider1.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.optionSlider1.Location = new System.Drawing.Point(18, 61);
+            this.optionSlider1.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.optionSlider1.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.optionSlider1.Name = "optionSlider1";
+            this.optionSlider1.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(73)))), ((int)(((byte)(84)))), ((int)(((byte)(149)))));
+            this.optionSlider1.NippleDiameter = 17;
+            this.optionSlider1.NippleExpandedDiameter = 30;
+            this.optionSlider1.NippleStrokeWidth = 2;
+            this.optionSlider1.Size = new System.Drawing.Size(253, 70);
+            this.optionSlider1.TabIndex = 9;
+            this.optionSlider1.Text = "optionSlider1";
+            this.optionSlider1.Thickness = 7;
+            this.optionSlider1.Value = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.optionSlider1.ValueChanged += new System.EventHandler(this.optionSlider1_ValueChanged);
+            // 
+            // ARUpDown
+            // 
+            this.ARUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.ARUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ARUpDown.DecimalPlaces = 1;
+            this.ARUpDown.Font = new System.Drawing.Font("Microsoft New Tai Lue", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ARUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ARUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ARUpDown.Location = new System.Drawing.Point(4, 11);
+            this.ARUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.ARUpDown.Maximum = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ARUpDown.Name = "ARUpDown";
+            this.ARUpDown.Size = new System.Drawing.Size(77, 24);
+            this.ARUpDown.TabIndex = 4;
+            this.ARUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.ARUpDown.ValueChanged += new System.EventHandler(this.ARUpDown_ValueChanged);
+            // 
+            // BpmMultiplierUpDown
+            // 
+            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BpmMultiplierUpDown.DecimalPlaces = 2;
+            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(4, 41);
+            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
+            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(77, 24);
+            this.BpmMultiplierUpDown.TabIndex = 4;
+            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
+            // 
             // mainFormBindingSource
             // 
             this.mainFormBindingSource.DataSource = typeof(osu_trainer.MainForm);
@@ -465,11 +451,8 @@
             this.panel2.ResumeLayout(false);
             this.Middle3Panel.ResumeLayout(false);
             this.Middle3Panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.Middle2Panel.ResumeLayout(false);
             this.Middle2Panel.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.Middle1Panel.PerformLayout();
             this.BottomPanel.ResumeLayout(false);
@@ -478,6 +461,8 @@
             this.TopPanel.PerformLayout();
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.ARUpDown)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).EndInit();
             this.ResumeLayout(false);
 
@@ -509,6 +494,5 @@
         private System.Windows.Forms.PictureBox StaticGif;
         private System.Windows.Forms.BindingSource mainFormBindingSource;
         private OptionSlider optionSlider1;
-        private System.Windows.Forms.NumericUpDown numericUpDown1;
     }
 }
