@@ -46,8 +46,8 @@ namespace osu_trainer
 
         // Common Control Lists
         List<Label> labels;
-        //List<NumericUpDown> updowns;
-        //List<TextBox> textboxes;
+        List<TextBox> diffDisplays;
+        List<OptionSlider> diffSliders;
 
         // Single Object Instances
         SoundPlayer sound = new SoundPlayer();
@@ -69,32 +69,33 @@ namespace osu_trainer
         {
             labels = new List<Label>
             {
+                hplabel,
+                cslabel,
+                arlabel,
+                odlabel,
                 label2,
                 label4,
-                label5,
-                label6
+                label5
             };
-            //updowns = new List<NumericUpDown>
-            //{
-            //    ARUpDown,
-            //    BpmMultiplierUpDown
-            //};
+            diffDisplays = new List<TextBox>
+            {
+                HPDisplay,
+                CSDisplay,
+                ARDisplay,
+                ODDisplay,
+            };
+            diffSliders = new List<OptionSlider>
+            {
+                HPSlider,
+                CSSlider,
+                ARSlider,
+                ODSlider,
+            };
             //textboxes = new List<TextBox>
             //{
             //    OriginalBpmTextBox,
             //    NewBpmTextBox
             //};
-        }
-
-        private void SelectMapButton_Click(object sender, EventArgs e)
-        {
-            using (OpenFileDialog ofd = new OpenFileDialog())
-            {
-                ofd.Title = "Select Beatmap";
-                if (ofd.ShowDialog() != DialogResult.OK)
-                    return;
-                LoadBeatmap(ofd.FileName);
-            }
         }
 
         private async void GenerateMapButton_Click(object sender, EventArgs e)
@@ -114,8 +115,7 @@ namespace osu_trainer
             sound.SoundLocation = matchConfirmWav;
             sound.Play();
 
-            if (AutoDetectMapCheckbox.Checked)
-                BeatmapUpdateTimer.Start();
+            BeatmapUpdateTimer.Start();
 
             EnableGenerateMapButton();
             GenerateMapButton.Text = oldButtonText;
@@ -259,7 +259,7 @@ namespace osu_trainer
             EnableFormControls();
 
             // Update Approach Rate Display
-            //ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
+            ARDisplay.Text = newBeatmap.ApproachRate.ToString();
             FormatAR();
 
             return true;
@@ -295,20 +295,6 @@ namespace osu_trainer
             BgPanel.BackgroundImage = bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
         }
 
-        private void AutoDetectMapCheckbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (AutoDetectMapCheckbox.Checked)
-            {
-                DisableSelectMapButton();
-                BeatmapUpdateTimer.Start();
-            }
-            else
-            {
-                EnableSelectMapButton();
-                BeatmapUpdateTimer.Stop();
-            }
-        }
-
         private void setMultiplier(float mult)
         {
             bpmMultiplier = mult;
@@ -319,8 +305,8 @@ namespace osu_trainer
 
             // Scale AR and Update AR Display
             newBeatmap.ApproachRate = DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier);
-            //ARUpDown.Value = (decimal)newBeatmap.ApproachRate;
-            ARUpDown.BackColor = textBoxBg;
+            ARDisplay.Text = newBeatmap.ApproachRate.ToString();
+            ARDisplay.BackColor = textBoxBg;
         }
 
         private List<float> GetBpmList(Beatmap map)
@@ -330,12 +316,6 @@ namespace osu_trainer
             if (bpmsUnique.Count == 1)
                 return bpmsUnique;
             return bpms;
-        }
-
-        private void ARUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            newBeatmap.ApproachRate = (float)ARUpDown.Value;
-            FormatAR();
         }
 
         #region Control State and Appearance
@@ -349,14 +329,10 @@ namespace osu_trainer
                 label.ForeColor = labelDisabledColor;
 
             // updowns
-            DisableARUpDown();
+            DisableDiffControls();
             DisableBpmUpDown();
 
             // sliders
-            optionSlider1.Enabled = false;
-
-            // misc
-            DisableSelectMapButton();
 
             // generate map
             DisableGenerateMapButton();
@@ -372,15 +348,10 @@ namespace osu_trainer
                 label.ForeColor = labelColor1;
 
             // updowns
-            EnableARUpDown();
+            EnableDiffControls();
             EnableBpmUpDown();
 
             // sliders
-            optionSlider1.Enabled = true;
-
-            // misc
-            if (AutoDetectMapCheckbox.Checked == false)
-                EnableSelectMapButton();
 
             // generate map
             EnableGenerateMapButton();
@@ -400,18 +371,32 @@ namespace osu_trainer
             StaticGif.Visible = false;
         }
 
-        private void EnableARUpDown()
+        private void EnableDiffControls()
         {
-            ARUpDown.Enabled = true;
-            ARUpDown.BackColor = textBoxBg;
+            foreach (var display in diffDisplays)
+            {
+                display.Enabled = true;
+                display.BackColor = textBoxBg;
+            }
             FormatAR();
+            foreach (var slider in diffSliders)
+            {
+                slider.Enabled = true;
+            }
         }
-        private void DisableARUpDown()
+        private void DisableDiffControls()
         {
-            ARUpDown.Enabled = false;
-            ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Regular);
-            ARUpDown.ForeColor = Color.FromArgb(224, 224, 224);
-            ARUpDown.BackColor = SystemColors.ControlDark;
+            foreach (var display in diffDisplays)
+            {
+                display.Enabled = false;
+                display.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+                display.ForeColor = Color.FromArgb(224, 224, 224);
+                display.BackColor = SystemColors.ControlDark;
+            }
+            foreach (var slider in diffSliders)
+            {
+                slider.Enabled = false;
+            }
         }
         private void EnableBpmUpDown()
         {
@@ -443,33 +428,19 @@ namespace osu_trainer
         {
             if (newBeatmap.ApproachRate > DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier))
             {
-                ARUpDown.ForeColor = Color.FromArgb(254, 68, 80);
-                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Bold);
+                ARDisplay.ForeColor = Color.FromArgb(254, 68, 80);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else if (newBeatmap.ApproachRate < DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier))
             {
-                ARUpDown.ForeColor = Color.FromArgb(114, 241, 184);
-                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Bold);
+                ARDisplay.ForeColor = Color.FromArgb(114, 241, 184);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else
             {
-                ARUpDown.ForeColor = Color.FromArgb(224, 224, 224);
-                ARUpDown.Font = new Font(ARUpDown.Font, FontStyle.Regular);
+                ARDisplay.ForeColor = Color.FromArgb(224, 224, 224);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
-        }
-        private void EnableSelectMapButton()
-        {
-            SelectMapButton.BackColor = accentOrange;
-            SelectMapButton.ForeColor = Color.White;
-            SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Bold);
-            SelectMapButton.Enabled = true;
-        }
-        private void DisableSelectMapButton()
-        {
-            SelectMapButton.BackColor = SystemColors.ControlLight;
-            SelectMapButton.ForeColor = Color.DimGray;
-            SelectMapButton.Font = new Font(SelectMapButton.Font, FontStyle.Regular);
-            SelectMapButton.Enabled = false;
         }
         private void UpdateBpmDisplay()
         {
@@ -523,11 +494,9 @@ namespace osu_trainer
                 LoadBeatmap(absoluteFilename);
         }
 
-        private void optionSlider1_ValueChanged(object sender, EventArgs e)
+        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
         {
-            newBeatmap.ApproachRate = (float)optionSlider1.Value;
-            ARUpDown.Value = optionSlider1.Value;
-            FormatAR();
+
         }
     }
 }

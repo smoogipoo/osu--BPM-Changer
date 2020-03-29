@@ -16,7 +16,8 @@ namespace osu_trainer
         private decimal minValue;
         [
         Category("Data"),
-        Description("Sets the value when the nipple is slid all the way to the left")
+        Description("Sets the value when the nipple is slid all the way to the left"),
+        DefaultValue(0)
         ]
         public decimal MinValue
         {
@@ -32,7 +33,8 @@ namespace osu_trainer
         private decimal maxValue;
         [
         Category("Data"),
-        Description("Sets the value when the nipple is slid all the way to the right")
+        Description("Sets the value when the nipple is slid all the way to the right"),
+        DefaultValue(10)
         ]
         public decimal MaxValue
         {
@@ -48,7 +50,8 @@ namespace osu_trainer
         private decimal value;
         [
         Category("Data"),
-        Description("Sets the value when the nipple is slid all the way to the right")
+        Description("Sets the initial value for the slider"),
+        DefaultValue(0)
         ]
         public decimal Value
         {
@@ -63,7 +66,8 @@ namespace osu_trainer
         private decimal increment;
         [
         Category("Data"),
-        Description("Sets value precision")
+        Description("Sets value precision"),
+        DefaultValue(0.1)
         ]
         public decimal Increment
         {
@@ -78,7 +82,8 @@ namespace osu_trainer
         private int thickness;
         [
         Category("Appearance"),
-        Description("adjust slider thicc")
+        Description("adjust slider thicc"),
+        DefaultValue(5)
         ]
         public int Thickness
         {
@@ -143,7 +148,8 @@ namespace osu_trainer
         private bool fillNipple;
         [
         Category("Appearance"),
-        Description("Determines whether the Nipple is filled with color.")
+        Description("Determines whether the Nipple is filled with color."),
+        DefaultValue(false)
         ]
         public bool FillNipple
         {
@@ -159,7 +165,8 @@ namespace osu_trainer
         private bool fillDraggingNipple;
         [
         Category("Appearance"),
-        Description("Determines whether the Nipple is filled with color.")
+        Description("Determines whether the Nipple is filled with color."),
+        DefaultValue(true)
         ]
         public bool FillDraggingNipple
         {
@@ -176,7 +183,8 @@ namespace osu_trainer
         private int nippleDiameter;
         [
         Category("Appearance"),
-        Description("Determines the size of the Nipple in resting position.")
+        Description("Determines the size of the Nipple in resting position."),
+        DefaultValue(17)
         ]
         public int NippleDiameter
         {
@@ -193,7 +201,8 @@ namespace osu_trainer
         private int nippleExpandedDiameter;
         [
         Category("Appearance"),
-        Description("Determines the size of the Nipple when it is expanded.")
+        Description("Determines the size of the Nipple when it is expanded."),
+        DefaultValue(30)
         ]
         public int NippleExpandedDiameter
         {
@@ -337,11 +346,11 @@ namespace osu_trainer
         }
         private int GetStartX()
         {
-            return Math.Max(Thickness / 2, NippleExpandedDiameter / 2) + 10;
+            return Math.Max(Thickness / 2, NippleExpandedDiameter / 2) + 2;
         }
         private int GetEndX()
         {
-            return Width - GetStartX() - 10;
+            return Width - GetStartX() - 2;
         }
         #endregion
     }
