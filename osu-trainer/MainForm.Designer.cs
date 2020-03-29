@@ -97,7 +97,7 @@
             this.OriginalBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.OriginalBpmTextBox.Location = new System.Drawing.Point(114, 48);
+            this.OriginalBpmTextBox.Location = new System.Drawing.Point(114, 44);
             this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
             this.OriginalBpmTextBox.ReadOnly = true;
@@ -109,7 +109,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label4.Location = new System.Drawing.Point(0, 48);
+            this.label4.Location = new System.Drawing.Point(0, 44);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 16);
@@ -121,7 +121,7 @@
             this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.NewBpmTextBox.Location = new System.Drawing.Point(114, 71);
+            this.NewBpmTextBox.Location = new System.Drawing.Point(114, 67);
             this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.NewBpmTextBox.Name = "NewBpmTextBox";
             this.NewBpmTextBox.ReadOnly = true;
@@ -133,7 +133,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label5.Location = new System.Drawing.Point(23, 72);
+            this.label5.Location = new System.Drawing.Point(23, 68);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 16);
@@ -166,16 +166,16 @@
             this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(440, 402);
+            this.MiddlePanel.Size = new System.Drawing.Size(440, 222);
             this.MiddlePanel.TabIndex = 10;
             // 
             // panel2
             // 
             this.panel2.Controls.Add(this.Panel3);
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel2.Location = new System.Drawing.Point(0, 181);
+            this.panel2.Location = new System.Drawing.Point(0, 129);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(440, 221);
+            this.panel2.Size = new System.Drawing.Size(440, 93);
             this.panel2.TabIndex = 11;
             // 
             // Panel3
@@ -190,14 +190,14 @@
             this.Panel3.Location = new System.Drawing.Point(0, 0);
             this.Panel3.Name = "Panel3";
             this.Panel3.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.Panel3.Size = new System.Drawing.Size(440, 221);
+            this.Panel3.Size = new System.Drawing.Size(440, 93);
             this.Panel3.TabIndex = 7;
             // 
             // BottomPanel
             // 
             this.BottomPanel.Controls.Add(this.GenerateMapButton);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 502);
+            this.BottomPanel.Location = new System.Drawing.Point(0, 322);
             this.BottomPanel.Name = "BottomPanel";
             this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
             this.BottomPanel.Size = new System.Drawing.Size(440, 60);
@@ -258,7 +258,7 @@
             // 
             this.StaticGif.Dock = System.Windows.Forms.DockStyle.Fill;
             this.StaticGif.ErrorImage = null;
-            this.StaticGif.ImageLocation = "img\\static.gif";
+            this.StaticGif.ImageLocation = "resources\\static.gif";
             this.StaticGif.InitialImage = null;
             this.StaticGif.Location = new System.Drawing.Point(0, 0);
             this.StaticGif.Name = "StaticGif";
@@ -272,10 +272,10 @@
             this.Middle1Panel.Controls.Add(this.tableLayoutPanel1);
             this.Middle1Panel.Dock = System.Windows.Forms.DockStyle.Top;
             this.Middle1Panel.Location = new System.Drawing.Point(0, 0);
-            this.Middle1Panel.Margin = new System.Windows.Forms.Padding(10);
+            this.Middle1Panel.Margin = new System.Windows.Forms.Padding(10, 10, 10, 0);
             this.Middle1Panel.Name = "Middle1Panel";
-            this.Middle1Panel.Padding = new System.Windows.Forms.Padding(10);
-            this.Middle1Panel.Size = new System.Drawing.Size(440, 181);
+            this.Middle1Panel.Padding = new System.Windows.Forms.Padding(10, 10, 10, 0);
+            this.Middle1Panel.Size = new System.Drawing.Size(440, 129);
             this.Middle1Panel.TabIndex = 10;
             // 
             // tableLayoutPanel1
@@ -305,7 +305,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.00063F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 25.00063F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 24.99813F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(420, 161);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(420, 119);
             this.tableLayoutPanel1.TabIndex = 0;
             // 
             // hplabel
@@ -317,7 +317,7 @@
             this.hplabel.Location = new System.Drawing.Point(3, 3);
             this.hplabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.hplabel.Name = "hplabel";
-            this.hplabel.Size = new System.Drawing.Size(32, 37);
+            this.hplabel.Size = new System.Drawing.Size(32, 26);
             this.hplabel.TabIndex = 0;
             this.hplabel.Text = "HP";
             this.hplabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -329,7 +329,7 @@
             this.HPDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.HPDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.HPDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.HPDisplay.Location = new System.Drawing.Point(41, 11);
+            this.HPDisplay.Location = new System.Drawing.Point(41, 6);
             this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.HPDisplay.Name = "HPDisplay";
             this.HPDisplay.Size = new System.Drawing.Size(42, 21);
@@ -343,10 +343,10 @@
             this.cslabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.cslabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
             this.cslabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.cslabel.Location = new System.Drawing.Point(3, 43);
+            this.cslabel.Location = new System.Drawing.Point(3, 32);
             this.cslabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.cslabel.Name = "cslabel";
-            this.cslabel.Size = new System.Drawing.Size(32, 37);
+            this.cslabel.Size = new System.Drawing.Size(32, 26);
             this.cslabel.TabIndex = 3;
             this.cslabel.Text = "CS";
             this.cslabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -357,7 +357,7 @@
             this.CSDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
             this.CSDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.CSDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.CSDisplay.Location = new System.Drawing.Point(41, 51);
+            this.CSDisplay.Location = new System.Drawing.Point(41, 35);
             this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.CSDisplay.Name = "CSDisplay";
             this.CSDisplay.Size = new System.Drawing.Size(42, 21);
@@ -371,10 +371,10 @@
             this.arlabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.arlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
             this.arlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.arlabel.Location = new System.Drawing.Point(3, 83);
+            this.arlabel.Location = new System.Drawing.Point(3, 61);
             this.arlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.arlabel.Name = "arlabel";
-            this.arlabel.Size = new System.Drawing.Size(32, 37);
+            this.arlabel.Size = new System.Drawing.Size(32, 26);
             this.arlabel.TabIndex = 6;
             this.arlabel.Text = "AR";
             this.arlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -385,7 +385,7 @@
             this.ARDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
             this.ARDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ARDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ARDisplay.Location = new System.Drawing.Point(41, 91);
+            this.ARDisplay.Location = new System.Drawing.Point(41, 64);
             this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.ARDisplay.Name = "ARDisplay";
             this.ARDisplay.Size = new System.Drawing.Size(42, 21);
@@ -399,10 +399,10 @@
             this.odlabel.Dock = System.Windows.Forms.DockStyle.Fill;
             this.odlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
             this.odlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.odlabel.Location = new System.Drawing.Point(3, 123);
+            this.odlabel.Location = new System.Drawing.Point(3, 90);
             this.odlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
             this.odlabel.Name = "odlabel";
-            this.odlabel.Size = new System.Drawing.Size(32, 38);
+            this.odlabel.Size = new System.Drawing.Size(32, 29);
             this.odlabel.TabIndex = 9;
             this.odlabel.Text = "OD";
             this.odlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
@@ -413,7 +413,7 @@
             this.ODDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
             this.ODDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.ODDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ODDisplay.Location = new System.Drawing.Point(41, 131);
+            this.ODDisplay.Location = new System.Drawing.Point(41, 94);
             this.ODDisplay.Margin = new System.Windows.Forms.Padding(3, 6, 3, 3);
             this.ODDisplay.Name = "ODDisplay";
             this.ODDisplay.Size = new System.Drawing.Size(42, 21);
@@ -465,7 +465,7 @@
             0,
             0,
             65536});
-            this.ODSlider.Location = new System.Drawing.Point(89, 123);
+            this.ODSlider.Location = new System.Drawing.Point(89, 90);
             this.ODSlider.MaxValue = new decimal(new int[] {
             10,
             0,
@@ -481,7 +481,7 @@
             this.ODSlider.NippleDiameter = 15;
             this.ODSlider.NippleExpandedDiameter = 20;
             this.ODSlider.NippleStrokeWidth = 2;
-            this.ODSlider.Size = new System.Drawing.Size(328, 35);
+            this.ODSlider.Size = new System.Drawing.Size(328, 26);
             this.ODSlider.TabIndex = 11;
             this.ODSlider.Text = "HPSlider";
             this.ODSlider.Thickness = 4;
@@ -490,6 +490,7 @@
             0,
             0,
             0});
+            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
             // 
             // ARSlider
             // 
@@ -500,7 +501,7 @@
             0,
             0,
             65536});
-            this.ARSlider.Location = new System.Drawing.Point(89, 83);
+            this.ARSlider.Location = new System.Drawing.Point(89, 61);
             this.ARSlider.MaxValue = new decimal(new int[] {
             10,
             0,
@@ -516,7 +517,7 @@
             this.ARSlider.NippleDiameter = 15;
             this.ARSlider.NippleExpandedDiameter = 20;
             this.ARSlider.NippleStrokeWidth = 2;
-            this.ARSlider.Size = new System.Drawing.Size(328, 34);
+            this.ARSlider.Size = new System.Drawing.Size(328, 23);
             this.ARSlider.TabIndex = 8;
             this.ARSlider.Text = "HPSlider";
             this.ARSlider.Thickness = 4;
@@ -525,6 +526,7 @@
             0,
             0,
             0});
+            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
             // 
             // CSSlider
             // 
@@ -535,7 +537,7 @@
             0,
             0,
             65536});
-            this.CSSlider.Location = new System.Drawing.Point(89, 43);
+            this.CSSlider.Location = new System.Drawing.Point(89, 32);
             this.CSSlider.MaxValue = new decimal(new int[] {
             10,
             0,
@@ -551,7 +553,7 @@
             this.CSSlider.NippleDiameter = 15;
             this.CSSlider.NippleExpandedDiameter = 20;
             this.CSSlider.NippleStrokeWidth = 2;
-            this.CSSlider.Size = new System.Drawing.Size(328, 34);
+            this.CSSlider.Size = new System.Drawing.Size(328, 23);
             this.CSSlider.TabIndex = 5;
             this.CSSlider.Text = "HPSlider";
             this.CSSlider.Thickness = 4;
@@ -560,6 +562,7 @@
             0,
             0,
             0});
+            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
             // 
             // HPSlider
             // 
@@ -586,7 +589,7 @@
             this.HPSlider.NippleDiameter = 15;
             this.HPSlider.NippleExpandedDiameter = 20;
             this.HPSlider.NippleStrokeWidth = 2;
-            this.HPSlider.Size = new System.Drawing.Size(328, 34);
+            this.HPSlider.Size = new System.Drawing.Size(328, 23);
             this.HPSlider.TabIndex = 2;
             this.HPSlider.Text = "HPSlider";
             this.HPSlider.Thickness = 4;
@@ -595,6 +598,7 @@
             0,
             0,
             0});
+            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
             // 
             // mainFormBindingSource
             // 
@@ -605,7 +609,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(440, 562);
+            this.ClientSize = new System.Drawing.Size(440, 382);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);

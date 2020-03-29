@@ -23,7 +23,7 @@ namespace osu_trainer
     public partial class MainForm : Form
     {
         // File Resources
-        string matchConfirmWav = "audio\\match-confirm.wav";
+        string matchConfirmWav = "resources\\match-confirm.wav";
 
         // Beatmap
         string userOsuInstallPath = null;
@@ -43,6 +43,8 @@ namespace osu_trainer
         Color accentPink = Color.FromArgb(255, 126, 219);
         Color accentBlue = Color.FromArgb(46, 226, 250);
         Color accentOrange = Color.FromArgb(246, 122, 44);
+        Color harderColor = Color.FromArgb(254, 68, 80);
+        Color easierColor = Color.FromArgb(114, 241, 184);
 
         // Common Control Lists
         List<Label> labels;
@@ -208,7 +210,7 @@ namespace osu_trainer
         {
             Console.WriteLine("Value changed");
             setMultiplier((float)BpmMultiplierUpDown.Value);
-            FormatAR();
+            BeatmapChanged();
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -260,7 +262,7 @@ namespace osu_trainer
 
             // Update Approach Rate Display
             ARDisplay.Text = newBeatmap.ApproachRate.ToString();
-            FormatAR();
+            BeatmapChanged();
 
             return true;
         }
@@ -378,7 +380,7 @@ namespace osu_trainer
                 display.Enabled = true;
                 display.BackColor = textBoxBg;
             }
-            FormatAR();
+            BeatmapChanged();
             foreach (var slider in diffSliders)
             {
                 slider.Enabled = true;
@@ -424,23 +426,84 @@ namespace osu_trainer
             GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Regular);
             GenerateMapButton.Enabled = false;
         }
-        private void FormatAR()
+        private void BeatmapChanged()
         {
+            // HP
+            HPDisplay.Text = newBeatmap.HPDrainRate.ToString();
+            HPSlider.Value = (decimal)newBeatmap.HPDrainRate;
+            if (newBeatmap.HPDrainRate > originalBeatmap.HPDrainRate)
+            {
+                HPDisplay.ForeColor = harderColor;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
+            }
+            else if (newBeatmap.HPDrainRate < originalBeatmap.HPDrainRate)
+            {
+                HPDisplay.ForeColor = easierColor;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                HPDisplay.ForeColor = textBoxFg;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Regular);
+            }
+
+            // CS
+            CSDisplay.Text = newBeatmap.CircleSize.ToString();
+            CSSlider.Value = (decimal)newBeatmap.CircleSize;
+            if (newBeatmap.CircleSize > originalBeatmap.CircleSize)
+            {
+                CSDisplay.ForeColor = harderColor;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
+            }
+            else if (newBeatmap.CircleSize < originalBeatmap.CircleSize)
+            {
+                CSDisplay.ForeColor = easierColor;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                CSDisplay.ForeColor = textBoxFg;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Regular);
+            }
+
+            // AR
+            ARDisplay.Text = newBeatmap.ApproachRate.ToString();
+            ARSlider.Value = (decimal)newBeatmap.ApproachRate;
             if (newBeatmap.ApproachRate > DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier))
             {
-                ARDisplay.ForeColor = Color.FromArgb(254, 68, 80);
+                ARDisplay.ForeColor = harderColor;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else if (newBeatmap.ApproachRate < DifficultyCalculator.CalculateNewAR(originalBeatmap, bpmMultiplier))
             {
-                ARDisplay.ForeColor = Color.FromArgb(114, 241, 184);
+                ARDisplay.ForeColor = easierColor;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else
             {
-                ARDisplay.ForeColor = Color.FromArgb(224, 224, 224);
+                ARDisplay.ForeColor = textBoxFg;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
+            
+            // OD
+            ODDisplay.Text = newBeatmap.OverallDifficulty.ToString();
+            ODSlider.Value = (decimal)newBeatmap.OverallDifficulty;
+            if (newBeatmap.OverallDifficulty > originalBeatmap.OverallDifficulty)
+            {
+                ODDisplay.ForeColor = harderColor;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
+            }
+            else if (newBeatmap.OverallDifficulty < originalBeatmap.OverallDifficulty)
+            {
+                ODDisplay.ForeColor = easierColor;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                ODDisplay.ForeColor = textBoxFg;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
+            }
+
         }
         private void UpdateBpmDisplay()
         {
@@ -494,9 +557,28 @@ namespace osu_trainer
                 LoadBeatmap(absoluteFilename);
         }
 
-        private void tableLayoutPanel1_Paint(object sender, PaintEventArgs e)
+        private void HPSlider_ValueChanged(object sender, EventArgs e)
         {
+            newBeatmap.HPDrainRate = (float)HPSlider.Value;
+            BeatmapChanged();
+        }
 
+        private void CSSlider_ValueChanged(object sender, EventArgs e)
+        {
+            newBeatmap.CircleSize = (float)CSSlider.Value;
+            BeatmapChanged();
+        }
+
+        private void ARSlider_ValueChanged(object sender, EventArgs e)
+        {
+            newBeatmap.ApproachRate = (float)ARSlider.Value;
+            BeatmapChanged();
+        }
+
+        private void ODSlider_ValueChanged(object sender, EventArgs e)
+        {
+            newBeatmap.OverallDifficulty = (float)ODSlider.Value;
+            BeatmapChanged();
         }
     }
 }
