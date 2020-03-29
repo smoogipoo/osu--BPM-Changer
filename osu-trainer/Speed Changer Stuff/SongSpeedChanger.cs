@@ -33,7 +33,7 @@ namespace osu_trainer
 
             // lame.exe
             Process lame1 = new Process();
-            lame1.StartInfo.FileName = "lame.exe";
+            lame1.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
             lame1.StartInfo.Arguments = string.Format("--decode \"{0}\" \"{1}\"", temp1, temp2);
             lame1.StartInfo.UseShellExecute = false;
             lame1.StartInfo.CreateNoWindow = true;
@@ -42,7 +42,7 @@ namespace osu_trainer
 
             // soundstretch.exe
             Process soundstretch = new Process();
-            soundstretch.StartInfo.FileName = "soundstretch.exe";
+            soundstretch.StartInfo.FileName = "Speed Changer Stuff\\soundstretch.exe";
             soundstretch.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\" -tempo={2}", temp2, temp3, (multiplier - 1) * 100);
             soundstretch.StartInfo.UseShellExecute = false;
             soundstretch.StartInfo.CreateNoWindow = true;
@@ -51,7 +51,7 @@ namespace osu_trainer
 
             // lame.exe again
             Process lame2 = new Process();
-            lame2.StartInfo.FileName = "lame.exe";
+            lame2.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
             lame2.StartInfo.Arguments = string.Format("\"{0}\" \"{1}\"", temp3, temp4);
             lame2.StartInfo.UseShellExecute = false;
             lame2.StartInfo.CreateNoWindow = true;

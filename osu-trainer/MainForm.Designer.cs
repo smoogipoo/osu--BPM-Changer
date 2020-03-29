@@ -620,7 +620,7 @@
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "Beatmap Speed Changer";
+            this.Text = "Beatmap Difficulty Editor";
             this.KeyDown += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyDown);
             this.MiddlePanel.ResumeLayout(false);
             this.panel2.ResumeLayout(false);
