@@ -61,12 +61,13 @@
             this.DiffLabel = new System.Windows.Forms.TextBox();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
+            this.StarLabel = new System.Windows.Forms.Label();
+            this.DiffCalcCooldown = new System.Windows.Forms.Timer(this.components);
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.ODSlider = new osu_trainer.OptionSlider();
             this.ARSlider = new osu_trainer.OptionSlider();
             this.CSSlider = new osu_trainer.OptionSlider();
             this.HPSlider = new osu_trainer.OptionSlider();
-            this.mainFormBindingSource = new System.Windows.Forms.BindingSource(this.components);
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Panel3.SuspendLayout();
@@ -77,7 +78,6 @@
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -185,6 +185,7 @@
             // 
             // Panel3
             // 
+            this.Panel3.Controls.Add(this.StarLabel);
             this.Panel3.Controls.Add(this.ScaleARCheck);
             this.Panel3.Controls.Add(this.label4);
             this.Panel3.Controls.Add(this.OriginalBpmTextBox);
@@ -207,7 +208,7 @@
             this.ScaleARCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ScaleARCheck.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ScaleARCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
-            this.ScaleARCheck.Location = new System.Drawing.Point(191, 11);
+            this.ScaleARCheck.Location = new System.Drawing.Point(191, 10);
             this.ScaleARCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ScaleARCheck.Name = "ScaleARCheck";
             this.ScaleARCheck.Size = new System.Drawing.Size(77, 20);
@@ -529,6 +530,22 @@
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
+            // StarLabel
+            // 
+            this.StarLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.StarLabel.AutoSize = true;
+            this.StarLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(132)))), ((int)(((byte)(65)))));
+            this.StarLabel.Location = new System.Drawing.Point(366, 12);
+            this.StarLabel.Name = "StarLabel";
+            this.StarLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
+            this.StarLabel.Size = new System.Drawing.Size(48, 16);
+            this.StarLabel.TabIndex = 20;
+            this.StarLabel.Text = "0.00 ☆";
+            // 
+            // DiffCalcCooldown
+            // 
+            this.DiffCalcCooldown.Tick += new System.EventHandler(this.DiffCalcCooldown_Tick);
+            // 
             // BpmMultiplierUpDown
             // 
             this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
@@ -712,10 +729,6 @@
             0});
             this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
             // 
-            // mainFormBindingSource
-            // 
-            this.mainFormBindingSource.DataSource = typeof(osu_trainer.MainForm);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -748,7 +761,6 @@
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.mainFormBindingSource)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -771,7 +783,6 @@
         private System.Windows.Forms.TextBox SongLabel;
         private System.Windows.Forms.Panel BgPanel;
         private System.Windows.Forms.PictureBox StaticGif;
-        private System.Windows.Forms.BindingSource mainFormBindingSource;
         private System.Windows.Forms.Panel Middle1Panel;
         private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
         private System.Windows.Forms.Label hplabel;
@@ -791,5 +802,7 @@
         private System.Windows.Forms.CheckBox ARLockCheck;
         private System.Windows.Forms.CheckBox CSLockCheck;
         private System.Windows.Forms.CheckBox ScaleARCheck;
+        private System.Windows.Forms.Label StarLabel;
+        private System.Windows.Forms.Timer DiffCalcCooldown;
     }
 }

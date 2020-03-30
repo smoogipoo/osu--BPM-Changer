@@ -10,6 +10,7 @@ using System.Windows.Forms;
 
 namespace osu_trainer
 {
+    [DefaultEvent("ValueChanged")]
     class OptionSlider : Control
     {
         #region Customizable Properties

@@ -14,6 +14,7 @@ using System.Linq;
 using System.Media;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
@@ -26,7 +27,7 @@ namespace osu_trainer
         string matchConfirmWav = "resources\\match-confirm.wav";
 
         // Beatmap
-        string userOsuInstallPath = null;
+        string userSongsFolder = null;
         Beatmap pureBeatmap;
         Beatmap originalBeatmap;
         Beatmap newBeatmap;
@@ -62,6 +63,8 @@ namespace osu_trainer
         // other
         private bool scaleARPreviousState;
         private string previousBeatmapRead;
+        private bool diffCalcReady = true;
+        Semaphore emlSemaphore = new Semaphore(1, 1);
 
         public MainForm()
         {
@@ -113,7 +116,7 @@ namespace osu_trainer
             BeatmapUpdateTimer.Stop();
 
             // main phase
-            ModifyBeatmapTiming(newBeatmap, bpmMultiplier);
+            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier);
             ModifyBeatmapMetadata(newBeatmap, bpmMultiplier);
             if (!File.Exists(GetBeatmapDirectoryName() + "\\" + newBeatmap.AudioFilename))
                 await Task.Run(() => SongSpeedChanger.GenerateAudioFile(originalBeatmap, newBeatmap, bpmMultiplier));
@@ -132,7 +135,8 @@ namespace osu_trainer
             newBeatmap.Version = originalBeatmap.Version;
         }
 
-        private void ModifyBeatmapTiming(Beatmap map, float multiplier)
+        // this function must be able to be called multiple times without messing up the map
+        private void ModifyBeatmapTiming(Beatmap originalMap, Beatmap newMap, float multiplier)
         {
             if (multiplier == 1)
                 return;
@@ -141,39 +145,72 @@ namespace osu_trainer
             // OUT: tp.BpmDelay          for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
-            foreach (TimingPoint timingPoint in map.TimingPoints)
+            for (int i = 0; i < originalMap.TimingPoints.Count; i++)
             {
-                if (timingPoint.InheritsBPM == false)
+                var originalTimingPoint = originalMap.TimingPoints[i];
+                var newTimingPoint = newMap.TimingPoints[i];
+                if (originalTimingPoint.InheritsBPM == false)
                 {
-                    float oldBpm = 60000 / timingPoint.BpmDelay;
+                    float oldBpm = 60000 / originalTimingPoint.BpmDelay;
                     float newBpm = oldBpm * multiplier;
                     float newDelay = 60000 / newBpm;
-                    timingPoint.BpmDelay = newDelay;
-                    timingPoint.Time = (int)(timingPoint.Time / multiplier);
+                    newTimingPoint.BpmDelay = newDelay;
+                    newTimingPoint.Time = (int)(originalTimingPoint.Time / multiplier);
                 }
                 else
                 {
-                    timingPoint.Time = (int)(timingPoint.Time / multiplier);
+                    newTimingPoint.Time = (int)(originalTimingPoint.Time / multiplier);
                 }
             }
+            //foreach (TimingPoint timingPoint in newMap.TimingPoints)
+            //{
+            //    if (timingPoint.InheritsBPM == false)
+            //    {
+            //        float oldBpm = 60000 / timingPoint.BpmDelay;
+            //        float newBpm = oldBpm * multiplier;
+            //        float newDelay = 60000 / newBpm;
+            //        timingPoint.BpmDelay = newDelay;
+            //        timingPoint.Time = (int)(timingPoint.Time / multiplier);
+            //    }
+            //    else
+            //    {
+            //        timingPoint.Time = (int)(timingPoint.Time / multiplier);
+            //    }
+            //}
 
             // OUT: event.StartTime      for each event in beatmap
             // OUT: event.EndTime        for each break event in beatmap
-            foreach (EventBase e in map.Events)
+            for (int i = 0; i < originalMap.Events.Count; i++)
             {
-                e.StartTime = (int)(e.StartTime / multiplier);
-                if (e.GetType() == typeof(BreakEvent))
-                    ((BreakEvent)e).EndTime = (int)(((BreakEvent)e).EndTime / multiplier);
+                var originalEvent = originalMap.Events[i];
+                var newEvent = newMap.Events[i];
+                newEvent.StartTime = (int)(originalEvent.StartTime / multiplier);
+                if (originalEvent.GetType() == typeof(BreakEvent))
+                    ((BreakEvent)newEvent).EndTime = (int)(((BreakEvent)originalEvent).EndTime / multiplier);
             }
+            //foreach (EventBase e in newMap.Events)
+            //{
+            //    e.StartTime = (int)(e.StartTime / multiplier);
+            //    if (e.GetType() == typeof(BreakEvent))
+            //        ((BreakEvent)e).EndTime = (int)(((BreakEvent)e).EndTime / multiplier);
+            //}
 
             // OUT: hitobject.StartTime         for each hit object in beatmap
             // OUT: hitobject.EndTime           for each spinner in beatmap
-            foreach (CircleObject hitobject in map.HitObjects)
+            for (int i = 0; i < originalMap.HitObjects.Count; i++)
             {
-                hitobject.StartTime = (int)(hitobject.StartTime / multiplier);
-                if (hitobject.GetType() == typeof(SpinnerObject))
-                    ((SpinnerObject)hitobject).EndTime = (int)(((SpinnerObject)hitobject).EndTime / multiplier);
+                var originalObject = originalMap.HitObjects[i];
+                var newObject = newMap.HitObjects[i];
+                newObject.StartTime = (int)(originalObject.StartTime / multiplier);
+                if (originalObject.GetType() == typeof(SpinnerObject))
+                    ((SpinnerObject)newObject).EndTime = (int)(((SpinnerObject)originalObject).EndTime / multiplier);
             }
+            //foreach (CircleObject hitobject in newMap.HitObjects)
+            //{
+            //    hitobject.StartTime = (int)(hitobject.StartTime / multiplier);
+            //    if (hitobject.GetType() == typeof(SpinnerObject))
+            //        ((SpinnerObject)hitobject).EndTime = (int)(((SpinnerObject)hitobject).EndTime / multiplier);
+            //}
         }
         // OUT: beatmap.Version
         // OUT: beatmap.Filename
@@ -208,10 +245,6 @@ namespace osu_trainer
             map.Tags.Add("osutrainer");
         }
 
-        private static string getTempFilename(string ext)
-        {
-            return Path.GetTempPath() + Guid.NewGuid() + '.' + ext;
-        }
         public static string NormalizeText(string str)
         {
             return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
@@ -227,8 +260,10 @@ namespace osu_trainer
             {
                 newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier);
             }
+            // apply changes to objects
+            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier);
             // always need to update new bpm display
-            BeatmapChanged();
+            BeatmapChanged(bpmChanged: true);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -256,7 +291,9 @@ namespace osu_trainer
             }
             // Check if beatmap was loaded successfully
             if (test.Filename == null && test.Title == null)
+            {
                 return false;
+            }
 
             // Check if this map was generated by osu-trainer
             if (test.Tags.Contains("osutrainer"))
@@ -286,6 +323,7 @@ namespace osu_trainer
             pureBeatmap = null;
             originalBeatmap = new Beatmap(test.Filename);
             newBeatmap = new Beatmap(test.Filename);
+            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier); // for diffcalc
 
             // Apply locked settings
             if (HPLockCheck.Checked)
@@ -301,10 +339,10 @@ namespace osu_trainer
 
             // Update shit from top to bottom
             EnableFormControls();
+            BeatmapChanged(newBeatmapLoaded: true);
             UpdateSongBg(newBeatmap);
             SongLabel.Text = $"{newBeatmap.Artist} - {newBeatmap.Title}";
             DiffLabel.Text = newBeatmap.Version;
-            BeatmapChanged();
 
             return true;
         }
@@ -412,7 +450,6 @@ namespace osu_trainer
             {
                 EnableTextbox(display);
             }
-            BeatmapChanged();
             foreach (var slider in diffSliders)
             {
                 slider.Enabled = true;
@@ -455,7 +492,9 @@ namespace osu_trainer
             GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Regular);
             GenerateMapButton.Enabled = false;
         }
-        private void BeatmapChanged()
+
+        // making this async seems to be causing a lot of headaches...
+        private async void BeatmapChanged(bool bpmChanged = false, bool csChanged = false, bool newBeatmapLoaded = false)
         {
             // HP
             HPDisplay.Text = newBeatmap.HPDrainRate.ToString();
@@ -533,6 +572,22 @@ namespace osu_trainer
                 ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
             }
 
+            // Star Rating
+            if ((bpmChanged || csChanged || newBeatmapLoaded) && diffCalcReady)
+            {
+                diffCalcReady = false;
+                DiffCalcCooldown.Start();
+                try
+                {
+                    StarLabel.Text = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap).ToString("0.00") + " ☆");
+                }
+                catch (NullReferenceException e) {
+                    // just do nothing, wait for next chance to recalculate difficulty
+                    Console.WriteLine(e);
+                    Console.WriteLine("lol asdfasdf;lkjasdf");
+                }
+            }
+
             UpdateBpmDisplay();
         }
         private void UpdateBpmDisplay()
@@ -594,47 +649,70 @@ namespace osu_trainer
         #region Event Handlers
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
+            emlSemaphore.WaitOne();
             // Try to get osu install folder
-            if (userOsuInstallPath == null)
+            if (userSongsFolder == null)
             {
                 // check if osu process is running
                 var processes = Process.GetProcessesByName("osu!");
                 if (processes.Length == 0)
+                {
                     return;
+                }
 
                 // check if osu exe exists
                 var osuExePath = processes[0].MainModule.FileName;
                 if (!File.Exists(osuExePath))
+                {
                     return;
+                }
 
                 // set path
-                userOsuInstallPath = Path.GetDirectoryName(osuExePath);
+                userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
             }
 
             // Read memory for current map
             string beatmapFolder = osu.GetMapFolderName();
             string beatmapFilename = osu.GetOsuFileName();
-            string absoluteFilename = userOsuInstallPath + "\\Songs\\" + beatmapFolder + "\\" + beatmapFilename;
 
             // Invalid read
             if (beatmapFilename == "")
+            {
+                emlSemaphore.Release();
                 return;
+            }
 
             // Beatmap name hasn't changed since last read
             if (previousBeatmapRead != null && previousBeatmapRead == beatmapFilename)
+            {
+                emlSemaphore.Release();
                 return;
+            }
             previousBeatmapRead = beatmapFilename;
+
+            string absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+            if (!File.Exists(absoluteFilename))
+            {
+                // TODO: Instruct user to point to their songs folder
+                // Could not find Songs folder.
+                // This normally happens when your Songs folder is located somewhere outside your osu install folder.
+                // Please show me where your Songs folder is.
+            }
 
             // No beatmap currently loaded
             if (originalBeatmap == null)
             {
                 LoadBeatmap(absoluteFilename);
+                emlSemaphore.Release();
                 return;
             }
 
             // Beatmap Changed
             if (beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
+            {
                 LoadBeatmap(absoluteFilename);
+            }
+            emlSemaphore.Release();
         }
 
         private void HPSlider_ValueChanged(object sender, EventArgs e)
@@ -648,7 +726,7 @@ namespace osu_trainer
         private void CSSlider_ValueChanged(object sender, EventArgs e)
         {
             newBeatmap.CircleSize = (float)CSSlider.Value;
-            BeatmapChanged();
+            BeatmapChanged(csChanged: true);
             if (CSLockCheck.Checked)
                 lockedCS = (float)CSSlider.Value;
         }
@@ -737,5 +815,11 @@ namespace osu_trainer
             }
         }
         #endregion
+
+        private void DiffCalcCooldown_Tick(object sender, EventArgs e)
+        {
+            diffCalcReady = true;
+            DiffCalcCooldown.Stop();
+        }
     }
 }

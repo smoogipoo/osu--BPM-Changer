@@ -43,6 +43,9 @@
     <ApplicationIcon>resources\oof.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.12.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="osu!BMAPI">
       <HintPath>BMAPI\obj\Debug\osu!BMAPI.dll</HintPath>
     </Reference>
@@ -82,9 +85,13 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="packages.config" />
     <None Include="Properties\DataSources\MainForm.datasource" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="oppai\oppai.exe">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="resources\match-confirm.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
