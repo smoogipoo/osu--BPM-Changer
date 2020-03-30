@@ -214,6 +214,7 @@
             this.ScaleARCheck.TabIndex = 19;
             this.ScaleARCheck.Text = "Scale AR";
             this.ScaleARCheck.UseVisualStyleBackColor = true;
+            this.ScaleARCheck.CheckedChanged += new System.EventHandler(this.ScaleARCheck_CheckedChanged);
             // 
             // BpmMultiplierUpDown
             // 

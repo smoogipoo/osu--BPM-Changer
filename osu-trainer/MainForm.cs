@@ -648,11 +648,16 @@ namespace osu_trainer
             if (ARLockCheck.Checked)
             {
                 ScaleARCheck.Checked = false;
+                ScaleARCheck.ForeColor = SystemColors.ControlDark;
                 EnableTextCheckbox(ARLockCheck);
                 lockedAR = (float)ARSlider.Value;
             }
             else
+            {
+                ScaleARCheck.Enabled = true;
+                ScaleARCheck.ForeColor = accentCyan;
                 DisableTextCheckbox(ARLockCheck);
+            }
         }
         private void ODLockCheck_CheckedChanged(object sender, EventArgs e)
         {
@@ -665,5 +670,20 @@ namespace osu_trainer
                 DisableTextCheckbox(ODLockCheck);
         }
         #endregion
+
+        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            if (ARLockCheck.Checked)
+            {
+                // negate input
+                ScaleARCheck.Checked = false;
+                return;
+            }
+            if (ScaleARCheck.Checked)
+            {
+                newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier);
+                BeatmapChanged();
+            }
+        }
     }
 }
