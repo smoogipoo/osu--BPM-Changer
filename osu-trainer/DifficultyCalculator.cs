@@ -10,7 +10,7 @@ namespace osu_trainer
     class DifficultyCalculator
     {
         // AR modifications: HR, DT, DTHR, BpmMultiplier
-        public static float CalculateNewAR(Beatmap map, float BpmMultiplier, int? mods = null)
+        public static float CalculateMultipliedAR(Beatmap map, float BpmMultiplier)
         {
             float newbpmMs = ApproachRateToMs(map.ApproachRate) / BpmMultiplier;
             float newbpmAR = MsToApproachRate(newbpmMs);

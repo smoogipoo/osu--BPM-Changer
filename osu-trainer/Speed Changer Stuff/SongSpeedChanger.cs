@@ -12,11 +12,12 @@ namespace osu_trainer
     class SongSpeedChanger
     {
         // TODO: do we need all these steps? can we do something to improve performance?
-        // TODO: do not save beatmap here, just generate .mp3. Assign new mp3 name outside of this function
-        public static void GenerateMap(Beatmap map, double multiplier)
+        // This function creates newMap.AudioFilename, assuming it does not exist yet.
+        // This function uses originalMap to determine the input audio file to process
+        public static void GenerateAudioFile(Beatmap originalMap, Beatmap newMap, double multiplier)
         {
             if (multiplier == 1)
-                return;
+                throw new ArgumentException("Don't call this function if multiplier is 1.0x");
             //temp1: Audio copy
             //temp2: Decoded wav
             //temp3: stretched file
@@ -27,9 +28,7 @@ namespace osu_trainer
             string temp4 = getTempFilename("mp3");
 
             // TODO: try catch
-            CopyFile(map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + map.AudioFilename, temp1);
-
-            map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + NormalizeText(map.Version) + ".mp3";
+            CopyFile(originalMap.Filename.Substring(0, originalMap.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + originalMap.AudioFilename, temp1);
 
             // lame.exe
             Process lame1 = new Process();
@@ -58,14 +57,9 @@ namespace osu_trainer
             lame2.Start();
             lame2.WaitForExit();
 
-            CopyFile(temp4, map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture)) + "\\" + map.AudioFilename);
+            CopyFile(temp4, Path.GetDirectoryName(newMap.Filename) + "\\" + newMap.AudioFilename);
 
-            Console.ForegroundColor = ConsoleColor.Green;
-            Console.WriteLine("Saving beatmap...");
-            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + NormalizeText(map.Artist) + " - " + NormalizeText(map.Title) + " (" + NormalizeText(map.Creator) + ")" + " [" + NormalizeText(map.Version) + "].osu";
-            map.Save(map.Filename);
-
-            Console.WriteLine("Cleaning up...");
+            // Clean up
             File.Delete(temp1);
             File.Delete(temp2);
             File.Delete(temp3);
