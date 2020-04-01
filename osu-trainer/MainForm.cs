@@ -593,7 +593,7 @@ namespace osu_trainer
         private void UpdateBpmDisplay()
         {
             var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
-            var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm * bpmMultiplier)).ToList();
+            var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
 
             if (new HashSet<int>(originalBpms).Count == 1)
             {
