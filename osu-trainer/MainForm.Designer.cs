@@ -226,7 +226,7 @@
             this.ScaleARCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ScaleARCheck.Font = new System.Drawing.Font("Carlito", 8.25F);
             this.ScaleARCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
-            this.ScaleARCheck.Location = new System.Drawing.Point(191, 10);
+            this.ScaleARCheck.Location = new System.Drawing.Point(191, 9);
             this.ScaleARCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ScaleARCheck.Name = "ScaleARCheck";
             this.ScaleARCheck.Size = new System.Drawing.Size(54, 23);

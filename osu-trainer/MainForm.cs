@@ -64,7 +64,10 @@ namespace osu_trainer
         private bool scaleARPreviousState;
         private string previousBeatmapRead;
         private bool diffCalcReady = true;
-        bool busyUpdatingBeatmap = false;
+        private bool busyUpdatingBeatmap = false;
+        private int beatmapFindFailCounter = 0;
+
+        
 
         public MainForm()
         {
@@ -399,42 +402,42 @@ namespace osu_trainer
                 return;
             previousBeatmapRead = beatmapFilename;
 
+            // Try to locate the beatmap
             string absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
             if (!File.Exists(absoluteFilename))
             {
-                string msg = "For some reason I couldn't find this beatmap in your Songs folder. ";
-                msg += "Maybe your Songs folder is in a different place than where I think it is." + Environment.NewLine;
-                msg += "Please select your osu! Songs folder in the next window.";
-                MessageBox.Show(msg);
-                using (var folderDialog = new OpenFileDialog())
+                Console.WriteLine(beatmapFindFailCounter + 1);
+                if (++beatmapFindFailCounter == 10)
                 {
-                    folderDialog.Title = "Select your osu! installation folder";
-                    folderDialog.ValidateNames = false;
-                    folderDialog.CheckFileExists = false;
-                    folderDialog.CheckPathExists = true;
-                    folderDialog.FileName = "Select Folder";
-                    if (folderDialog.ShowDialog() != DialogResult.OK)
-                        return;
+                    string msg = "Automatic beatmap detection failed 10 times in a row. ";
+                    msg += "Your songs folder is probably somewhere else. ";
+                    msg += "Please manually select your Songs folder in the next window.";
+                    MessageBox.Show(msg, "Having trouble finding your beatmaps...", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                    using (var folderDialog = new OpenFileDialog())
+                    {
+                        folderDialog.Title = "Select your osu! installation folder";
+                        folderDialog.ValidateNames = false;
+                        folderDialog.CheckFileExists = false;
+                        folderDialog.CheckPathExists = true;
+                        folderDialog.FileName = "Select Folder";
+                        if (folderDialog.ShowDialog() != DialogResult.OK)
+                            return;
 
-                    userSongsFolder = Path.GetDirectoryName(folderDialog.FileName);
-                    Properties.Settings.Default.SongsFolder = userSongsFolder;
-                    Properties.Settings.Default.Save();
-                    // try again
-                    absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
-                    if (!File.Exists(absoluteFilename))
-                        return;
+                        userSongsFolder = Path.GetDirectoryName(folderDialog.FileName);
+                        Properties.Settings.Default.SongsFolder = userSongsFolder;
+                        Properties.Settings.Default.Save();
+                        // try again
+                        absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+                        if (!File.Exists(absoluteFilename))
+                            return;
+                    }
                 }
-            }
-
-            // No beatmap currently loaded
-            if (originalBeatmap == null)
-            {
-                LoadBeatmap(absoluteFilename);
                 return;
             }
+            beatmapFindFailCounter = 0;
 
-            // Beatmap Changed
-            if (beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
+            // No beatmap currently loaded, or beatmap changed
+            if (originalBeatmap == null || beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
                 LoadBeatmap(absoluteFilename);
         }
 
