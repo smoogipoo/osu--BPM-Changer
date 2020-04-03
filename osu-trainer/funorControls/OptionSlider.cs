@@ -59,7 +59,7 @@ namespace osu_trainer
             get => value;
             set
             {
-                this.value = value;
+                this.value = Helper.Clamp(value, MinValue, MaxValue);
                 Invalidate();
             }
         }
@@ -313,7 +313,6 @@ namespace osu_trainer
             Invalidate();
             base.OnMouseMove(e);
         }
-
         protected override void OnMouseDown(MouseEventArgs e)
         {
             if (!Enabled)
@@ -332,6 +331,17 @@ namespace osu_trainer
             dragging = false;
             nippleCurrentDiameter = NippleDiameter;
             Invalidate();
+        }
+
+        protected override void OnMouseWheel(MouseEventArgs e)
+        {
+            if (!Enabled)
+                return;
+            if (e.Delta > 0)
+                Value = Helper.Clamp(Value + Increment, MinValue, MaxValue);
+            if (e.Delta < 0)
+                Value = Helper.Clamp(Value - Increment, MinValue, MaxValue);
+            onValueChanged?.Invoke(this, e);
         }
         #endregion
 
