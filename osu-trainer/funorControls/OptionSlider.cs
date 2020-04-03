@@ -116,7 +116,7 @@ namespace osu_trainer
         private Color nippleColor;
         [
         Category("Appearance"),
-        Description("Sets the color of the Nipple.")
+        Description("Sets the stroke color of the Nipple.")
         ]
         public Color NippleColor
         {
@@ -124,6 +124,22 @@ namespace osu_trainer
             set
             {
                 nippleColor = value;
+                Invalidate();
+            }
+        }
+
+
+        private Color nippleIdleColor;
+        [
+        Category("Appearance"),
+        Description("Sets the stroke color of the Nipple when idle.")
+        ]
+        public Color NippleIdleColor
+        {
+            get => nippleIdleColor;
+            set 
+            {
+                nippleIdleColor = value;
                 Invalidate();
             }
         }
@@ -258,6 +274,8 @@ namespace osu_trainer
             bodyPen.EndCap = LineCap.Round;
             var nippleBrush = new SolidBrush(NippleColor);
             var nipplePen = new Pen(nippleBrush, NippleStrokeWidth);
+
+            var nippleIdlePen = new Pen(NippleIdleColor, NippleStrokeWidth);
             var backBrush = new SolidBrush(BackColor);
 
             // size and position
@@ -269,9 +287,9 @@ namespace osu_trainer
             g.DrawLine(bodyPen, GetStartX(), centerY, GetEndX(), centerY);
             if (!Enabled)
                 return;
-            bool fill = dragging ? FillDraggingNipple : FillNipple;
+            bool fill = dragging ? true : FillNipple;
             g.FillEllipse(fill ? nippleBrush : backBrush, GetNippleRect());
-            g.DrawEllipse(nipplePen, GetNippleRect());
+            g.DrawEllipse(expanded ? nipplePen : nippleIdlePen, GetNippleRect());
         }
 
         protected override void OnMouseMove(MouseEventArgs e)

@@ -144,7 +144,7 @@ namespace osu_trainer
             newBeatmap.Version = originalBeatmap.Version;
         }
 
-        // this function can safely be called repeatedly
+        // it is safe to call this function repeatedly
         private void ModifyBeatmapTiming(Beatmap originalMap, Beatmap newMap, float multiplier)
         {
             if (multiplier == 1)
@@ -369,6 +369,7 @@ namespace osu_trainer
             UpdateSongBg(newBeatmap);
             SongLabel.Text = TruncateLabelText($"{newBeatmap.Artist} - {newBeatmap.Title}", SongLabel);
             DiffLabel.Text = TruncateLabelText(newBeatmap.Version, DiffLabel);
+            GetDominantBpm(newBeatmap);
             return;
         }
         private string TruncateLabelText(string txt, Label label)
@@ -490,6 +491,70 @@ namespace osu_trainer
             int panDown = (bmpImage.Height - cropHeight) / 3;
             // crop and pan via cloning
             return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
+        }
+
+        private float GetDominantBpm(Beatmap map)
+        {
+            var bpms = GetBpmList(map);
+            if (bpms.Count == 1)
+                return bpms[0];
+            // store bpm => prominence (as in, how long that bpm is active in the map)
+            float previousTime = 0;
+            float previousBpm = 0;
+            var bpmTimingPoints = map.TimingPoints.Where(tp => !tp.InheritsBPM).ToList();
+            var bpmProminenceValues = new Dictionary<float, float>();
+
+            for (int i = 0; i < bpmTimingPoints.Count; i++)
+            {
+                var tp = bpmTimingPoints[i];
+                var currentBpm = 60000 / tp.BpmDelay;
+                var currentTime = tp.Time;
+                // case: first timing point
+                if (i == 0)
+                {
+                    previousBpm = currentBpm;
+                    previousTime = currentTime;
+                }
+                // case: middle timing point
+                else if (i < bpmTimingPoints.Count - 1)
+                {
+                    if (!bpmProminenceValues.ContainsKey(previousBpm))
+                        bpmProminenceValues.Add(previousBpm, 0);
+                    float duration = currentTime - previousTime;
+                    bpmProminenceValues[previousBpm] += duration;
+
+                    previousBpm = currentBpm;
+                    previousTime = currentTime;
+                }
+                // case: last timing point
+                else if (i == bpmTimingPoints.Count - 1)
+                {
+                    if (!bpmProminenceValues.ContainsKey(previousBpm))
+                        bpmProminenceValues.Add(previousBpm, 0);
+                    float duration = currentTime - previousTime;
+                    bpmProminenceValues[previousBpm] += duration;
+
+                    // jump ahead in time to last hit object in map
+                    if (!bpmProminenceValues.ContainsKey(currentBpm))
+                        bpmProminenceValues.Add(currentBpm, 0);
+                    float finalTime = map.HitObjects.Last().StartTime;
+                    bpmProminenceValues[currentBpm] += finalTime - currentTime;
+                }
+            }
+            var lines = bpmProminenceValues.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
+            Console.WriteLine(string.Join(Environment.NewLine, lines));
+
+            float candidateBpm = 0;
+            float maxProminence = float.MinValue;
+            foreach (KeyValuePair<float, float> entry in bpmProminenceValues)
+            {
+                if (entry.Value > maxProminence)
+                {
+                    candidateBpm = entry.Key;
+                    maxProminence = entry.Value;
+                }
+            }
+            return candidateBpm;
         }
 
         private List<float> GetBpmList(Beatmap map)
@@ -764,22 +829,23 @@ namespace osu_trainer
             var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
             var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
 
-            if (bpmMultiplier > 1)
-                NewBpmTextBox.ForeColor = accentRed;
-            else if (bpmMultiplier < 1)
-                NewBpmTextBox.ForeColor = easierColor;
-            else
-                NewBpmTextBox.ForeColor = textBoxFg;
+            NewBpmTextBox.ForeColor = (bpmMultiplier > 1) ? accentRed : (bpmMultiplier < 1) ? easierColor : textBoxFg;
 
-            if (new HashSet<int>(originalBpms).Count == 1)
+            OriginalBpmTextBox.Text = GetDominantBpm(originalBeatmap).ToString("0");
+            NewBpmTextBox.Text = GetDominantBpm(newBeatmap).ToString("0");
+            if (GetBpmList(originalBeatmap).Distinct().ToList().Count > 1)
             {
-                OriginalBpmTextBox.Text = originalBpms[0].ToString();
-                NewBpmTextBox.Text = newBpms[0].ToString();
-                return;
-            }
+                var oldbpms = GetBpmList(originalBeatmap);
+                float oldmin = oldbpms.Min();
+                float oldmax = oldbpms.Max();
+                OriginalBpmTextBox.Text += $" ({oldmin.ToString("0")} - {oldmax.ToString("0")})";
 
-            OriginalBpmTextBox.Text = string.Join(" ... ", originalBpms);
-            NewBpmTextBox.Text = string.Join(" ... ", newBpms);
+                var newbpms = GetBpmList(newBeatmap);
+                float newmin = newbpms.Min();
+                float newmax = newbpms.Max();
+                NewBpmTextBox.Text += $" ({newmin.ToString("0")} - {newmax.ToString("0")})";
+            }
+            return;
         }
         private void DisableTextbox(TextBox textbox)
         {
