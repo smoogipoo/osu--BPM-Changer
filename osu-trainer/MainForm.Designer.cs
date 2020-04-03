@@ -42,7 +42,6 @@
             this.Panel3 = new System.Windows.Forms.Panel();
             this.StarLabel = new System.Windows.Forms.Label();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ODLockCheck = new System.Windows.Forms.CheckBox();
@@ -50,16 +49,12 @@
             this.CSLockCheck = new System.Windows.Forms.CheckBox();
             this.odlabel = new System.Windows.Forms.Label();
             this.ODDisplay = new System.Windows.Forms.TextBox();
-            this.ODSlider = new osu_trainer.OptionSlider();
             this.arlabel = new System.Windows.Forms.Label();
             this.ARDisplay = new System.Windows.Forms.TextBox();
-            this.ARSlider = new osu_trainer.OptionSlider();
             this.cslabel = new System.Windows.Forms.Label();
             this.CSDisplay = new System.Windows.Forms.TextBox();
-            this.CSSlider = new osu_trainer.OptionSlider();
             this.hplabel = new System.Windows.Forms.Label();
             this.HPDisplay = new System.Windows.Forms.TextBox();
-            this.HPSlider = new osu_trainer.OptionSlider();
             this.HPLockCheck = new System.Windows.Forms.CheckBox();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
@@ -68,16 +63,21 @@
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
             this.DiffCalcCooldown = new System.Windows.Forms.Timer(this.components);
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
+            this.ODSlider = new osu_trainer.OptionSlider();
+            this.ARSlider = new osu_trainer.OptionSlider();
+            this.CSSlider = new osu_trainer.OptionSlider();
+            this.HPSlider = new osu_trainer.OptionSlider();
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -214,55 +214,26 @@
             // 
             // ScaleARCheck
             // 
+            this.ScaleARCheck.Appearance = System.Windows.Forms.Appearance.Button;
             this.ScaleARCheck.AutoSize = true;
+            this.ScaleARCheck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.ScaleARCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
             this.ScaleARCheck.Checked = true;
             this.ScaleARCheck.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.ScaleARCheck.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ScaleARCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
+            this.ScaleARCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.ScaleARCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.ScaleARCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ScaleARCheck.Font = new System.Drawing.Font("Carlito", 8.25F);
             this.ScaleARCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
             this.ScaleARCheck.Location = new System.Drawing.Point(191, 10);
             this.ScaleARCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ScaleARCheck.Name = "ScaleARCheck";
-            this.ScaleARCheck.Size = new System.Drawing.Size(77, 20);
+            this.ScaleARCheck.Size = new System.Drawing.Size(54, 23);
             this.ScaleARCheck.TabIndex = 19;
             this.ScaleARCheck.Text = "Scale AR";
-            this.ScaleARCheck.UseVisualStyleBackColor = true;
+            this.ScaleARCheck.UseVisualStyleBackColor = false;
             this.ScaleARCheck.CheckedChanged += new System.EventHandler(this.ScaleARCheck_CheckedChanged);
-            // 
-            // BpmMultiplierUpDown
-            // 
-            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.BpmMultiplierUpDown.DecimalPlaces = 2;
-            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
-            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
-            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
-            this.BpmMultiplierUpDown.TabIndex = 4;
-            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
             // 
             // Middle1Panel
             // 
@@ -398,43 +369,6 @@
             this.ODDisplay.Text = "0.0";
             this.ODDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // ODSlider
-            // 
-            this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.ODSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ODSlider.FillDraggingNipple = false;
-            this.ODSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ODSlider.Location = new System.Drawing.Point(89, 90);
-            this.ODSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ODSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ODSlider.Name = "ODSlider";
-            this.ODSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.ODSlider.NippleDiameter = 15;
-            this.ODSlider.NippleExpandedDiameter = 20;
-            this.ODSlider.NippleStrokeWidth = 2;
-            this.ODSlider.Size = new System.Drawing.Size(263, 23);
-            this.ODSlider.TabIndex = 11;
-            this.ODSlider.Text = "HPSlider";
-            this.ODSlider.Thickness = 4;
-            this.ODSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
-            // 
             // arlabel
             // 
             this.arlabel.AutoSize = true;
@@ -462,43 +396,6 @@
             this.ARDisplay.TabIndex = 7;
             this.ARDisplay.Text = "0.0";
             this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // ARSlider
-            // 
-            this.ARSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.ARSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ARSlider.FillDraggingNipple = false;
-            this.ARSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ARSlider.Location = new System.Drawing.Point(89, 61);
-            this.ARSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ARSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ARSlider.Name = "ARSlider";
-            this.ARSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.ARSlider.NippleDiameter = 15;
-            this.ARSlider.NippleExpandedDiameter = 20;
-            this.ARSlider.NippleStrokeWidth = 2;
-            this.ARSlider.Size = new System.Drawing.Size(263, 23);
-            this.ARSlider.TabIndex = 8;
-            this.ARSlider.Text = "HPSlider";
-            this.ARSlider.Thickness = 4;
-            this.ARSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
             // 
             // cslabel
             // 
@@ -528,43 +425,6 @@
             this.CSDisplay.Text = "0.0";
             this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // CSSlider
-            // 
-            this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.CSSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CSSlider.FillDraggingNipple = false;
-            this.CSSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.CSSlider.Location = new System.Drawing.Point(89, 32);
-            this.CSSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.CSSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CSSlider.Name = "CSSlider";
-            this.CSSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.CSSlider.NippleDiameter = 15;
-            this.CSSlider.NippleExpandedDiameter = 20;
-            this.CSSlider.NippleStrokeWidth = 2;
-            this.CSSlider.Size = new System.Drawing.Size(263, 23);
-            this.CSSlider.TabIndex = 5;
-            this.CSSlider.Text = "HPSlider";
-            this.CSSlider.Thickness = 4;
-            this.CSSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
-            // 
             // hplabel
             // 
             this.hplabel.AutoSize = true;
@@ -593,43 +453,6 @@
             this.HPDisplay.TabIndex = 1;
             this.HPDisplay.Text = "0.0";
             this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // HPSlider
-            // 
-            this.HPSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.HPSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.HPSlider.FillDraggingNipple = false;
-            this.HPSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.HPSlider.Location = new System.Drawing.Point(89, 3);
-            this.HPSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.HPSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.HPSlider.Name = "HPSlider";
-            this.HPSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.HPSlider.NippleDiameter = 15;
-            this.HPSlider.NippleExpandedDiameter = 20;
-            this.HPSlider.NippleStrokeWidth = 2;
-            this.HPSlider.Size = new System.Drawing.Size(263, 23);
-            this.HPSlider.TabIndex = 2;
-            this.HPSlider.Text = "HPSlider";
-            this.HPSlider.Thickness = 4;
-            this.HPSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
             // 
             // HPLockCheck
             // 
@@ -729,6 +552,189 @@
             // 
             this.DiffCalcCooldown.Tick += new System.EventHandler(this.DiffCalcCooldown_Tick);
             // 
+            // BpmMultiplierUpDown
+            // 
+            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BpmMultiplierUpDown.DecimalPlaces = 2;
+            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
+            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
+            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
+            this.BpmMultiplierUpDown.TabIndex = 4;
+            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
+            // 
+            // ODSlider
+            // 
+            this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.ODSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ODSlider.FillDraggingNipple = false;
+            this.ODSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ODSlider.Location = new System.Drawing.Point(89, 90);
+            this.ODSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ODSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ODSlider.Name = "ODSlider";
+            this.ODSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.ODSlider.NippleDiameter = 15;
+            this.ODSlider.NippleExpandedDiameter = 20;
+            this.ODSlider.NippleStrokeWidth = 2;
+            this.ODSlider.Size = new System.Drawing.Size(263, 23);
+            this.ODSlider.TabIndex = 11;
+            this.ODSlider.Text = "HPSlider";
+            this.ODSlider.Thickness = 4;
+            this.ODSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
+            // 
+            // ARSlider
+            // 
+            this.ARSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.ARSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ARSlider.FillDraggingNipple = false;
+            this.ARSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ARSlider.Location = new System.Drawing.Point(89, 61);
+            this.ARSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ARSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ARSlider.Name = "ARSlider";
+            this.ARSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.ARSlider.NippleDiameter = 15;
+            this.ARSlider.NippleExpandedDiameter = 20;
+            this.ARSlider.NippleStrokeWidth = 2;
+            this.ARSlider.Size = new System.Drawing.Size(263, 23);
+            this.ARSlider.TabIndex = 8;
+            this.ARSlider.Text = "HPSlider";
+            this.ARSlider.Thickness = 4;
+            this.ARSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
+            // 
+            // CSSlider
+            // 
+            this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.CSSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CSSlider.FillDraggingNipple = false;
+            this.CSSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CSSlider.Location = new System.Drawing.Point(89, 32);
+            this.CSSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CSSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CSSlider.Name = "CSSlider";
+            this.CSSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.CSSlider.NippleDiameter = 15;
+            this.CSSlider.NippleExpandedDiameter = 20;
+            this.CSSlider.NippleStrokeWidth = 2;
+            this.CSSlider.Size = new System.Drawing.Size(263, 23);
+            this.CSSlider.TabIndex = 5;
+            this.CSSlider.Text = "HPSlider";
+            this.CSSlider.Thickness = 4;
+            this.CSSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
+            // 
+            // HPSlider
+            // 
+            this.HPSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.HPSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.HPSlider.FillDraggingNipple = false;
+            this.HPSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.HPSlider.Location = new System.Drawing.Point(89, 3);
+            this.HPSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.HPSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.HPSlider.Name = "HPSlider";
+            this.HPSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.HPSlider.NippleDiameter = 15;
+            this.HPSlider.NippleExpandedDiameter = 20;
+            this.HPSlider.NippleStrokeWidth = 2;
+            this.HPSlider.Size = new System.Drawing.Size(263, 23);
+            this.HPSlider.TabIndex = 2;
+            this.HPSlider.Text = "HPSlider";
+            this.HPSlider.Thickness = 4;
+            this.HPSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
@@ -751,7 +757,6 @@
             this.panel2.ResumeLayout(false);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
@@ -761,6 +766,7 @@
             this.TopPanel.PerformLayout();
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
