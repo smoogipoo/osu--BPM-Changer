@@ -25,6 +25,8 @@ namespace osu_trainer
     {
         // File Resources
         string matchConfirmWav = "resources\\match-confirm.wav";
+        string nobgpng = "resources\\nobg.png";
+        static Image nobg;
 
         // Beatmap
         string userSongsFolder = null;
@@ -45,12 +47,15 @@ namespace osu_trainer
         Color labelColor1 = Color.FromArgb(249, 126, 114);
         Color labelColor2 = Color.FromArgb(254, 222, 93);
         Color labelDisabledColor = Color.FromArgb(136, 134, 144);
-        Color accentPink = Color.FromArgb(255, 126, 219);
+        Color accentPink = Color.FromArgb(243, 114, 185);
         Color accentBlue = Color.FromArgb(46, 226, 250);
         Color accentOrange = Color.FromArgb(246, 122, 44);
         Color accentRed = Color.FromArgb(254, 68, 80);
         Color accentCyan = Color.FromArgb(46, 226, 250);
         Color easierColor = Color.FromArgb(114, 241, 184);
+        Color aimColor = Color.FromArgb(255, 133, 201);
+        Color speedColor = Color.FromArgb(114, 241, 184);
+        Color starsColor = Color.FromArgb(225, 132, 65);
 
         // Common Control Lists
         List<Label> labels;
@@ -72,6 +77,8 @@ namespace osu_trainer
         {
             InitializeComponent();
             InitializeControlLists();
+
+            nobg = Image.FromFile(nobgpng);
 
             // Init osu memory reader
             osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
@@ -337,7 +344,7 @@ namespace osu_trainer
                 UpdateSongBg(newBeatmap);
                 SongLabel.Visible = true;
                 SongLabel.ForeColor = labelColor2;
-                SongLabel.Text = $"{newBeatmap.Artist} - {newBeatmap.Title}";
+                SongLabel.Text = TruncateLabelText($"{newBeatmap.Artist} - {newBeatmap.Title}", SongLabel);
                 DiffLabel.Visible = true;
                 DiffLabel.ForeColor = accentRed;
                 DiffLabel.Text = $"not osu!std";
@@ -360,9 +367,21 @@ namespace osu_trainer
             EnableFormControls();
             BeatmapChanged(newBeatmapLoaded: true);
             UpdateSongBg(newBeatmap);
-            SongLabel.Text = $"{newBeatmap.Artist} - {newBeatmap.Title}";
-            DiffLabel.Text = newBeatmap.Version;
+            SongLabel.Text = TruncateLabelText($"{newBeatmap.Artist} - {newBeatmap.Title}", SongLabel);
+            DiffLabel.Text = TruncateLabelText(newBeatmap.Version, DiffLabel);
             return;
+        }
+        private string TruncateLabelText(string txt, Label label)
+        {
+            if (TextRenderer.MeasureText(txt, label.Font).Width > label.Width)
+            {
+                string truncated = txt;
+                while (TextRenderer.MeasureText(truncated, label.Font).Width > label.Width - 10)
+                    truncated = truncated.Substring(0, truncated.Length-1);
+                truncated += "...";
+                return truncated;
+            }
+            return txt;
         }
 
         // Detection of user Songs folder also happens here
@@ -446,7 +465,7 @@ namespace osu_trainer
             if (imageEvent == null)
             {
                 // no background for this map
-                Console.WriteLine("No image");
+                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
                 return;
             }
                 
@@ -454,23 +473,29 @@ namespace osu_trainer
             if (!File.Exists(imageAbsolutePath))
             {
                 // no background for this map
-                Console.WriteLine("No image");
+                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
                 return;
             }
 
             // crop height to aspect ratio
             Image bg = Image.FromFile(imageAbsolutePath);
-            Bitmap bmpImage = new Bitmap(bg);
-            float aspectRatio = BgPanel.Size.Width / BgPanel.Size.Height;
+            BgPanel.BackgroundImage = CropAndPanToFit(bg, BgPanel.Size.Width, BgPanel.Size.Height);
+        }
+        private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
+        {
+            Bitmap bmpImage = new Bitmap(img);
+            float aspectRatio = destinationWidth / destinationHeight;
             int cropHeight = (int)(bmpImage.Width / aspectRatio);
             // pan down to center image
             int panDown = (bmpImage.Height - cropHeight) / 3;
-
-            BgPanel.BackgroundImage = bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
+            // crop and pan via cloning
+            return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
         }
 
         private List<float> GetBpmList(Beatmap map)
         {
+            if (map == null)
+                return new List<float> { 0.0f };
             var bpms = map.TimingPoints.Where((tp) => !tp.InheritsBPM).Select((tp) => 60000 / tp.BpmDelay).ToList();
             var bpmsUnique = bpms.Distinct().ToList();
             if (bpmsUnique.Count == 1)
@@ -508,16 +533,30 @@ namespace osu_trainer
             DisableDiffControls();
             DisableBpmUpDown();
 
+            // Star Rating Display
+            StarLabel.ForeColor = labelDisabledColor;
+            StarLabel.Text = "☆";
+            AimLabel.ForeColor = labelDisabledColor;
+            AimLabel.Text = "";
+            SpeedLabel.ForeColor = labelDisabledColor;
+            SpeedLabel.Text = "";
+            AimSpeedBar.LeftColour = labelDisabledColor;
+            AimSpeedBar.RightColour = labelDisabledColor;
+
+            // BPM Display
+            OriginalBpmTextBox.ForeColor = textBoxFg;
+            NewBpmTextBox.ForeColor = textBoxFg;
+
             // generate map
             DisableGenerateMapButton();
 
         }
         private void EnableFormControls()
         {
-            // top
+            // Song Display
             EnableSongDisplay();
 
-            // labels
+            // Labels
             foreach (var label in labels)
                 label.ForeColor = labelColor1;
 
@@ -526,6 +565,17 @@ namespace osu_trainer
 
             // BPM Multiplier Up Down
             EnableBpmUpDown();
+
+            // Star Rating Display
+            StarLabel.ForeColor = starsColor;
+            AimLabel.ForeColor = aimColor;
+            SpeedLabel.ForeColor = speedColor;
+            AimSpeedBar.LeftColour = aimColor;
+            AimSpeedBar.RightColour = speedColor;
+
+            // BPM Display
+            OriginalBpmTextBox.ForeColor = textBoxFg;
+            NewBpmTextBox.ForeColor = textBoxFg;
 
             // generate map
             EnableGenerateMapButton();
@@ -581,16 +631,16 @@ namespace osu_trainer
         }
         private void EnableGenerateMapButton()
         {
+            if (!NewMapIsDifferent())
+                return;
             GenerateMapButton.Enabled = true;
             GenerateMapButton.ForeColor = Color.White;
             GenerateMapButton.BackColor = accentPink;
-            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Bold);
         }
         private void DisableGenerateMapButton()
         {
             GenerateMapButton.ForeColor = Color.DimGray;
             GenerateMapButton.BackColor = SystemColors.ControlLight;
-            GenerateMapButton.Font = new Font(GenerateMapButton.Font, FontStyle.Regular);
             GenerateMapButton.Enabled = false;
         }
 
@@ -678,15 +728,26 @@ namespace osu_trainer
             {
                 diffCalcReady = false;
                 DiffCalcCooldown.Start();
+                float stars, aimStars, speedStars = -1.0f;
                 try
                 {
-                    StarLabel.Text = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap).ToString("0.00") + " ☆");
+                    (stars, aimStars, speedStars) = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap));
                 }
                 catch (NullReferenceException e) {
                     // just do nothing, wait for next chance to recalculate difficulty
                     Console.WriteLine(e);
                     Console.WriteLine("lol asdfasdf;lkjasdf");
+                    return;
                 }
+                if (stars < 0)
+                    return;
+
+                int aimPercent = (int)(100.0f * aimStars / (aimStars + speedStars));
+                int speedPercent = 100 - aimPercent;
+                StarLabel.Text = $"{stars:0.00} ☆";
+                AimLabel.Text = $"aim: {aimPercent}%";
+                SpeedLabel.Text = $"spd: {speedPercent}%";
+                AimSpeedBar.LeftPercent = aimPercent;
             }
 
             UpdateBpmDisplay();
@@ -702,6 +763,13 @@ namespace osu_trainer
         {
             var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
             var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
+
+            if (bpmMultiplier > 1)
+                NewBpmTextBox.ForeColor = accentRed;
+            else if (bpmMultiplier < 1)
+                NewBpmTextBox.ForeColor = easierColor;
+            else
+                NewBpmTextBox.ForeColor = textBoxFg;
 
             if (new HashSet<int>(originalBpms).Count == 1)
             {
@@ -872,5 +940,6 @@ namespace osu_trainer
             DiffCalcCooldown.Stop();
         }
         #endregion
+
     }
 }

@@ -40,8 +40,12 @@
             this.MiddlePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Panel3 = new System.Windows.Forms.Panel();
+            this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
+            this.AimLabel = new System.Windows.Forms.Label();
+            this.SpeedLabel = new System.Windows.Forms.Label();
             this.StarLabel = new System.Windows.Forms.Label();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ODLockCheck = new System.Windows.Forms.CheckBox();
@@ -49,35 +53,34 @@
             this.CSLockCheck = new System.Windows.Forms.CheckBox();
             this.odlabel = new System.Windows.Forms.Label();
             this.ODDisplay = new System.Windows.Forms.TextBox();
+            this.ODSlider = new osu_trainer.OptionSlider();
             this.arlabel = new System.Windows.Forms.Label();
             this.ARDisplay = new System.Windows.Forms.TextBox();
+            this.ARSlider = new osu_trainer.OptionSlider();
             this.cslabel = new System.Windows.Forms.Label();
             this.CSDisplay = new System.Windows.Forms.TextBox();
+            this.CSSlider = new osu_trainer.OptionSlider();
             this.hplabel = new System.Windows.Forms.Label();
             this.HPDisplay = new System.Windows.Forms.TextBox();
+            this.HPSlider = new osu_trainer.OptionSlider();
             this.HPLockCheck = new System.Windows.Forms.CheckBox();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.TopPanel = new System.Windows.Forms.Panel();
-            this.SongLabel = new System.Windows.Forms.TextBox();
-            this.DiffLabel = new System.Windows.Forms.TextBox();
+            this.SongLabel = new System.Windows.Forms.Label();
+            this.DiffLabel = new System.Windows.Forms.Label();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
             this.DiffCalcCooldown = new System.Windows.Forms.Timer(this.components);
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
-            this.ODSlider = new osu_trainer.OptionSlider();
-            this.ARSlider = new osu_trainer.OptionSlider();
-            this.CSSlider = new osu_trainer.OptionSlider();
-            this.HPSlider = new osu_trainer.OptionSlider();
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Panel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -85,7 +88,7 @@
             this.label2.AutoSize = true;
             this.label2.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label2.Location = new System.Drawing.Point(7, 12);
+            this.label2.Location = new System.Drawing.Point(7, 28);
             this.label2.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(101, 17);
@@ -102,11 +105,11 @@
             this.OriginalBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.OriginalBpmTextBox.Location = new System.Drawing.Point(114, 44);
+            this.OriginalBpmTextBox.Location = new System.Drawing.Point(114, 59);
             this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
             this.OriginalBpmTextBox.ReadOnly = true;
-            this.OriginalBpmTextBox.Size = new System.Drawing.Size(305, 17);
+            this.OriginalBpmTextBox.Size = new System.Drawing.Size(300, 17);
             this.OriginalBpmTextBox.TabIndex = 8;
             // 
             // label4
@@ -114,7 +117,7 @@
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label4.Location = new System.Drawing.Point(0, 44);
+            this.label4.Location = new System.Drawing.Point(0, 59);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(106, 16);
@@ -126,11 +129,11 @@
             this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.NewBpmTextBox.Location = new System.Drawing.Point(114, 67);
+            this.NewBpmTextBox.Location = new System.Drawing.Point(114, 82);
             this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
             this.NewBpmTextBox.Name = "NewBpmTextBox";
             this.NewBpmTextBox.ReadOnly = true;
-            this.NewBpmTextBox.Size = new System.Drawing.Size(304, 17);
+            this.NewBpmTextBox.Size = new System.Drawing.Size(300, 17);
             this.NewBpmTextBox.TabIndex = 8;
             // 
             // label5
@@ -138,7 +141,7 @@
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label5.Location = new System.Drawing.Point(23, 68);
+            this.label5.Location = new System.Drawing.Point(23, 83);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(83, 16);
@@ -149,7 +152,7 @@
             // 
             this.GenerateMapButton.AutoSize = true;
             this.GenerateMapButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
-            this.GenerateMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(126)))), ((int)(((byte)(219)))));
+            this.GenerateMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(114)))), ((int)(((byte)(185)))));
             this.GenerateMapButton.Dock = System.Windows.Forms.DockStyle.Fill;
             this.GenerateMapButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.GenerateMapButton.Font = new System.Drawing.Font("Microsoft Tai Le", 11F, System.Drawing.FontStyle.Bold);
@@ -171,7 +174,7 @@
             this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(427, 214);
+            this.MiddlePanel.Size = new System.Drawing.Size(427, 224);
             this.MiddlePanel.TabIndex = 10;
             // 
             // panel2
@@ -180,11 +183,14 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 126);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(427, 88);
+            this.panel2.Size = new System.Drawing.Size(427, 98);
             this.panel2.TabIndex = 11;
             // 
             // Panel3
             // 
+            this.Panel3.Controls.Add(this.AimSpeedBar);
+            this.Panel3.Controls.Add(this.AimLabel);
+            this.Panel3.Controls.Add(this.SpeedLabel);
             this.Panel3.Controls.Add(this.StarLabel);
             this.Panel3.Controls.Add(this.ScaleARCheck);
             this.Panel3.Controls.Add(this.label4);
@@ -197,20 +203,54 @@
             this.Panel3.Location = new System.Drawing.Point(0, 0);
             this.Panel3.Name = "Panel3";
             this.Panel3.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.Panel3.Size = new System.Drawing.Size(427, 88);
+            this.Panel3.Size = new System.Drawing.Size(427, 98);
             this.Panel3.TabIndex = 7;
+            // 
+            // AimSpeedBar
+            // 
+            this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
+            this.AimSpeedBar.LeftPercent = 40;
+            this.AimSpeedBar.Location = new System.Drawing.Point(276, 44);
+            this.AimSpeedBar.Name = "AimSpeedBar";
+            this.AimSpeedBar.RightColour = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
+            this.AimSpeedBar.Size = new System.Drawing.Size(135, 3);
+            this.AimSpeedBar.TabIndex = 21;
+            this.AimSpeedBar.Text = "ratioBar1";
+            // 
+            // AimLabel
+            // 
+            this.AimLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.AimLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.AimLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
+            this.AimLabel.Location = new System.Drawing.Point(273, 28);
+            this.AimLabel.Name = "AimLabel";
+            this.AimLabel.Size = new System.Drawing.Size(66, 23);
+            this.AimLabel.TabIndex = 20;
+            this.AimLabel.Text = "aim: 50%";
+            // 
+            // SpeedLabel
+            // 
+            this.SpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.SpeedLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.SpeedLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
+            this.SpeedLabel.Location = new System.Drawing.Point(350, 28);
+            this.SpeedLabel.Name = "SpeedLabel";
+            this.SpeedLabel.Size = new System.Drawing.Size(66, 23);
+            this.SpeedLabel.TabIndex = 20;
+            this.SpeedLabel.Text = "spd: 50%";
+            this.SpeedLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // StarLabel
             // 
             this.StarLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.StarLabel.AutoSize = true;
+            this.StarLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.StarLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(132)))), ((int)(((byte)(65)))));
-            this.StarLabel.Location = new System.Drawing.Point(366, 12);
+            this.StarLabel.Location = new System.Drawing.Point(306, 4);
             this.StarLabel.Name = "StarLabel";
-            this.StarLabel.RightToLeft = System.Windows.Forms.RightToLeft.Yes;
-            this.StarLabel.Size = new System.Drawing.Size(48, 16);
+            this.StarLabel.Size = new System.Drawing.Size(114, 23);
             this.StarLabel.TabIndex = 20;
             this.StarLabel.Text = "0.00 ☆";
+            this.StarLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
             // 
             // ScaleARCheck
             // 
@@ -226,7 +266,7 @@
             this.ScaleARCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ScaleARCheck.Font = new System.Drawing.Font("Carlito", 8.25F);
             this.ScaleARCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
-            this.ScaleARCheck.Location = new System.Drawing.Point(191, 9);
+            this.ScaleARCheck.Location = new System.Drawing.Point(191, 25);
             this.ScaleARCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ScaleARCheck.Name = "ScaleARCheck";
             this.ScaleARCheck.Size = new System.Drawing.Size(54, 23);
@@ -234,6 +274,41 @@
             this.ScaleARCheck.Text = "Scale AR";
             this.ScaleARCheck.UseVisualStyleBackColor = false;
             this.ScaleARCheck.CheckedChanged += new System.EventHandler(this.ScaleARCheck_CheckedChanged);
+            // 
+            // BpmMultiplierUpDown
+            // 
+            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
+            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BpmMultiplierUpDown.DecimalPlaces = 2;
+            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 24);
+            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
+            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
+            this.BpmMultiplierUpDown.TabIndex = 4;
+            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
             // 
             // Middle1Panel
             // 
@@ -369,224 +444,6 @@
             this.ODDisplay.Text = "0.0";
             this.ODDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // arlabel
-            // 
-            this.arlabel.AutoSize = true;
-            this.arlabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.arlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.arlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.arlabel.Location = new System.Drawing.Point(3, 61);
-            this.arlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.arlabel.Name = "arlabel";
-            this.arlabel.Size = new System.Drawing.Size(32, 26);
-            this.arlabel.TabIndex = 6;
-            this.arlabel.Text = "AR";
-            this.arlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // ARDisplay
-            // 
-            this.ARDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ARDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.ARDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ARDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ARDisplay.Location = new System.Drawing.Point(41, 63);
-            this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.ARDisplay.Name = "ARDisplay";
-            this.ARDisplay.Size = new System.Drawing.Size(42, 21);
-            this.ARDisplay.TabIndex = 7;
-            this.ARDisplay.Text = "0.0";
-            this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // cslabel
-            // 
-            this.cslabel.AutoSize = true;
-            this.cslabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cslabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.cslabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.cslabel.Location = new System.Drawing.Point(3, 32);
-            this.cslabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.cslabel.Name = "cslabel";
-            this.cslabel.Size = new System.Drawing.Size(32, 26);
-            this.cslabel.TabIndex = 3;
-            this.cslabel.Text = "CS";
-            this.cslabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // CSDisplay
-            // 
-            this.CSDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.CSDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.CSDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CSDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.CSDisplay.Location = new System.Drawing.Point(41, 34);
-            this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.CSDisplay.Name = "CSDisplay";
-            this.CSDisplay.Size = new System.Drawing.Size(42, 21);
-            this.CSDisplay.TabIndex = 4;
-            this.CSDisplay.Text = "0.0";
-            this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // hplabel
-            // 
-            this.hplabel.AutoSize = true;
-            this.hplabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hplabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.hplabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.hplabel.Location = new System.Drawing.Point(3, 3);
-            this.hplabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.hplabel.Name = "hplabel";
-            this.hplabel.Size = new System.Drawing.Size(32, 26);
-            this.hplabel.TabIndex = 0;
-            this.hplabel.Text = "HP";
-            this.hplabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // HPDisplay
-            // 
-            this.HPDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.HPDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.HPDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.HPDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HPDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.HPDisplay.Location = new System.Drawing.Point(41, 5);
-            this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.HPDisplay.Name = "HPDisplay";
-            this.HPDisplay.Size = new System.Drawing.Size(42, 21);
-            this.HPDisplay.TabIndex = 1;
-            this.HPDisplay.Text = "0.0";
-            this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // HPLockCheck
-            // 
-            this.HPLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
-            this.HPLockCheck.AutoSize = true;
-            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
-            this.HPLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.HPLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
-            this.HPLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.HPLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HPLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
-            this.HPLockCheck.Location = new System.Drawing.Point(358, 5);
-            this.HPLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.HPLockCheck.Name = "HPLockCheck";
-            this.HPLockCheck.Size = new System.Drawing.Size(38, 21);
-            this.HPLockCheck.TabIndex = 12;
-            this.HPLockCheck.Text = "Lock";
-            this.HPLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.HPLockCheck.UseVisualStyleBackColor = true;
-            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HPLockCheck_CheckedChanged);
-            // 
-            // BottomPanel
-            // 
-            this.BottomPanel.Controls.Add(this.GenerateMapButton);
-            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 314);
-            this.BottomPanel.Name = "BottomPanel";
-            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.BottomPanel.Size = new System.Drawing.Size(427, 60);
-            this.BottomPanel.TabIndex = 11;
-            // 
-            // TopPanel
-            // 
-            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.TopPanel.Controls.Add(this.SongLabel);
-            this.TopPanel.Controls.Add(this.DiffLabel);
-            this.TopPanel.Controls.Add(this.BgPanel);
-            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TopPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.TopPanel.Size = new System.Drawing.Size(427, 100);
-            this.TopPanel.TabIndex = 12;
-            // 
-            // SongLabel
-            // 
-            this.SongLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.SongLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.SongLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.SongLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
-            this.SongLabel.Location = new System.Drawing.Point(10, 78);
-            this.SongLabel.Name = "SongLabel";
-            this.SongLabel.ReadOnly = true;
-            this.SongLabel.Size = new System.Drawing.Size(260, 14);
-            this.SongLabel.TabIndex = 2;
-            this.SongLabel.Text = "Artist - Title";
-            // 
-            // DiffLabel
-            // 
-            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.DiffLabel.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
-            this.DiffLabel.Location = new System.Drawing.Point(276, 78);
-            this.DiffLabel.Name = "DiffLabel";
-            this.DiffLabel.ReadOnly = true;
-            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
-            this.DiffLabel.TabIndex = 2;
-            this.DiffLabel.Text = "Extra";
-            this.DiffLabel.TextAlign = System.Windows.Forms.HorizontalAlignment.Right;
-            // 
-            // BgPanel
-            // 
-            this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
-            this.BgPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
-            this.BgPanel.Controls.Add(this.StaticGif);
-            this.BgPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.BgPanel.Location = new System.Drawing.Point(10, 10);
-            this.BgPanel.Name = "BgPanel";
-            this.BgPanel.Size = new System.Drawing.Size(407, 62);
-            this.BgPanel.TabIndex = 0;
-            // 
-            // StaticGif
-            // 
-            this.StaticGif.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.StaticGif.ErrorImage = null;
-            this.StaticGif.ImageLocation = "resources\\static.gif";
-            this.StaticGif.InitialImage = null;
-            this.StaticGif.Location = new System.Drawing.Point(0, 0);
-            this.StaticGif.Name = "StaticGif";
-            this.StaticGif.Size = new System.Drawing.Size(407, 62);
-            this.StaticGif.TabIndex = 0;
-            this.StaticGif.TabStop = false;
-            this.StaticGif.Visible = false;
-            // 
-            // DiffCalcCooldown
-            // 
-            this.DiffCalcCooldown.Tick += new System.EventHandler(this.DiffCalcCooldown_Tick);
-            // 
-            // BpmMultiplierUpDown
-            // 
-            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.BpmMultiplierUpDown.DecimalPlaces = 2;
-            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
-            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
-            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
-            this.BpmMultiplierUpDown.TabIndex = 4;
-            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
-            // 
             // ODSlider
             // 
             this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
@@ -623,6 +480,34 @@
             0,
             0});
             this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
+            // 
+            // arlabel
+            // 
+            this.arlabel.AutoSize = true;
+            this.arlabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.arlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.arlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.arlabel.Location = new System.Drawing.Point(3, 61);
+            this.arlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.arlabel.Name = "arlabel";
+            this.arlabel.Size = new System.Drawing.Size(32, 26);
+            this.arlabel.TabIndex = 6;
+            this.arlabel.Text = "AR";
+            this.arlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // ARDisplay
+            // 
+            this.ARDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ARDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.ARDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ARDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ARDisplay.Location = new System.Drawing.Point(41, 63);
+            this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.ARDisplay.Name = "ARDisplay";
+            this.ARDisplay.Size = new System.Drawing.Size(42, 21);
+            this.ARDisplay.TabIndex = 7;
+            this.ARDisplay.Text = "0.0";
+            this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ARSlider
             // 
@@ -661,6 +546,34 @@
             0});
             this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
             // 
+            // cslabel
+            // 
+            this.cslabel.AutoSize = true;
+            this.cslabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cslabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.cslabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.cslabel.Location = new System.Drawing.Point(3, 32);
+            this.cslabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.cslabel.Name = "cslabel";
+            this.cslabel.Size = new System.Drawing.Size(32, 26);
+            this.cslabel.TabIndex = 3;
+            this.cslabel.Text = "CS";
+            this.cslabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // CSDisplay
+            // 
+            this.CSDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.CSDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.CSDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CSDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.CSDisplay.Location = new System.Drawing.Point(41, 34);
+            this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.CSDisplay.Name = "CSDisplay";
+            this.CSDisplay.Size = new System.Drawing.Size(42, 21);
+            this.CSDisplay.TabIndex = 4;
+            this.CSDisplay.Text = "0.0";
+            this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
             // CSSlider
             // 
             this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
@@ -697,6 +610,35 @@
             0,
             0});
             this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
+            // 
+            // hplabel
+            // 
+            this.hplabel.AutoSize = true;
+            this.hplabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hplabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.hplabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.hplabel.Location = new System.Drawing.Point(3, 3);
+            this.hplabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.hplabel.Name = "hplabel";
+            this.hplabel.Size = new System.Drawing.Size(32, 26);
+            this.hplabel.TabIndex = 0;
+            this.hplabel.Text = "HP";
+            this.hplabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // HPDisplay
+            // 
+            this.HPDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.HPDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.HPDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.HPDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HPDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.HPDisplay.Location = new System.Drawing.Point(41, 5);
+            this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.HPDisplay.Name = "HPDisplay";
+            this.HPDisplay.Size = new System.Drawing.Size(42, 21);
+            this.HPDisplay.TabIndex = 1;
+            this.HPDisplay.Text = "0.0";
+            this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // HPSlider
             // 
@@ -735,12 +677,106 @@
             0});
             this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
             // 
+            // HPLockCheck
+            // 
+            this.HPLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
+            this.HPLockCheck.AutoSize = true;
+            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.HPLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.HPLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.HPLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.HPLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HPLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.HPLockCheck.Location = new System.Drawing.Point(358, 5);
+            this.HPLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.HPLockCheck.Name = "HPLockCheck";
+            this.HPLockCheck.Size = new System.Drawing.Size(38, 21);
+            this.HPLockCheck.TabIndex = 12;
+            this.HPLockCheck.Text = "Lock";
+            this.HPLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.HPLockCheck.UseVisualStyleBackColor = true;
+            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HPLockCheck_CheckedChanged);
+            // 
+            // BottomPanel
+            // 
+            this.BottomPanel.Controls.Add(this.GenerateMapButton);
+            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomPanel.Location = new System.Drawing.Point(0, 324);
+            this.BottomPanel.Name = "BottomPanel";
+            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.BottomPanel.Size = new System.Drawing.Size(427, 60);
+            this.BottomPanel.TabIndex = 11;
+            // 
+            // TopPanel
+            // 
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.TopPanel.Controls.Add(this.SongLabel);
+            this.TopPanel.Controls.Add(this.DiffLabel);
+            this.TopPanel.Controls.Add(this.BgPanel);
+            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TopPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopPanel.Name = "TopPanel";
+            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.TopPanel.Size = new System.Drawing.Size(427, 100);
+            this.TopPanel.TabIndex = 12;
+            // 
+            // SongLabel
+            // 
+            this.SongLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.SongLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.SongLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.SongLabel.Location = new System.Drawing.Point(8, 78);
+            this.SongLabel.Name = "SongLabel";
+            this.SongLabel.Size = new System.Drawing.Size(260, 14);
+            this.SongLabel.TabIndex = 2;
+            this.SongLabel.Text = "Artist - Title";
+            // 
+            // DiffLabel
+            // 
+            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.DiffLabel.Location = new System.Drawing.Point(282, 78);
+            this.DiffLabel.Name = "DiffLabel";
+            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
+            this.DiffLabel.TabIndex = 2;
+            this.DiffLabel.Text = "Extra";
+            this.DiffLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // BgPanel
+            // 
+            this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.BgPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
+            this.BgPanel.Controls.Add(this.StaticGif);
+            this.BgPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.BgPanel.Location = new System.Drawing.Point(10, 10);
+            this.BgPanel.Name = "BgPanel";
+            this.BgPanel.Size = new System.Drawing.Size(407, 62);
+            this.BgPanel.TabIndex = 0;
+            // 
+            // StaticGif
+            // 
+            this.StaticGif.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.StaticGif.ErrorImage = null;
+            this.StaticGif.ImageLocation = "resources\\static.gif";
+            this.StaticGif.InitialImage = null;
+            this.StaticGif.Location = new System.Drawing.Point(0, 0);
+            this.StaticGif.Name = "StaticGif";
+            this.StaticGif.Size = new System.Drawing.Size(407, 62);
+            this.StaticGif.TabIndex = 0;
+            this.StaticGif.TabStop = false;
+            this.StaticGif.Visible = false;
+            // 
+            // DiffCalcCooldown
+            // 
+            this.DiffCalcCooldown.Tick += new System.EventHandler(this.DiffCalcCooldown_Tick);
+            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(427, 374);
+            this.ClientSize = new System.Drawing.Size(427, 384);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
@@ -757,16 +793,15 @@
             this.panel2.ResumeLayout(false);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.BottomPanel.ResumeLayout(false);
             this.BottomPanel.PerformLayout();
             this.TopPanel.ResumeLayout(false);
-            this.TopPanel.PerformLayout();
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -785,8 +820,8 @@
         private System.Windows.Forms.Panel TopPanel;
         private System.Windows.Forms.Panel panel2;
         private System.Windows.Forms.Panel Panel3;
-        private System.Windows.Forms.TextBox DiffLabel;
-        private System.Windows.Forms.TextBox SongLabel;
+        private System.Windows.Forms.Label DiffLabel;
+        private System.Windows.Forms.Label SongLabel;
         private System.Windows.Forms.Panel BgPanel;
         private System.Windows.Forms.PictureBox StaticGif;
         private System.Windows.Forms.Panel Middle1Panel;
@@ -810,5 +845,8 @@
         private System.Windows.Forms.CheckBox ScaleARCheck;
         private System.Windows.Forms.Label StarLabel;
         private System.Windows.Forms.Timer DiffCalcCooldown;
+        private funorControls.RatioBar AimSpeedBar;
+        private System.Windows.Forms.Label AimLabel;
+        private System.Windows.Forms.Label SpeedLabel;
     }
 }

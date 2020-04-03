@@ -265,6 +265,7 @@ namespace osu_trainer
             int centerY = Height / 2;
             int nippleX = GetStartX() + (int)(width * (Value - MinValue) / (MaxValue - MinValue));
 
+            // draw objects
             g.DrawLine(bodyPen, GetStartX(), centerY, GetEndX(), centerY);
             if (!Enabled)
                 return;

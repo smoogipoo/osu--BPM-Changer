@@ -54,7 +54,7 @@ namespace osu_trainer
             return 300;
         }
 
-        public static float CalculateStarRating(Beatmap map)
+        public static (float, float, float) CalculateStarRating(Beatmap map)
         {
             if (map == null)
                 throw new NullReferenceException();
@@ -90,14 +90,14 @@ namespace osu_trainer
             {
                 // TODO: An error occurs when opening a non-osu!standard map (mania, taiko, etc)
                 Console.WriteLine("Could not calculate difficulty");
-                return 0;
+                return (-1, -1, -1);
             }
             float stars      = oppaiData.GetValue("stars").ToObject<float>();
             float aimStars   = oppaiData.GetValue("aim_stars").ToObject<float>();
             float speedStars = oppaiData.GetValue("speed_stars").ToObject<float>();
 
 
-            return stars;
+            return (stars, aimStars, speedStars);
         }
     }
 }
