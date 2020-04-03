@@ -67,7 +67,6 @@ namespace osu_trainer
         private bool busyUpdatingBeatmap = false;
         private int beatmapFindFailCounter = 0;
 
-        
 
         public MainForm()
         {
@@ -479,6 +478,17 @@ namespace osu_trainer
             return bpms;
         }
 
+        private bool NewMapIsDifferent()
+        {
+            return (
+                newBeatmap.HPDrainRate != originalBeatmap.HPDrainRate ||
+                newBeatmap.CircleSize != originalBeatmap.CircleSize ||
+                newBeatmap.ApproachRate != originalBeatmap.ApproachRate ||
+                newBeatmap.OverallDifficulty != originalBeatmap.OverallDifficulty ||
+                bpmMultiplier != 1.0f
+                );
+        }
+
         private string GetBeatmapDirectoryName()
         {
             return Path.GetDirectoryName(originalBeatmap.Filename);
@@ -680,6 +690,13 @@ namespace osu_trainer
             }
 
             UpdateBpmDisplay();
+
+            // Generate Map Button
+            if (NewMapIsDifferent())
+                EnableGenerateMapButton();
+            else
+                DisableGenerateMapButton();
+
         }
         private void UpdateBpmDisplay()
         {
