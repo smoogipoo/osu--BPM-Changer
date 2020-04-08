@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace osu_trainer
@@ -15,7 +16,6 @@ namespace osu_trainer
     {
         NOT_READY,
         READY,
-        LOADING_BEATMAP,
         GENERATING_BEATMAP
     }
 
@@ -35,10 +35,11 @@ namespace osu_trainer
         public Beatmap OriginalBeatmap;
         public Beatmap NewBeatmap;
 
-        bool recalcRequested;
-        float starRating;
-        float aimRating;
-        float speedRating;
+        object recalcLock = new object();
+        bool recalcNeeded = false;
+        public float starRating;
+        public float aimRating;
+        public float speedRating;
 
         float bpmMultiplier = 1.0f;
         float lockedHP = 0f;
@@ -52,7 +53,6 @@ namespace osu_trainer
         bool scaleAR = true;
         bool scaleOD = true;
 
-        string requestedBeatmap;
         
 
         public BeatmapEditor(MainForm f)
@@ -62,14 +62,14 @@ namespace osu_trainer
         }
 
         public event EventHandler StateChanged;
-        public event EventHandler BeatmapLoaded;
+        public event EventHandler BeatmapSwitched;
         public event EventHandler BeatmapModified;
         public event EventHandler ControlsModified;
 
         public void ForceUpdate()
         {
             StateChanged?.Invoke(this, EventArgs.Empty);
-            BeatmapLoaded?.Invoke(this, EventArgs.Empty);
+            BeatmapSwitched?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
@@ -95,28 +95,26 @@ namespace osu_trainer
             // reset diff name
             NewBeatmap.Version = OriginalBeatmap.Version;
 
-            // beatmap may have changed while generating
-            if (OriginalBeatmap.Filename != requestedBeatmap)
-            {
-                SetState(EditorState.LOADING_BEATMAP);
-                LoadBeatmapLoop();
-            }
-            else
-            {
-                SetState(EditorState.READY);
-            }
+            SetState(EditorState.READY);
         }
 
 
-        public void RequestLoadBeatmap(string beatmapPath)
+        public async void RequestBeatmapLoad(string beatmapPath)
         {
-            // most recently requested beatmap
-            requestedBeatmap = beatmapPath;
-            if (state == EditorState.READY)
+            bool success = await Task.Run(() => LoadBeatmap(beatmapPath));
+            if (!success)
             {
-                SetState(EditorState.LOADING_BEATMAP);
-                LoadBeatmapLoop();
+                SetState(EditorState.NOT_READY);
+                NotReadyReason = BadBeatmapReason.ERROR_LOADING_BEATMAP;
+                BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+                return; // get out of here
             }
+
+            // finish
+            ModifyBeatmapTiming(bpmMultiplier); // for calculating star rating
+            SetState(EditorState.READY);
+            BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+            BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
 
         public void SetState(EditorState state)
@@ -168,22 +166,22 @@ namespace osu_trainer
         public void SetHPLock(bool locked)
         {
             hpIsLocked = locked;
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetCSLock(bool locked)
         {
             csIsLocked = locked;
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetARLock(bool locked)
         {
             arIsLocked = locked;
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetODLock(bool locked)
         {
             odIsLocked = locked;
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetBpmMultiplier(float multiplier)
         {
@@ -246,45 +244,67 @@ namespace osu_trainer
             );
         }
 
-
-        #region private
-        private async void LoadBeatmapLoop()
+        public async void RecalculateStarRating()
         {
-            if (NewBeatmap == null)
-                await Task.Run(() => LoadBeatmap());
+            if (state != EditorState.READY)
+                return;
+            if (!recalcNeeded)
+                return;
 
-            while (NewBeatmap.Filename != requestedBeatmap)
+            // try to get exclusive access
+            if (Monitor.TryEnter(recalcLock))
             {
-                await Task.Run(() => LoadBeatmap());
-                // if a new beatmap was requested while loading the beatmap, we will stay in this loop
-            }
+                recalcNeeded = false;
 
-            // finish
-            ModifyBeatmapTiming(bpmMultiplier); // for calculating star rating
-            SetState(EditorState.READY);
+                // BEGIN: time consuming section
+                float stars, aimStars, speedStars = -1.0f;
+                try
+                {
+                    (stars, aimStars, speedStars) = await Task.Run(() => DifficultyCalculator.CalculateStarRating(NewBeatmap));
+                }
+                catch (NullReferenceException e)
+                {
+                    // just do nothing, wait for next chance to recalculate difficulty
+                    Console.WriteLine(e);
+                    Console.WriteLine("lol asdfasdf;lkjasdf");
+                    return;
+                }
+                if (stars < 0)
+                    return;
+
+                int aimPercent = (int)(100.0f * aimStars / (aimStars + speedStars));
+                int speedPercent = 100 - aimPercent;
+                BeatmapModified?.Invoke(this, EventArgs.Empty);
+                // END: time consuming section
+
+                // release lock
+                Monitor.Exit(recalcLock);
+            }
         }
 
-        private void LoadBeatmap()
+        #region private
+
+        // return true on success
+        private bool LoadBeatmap(string beatmapPath)
         {
-            if (requestedBeatmap == "")
-                throw new Exception("Cannot load beatmap <empty string>");
             // test if the beatmap is valid before committing to using it
             Beatmap test;
             try
             {
-                test = new Beatmap(requestedBeatmap);
+                test = new Beatmap(beatmapPath);
             }
             catch (FormatException e)
             {
                 Console.WriteLine("Bad .osu file format");
                 OriginalBeatmap = null;
                 NewBeatmap = null;
-                return;
+                return false;
             }
             // Check if beatmap was loaded successfully
             if (test.Filename == null && test.Title == null)
             {
-                return;
+                Console.WriteLine("Bad .osu file format");
+                return false;
             }
 
             // Check if this map was generated by osu-trainer
@@ -314,7 +334,7 @@ namespace osu_trainer
             // Commit to new beatmap
             OriginalBeatmap = new Beatmap(test.Filename);
             NewBeatmap = new Beatmap(test.Filename);
-            return;
+            return true;
         }
 
 

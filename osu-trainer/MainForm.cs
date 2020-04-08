@@ -56,13 +56,12 @@ namespace osu_trainer
 
         // Single Object Instances
         SoundPlayer sound = new SoundPlayer();
-        BeatmapEditor beatmapEditor;
+        BeatmapEditor editor;
 
         // other
         private bool scaleARPreviousState;
         private string previousBeatmapRead;
         private bool diffCalcReady = true;
-        private bool busyUpdatingBeatmap = false;
         private int beatmapFindFailCounter = 0;
 
         public MainForm()
@@ -81,33 +80,38 @@ namespace osu_trainer
             {
                 HPDisplay, CSDisplay, ARDisplay, ODDisplay
             };
+            diffSliders = new List<OptionSlider>
+            {
+                HPSlider, CSSlider, ARSlider, ODSlider
+            };
 
 
             // Init object instances
             osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
-            beatmapEditor = new BeatmapEditor(this);
+            editor = new BeatmapEditor(this);
 
-            // Add event handlers
-            beatmapEditor.StateChanged     += UpdateDumbLabels;
-            beatmapEditor.StateChanged     += UpdateGenerateButton;
-            beatmapEditor.BeatmapModified  += UpdateSongDisplay;
-            beatmapEditor.BeatmapModified  += UpdateBpmDisplay;
-            beatmapEditor.BeatmapModified  += UpdateHpCsArOdDisplay;
-            beatmapEditor.BeatmapModified  += UpdateDifficultyDisplay;
-            beatmapEditor.ControlsModified += UpdateLockButtons;
-            beatmapEditor.ControlsModified += UpdateScaleButtons;
+            // Add event handlers (observers)
+            editor.StateChanged     += ToggleDumbLabels;
+            editor.StateChanged     += ToggleGenerateButton;
+            editor.StateChanged     += ToggleHpCsArOdDisplay;
+            editor.StateChanged     += ToggleDifficultyDisplay;
+            editor.StateChanged     += ToggleBpmUpDown;
+            editor.BeatmapSwitched  += UpdateSongDisplay;
+            editor.BeatmapModified  += UpdateBpmDisplay;
+            editor.BeatmapModified  += UpdateHpCsArOdDisplay;
+            editor.BeatmapModified  += UpdateDifficultyDisplay;
+            editor.BeatmapModified  += ToggleGenerateButton;
+            editor.ControlsModified += UpdateLockButtons;
+            editor.ControlsModified += UpdateScaleButtons;
 
-            beatmapEditor.SetState(EditorState.NOT_READY);
-            beatmapEditor.NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
-
-            beatmapEditor.ForceUpdate();
+            editor.SetState(EditorState.NOT_READY);
+            editor.NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
 
             BeatmapUpdateTimer.Start();
         }
 
         void UpdateSongDisplay(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
             switch (editor.GetState())
             {
                 case EditorState.NOT_READY:
@@ -132,24 +136,25 @@ namespace osu_trainer
                     }
                     break;
                 case EditorState.READY:
-                case EditorState.LOADING_BEATMAP:
                 case EditorState.GENERATING_BEATMAP:
+                    UpdateSongBg(editor.NewBeatmap);
+
                     SongLabel.ForeColor = accentYellow;
+                    DiffLabel.ForeColor = accentYellow;
                     StaticGif.Visible = false;
                     DiffLabel.Visible = true;
 
-                    string artist = beatmapEditor.OriginalBeatmap.Artist;
-                    string title = beatmapEditor.OriginalBeatmap.Title;
-                    string diff = beatmapEditor.OriginalBeatmap.Version;
+                    string artist = this.editor.OriginalBeatmap.Artist;
+                    string title = this.editor.OriginalBeatmap.Title;
+                    string diff = this.editor.OriginalBeatmap.Version;
                     SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
                     DiffLabel.Text = TruncateLabelText(diff, DiffLabel);
                     break;
             }
         }
 
-        void UpdateDumbLabels(object sender, EventArgs e)
+        void ToggleDumbLabels(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
             Color labelColor = accentSalmon;
             switch (editor.GetState())
             {
@@ -157,7 +162,6 @@ namespace osu_trainer
                     labelColor = labelDisabledColor;
                     break;
                 case EditorState.READY:
-                case EditorState.LOADING_BEATMAP:
                 case EditorState.GENERATING_BEATMAP:
                     labelColor = accentSalmon;
                     break;
@@ -168,13 +172,11 @@ namespace osu_trainer
 
         void UpdateBpmDisplay(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
             switch (editor.GetState())
             {
                 case EditorState.NOT_READY:
                     break;
                 case EditorState.READY:
-                case EditorState.LOADING_BEATMAP:
                     //var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
                     //var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
 
@@ -203,14 +205,12 @@ namespace osu_trainer
 
         void UpdateLockButtons(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
             switch (editor.GetState())
             {
                 case EditorState.NOT_READY:
                     break;
                 case EditorState.READY:
                     break;
-                case EditorState.LOADING_BEATMAP:
                     break;
                 case EditorState.GENERATING_BEATMAP:
                     break;
@@ -219,23 +219,21 @@ namespace osu_trainer
 
         void UpdateScaleButtons(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
             switch (editor.GetState())
             {
                 case EditorState.NOT_READY:
                     break;
                 case EditorState.READY:
                     break;
-                case EditorState.LOADING_BEATMAP:
                     break;
                 case EditorState.GENERATING_BEATMAP:
                     break;
             }
         }
 
-        void UpdateHpCsArOdDisplay(object sender, EventArgs e)
+        void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
-            bool enabled = (beatmapEditor.GetState() == EditorState.READY || beatmapEditor.GetState() == EditorState.LOADING_BEATMAP);
+            bool enabled = (editor.GetState() != EditorState.NOT_READY);
             foreach (var textbox in diffDisplays)
             {
                 textbox.Enabled = enabled ? true : false;
@@ -243,12 +241,16 @@ namespace osu_trainer
                 textbox.ForeColor = textBoxFg;
                 textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
-            if (!enabled)
-                return;
-
+            foreach (var slider in diffSliders)
+            {
+                slider.Enabled = enabled;
+            }
+        }
+        void UpdateHpCsArOdDisplay(object sender, EventArgs e)
+        {
             // HP
-            float newHP      = beatmapEditor.NewBeatmap.HPDrainRate;
-            float originalHP = beatmapEditor.OriginalBeatmap.HPDrainRate;
+            float newHP      = editor.NewBeatmap.HPDrainRate;
+            float originalHP = editor.OriginalBeatmap.HPDrainRate;
             HPDisplay.Text = newHP.ToString();
             HPSlider.Value = (decimal)newHP;
             if (newHP > originalHP)
@@ -268,8 +270,8 @@ namespace osu_trainer
             }
 
             // CS
-            float newCS      = beatmapEditor.NewBeatmap.CircleSize;
-            float originalCS = beatmapEditor.OriginalBeatmap.CircleSize;
+            float newCS      = editor.NewBeatmap.CircleSize;
+            float originalCS = editor.OriginalBeatmap.CircleSize;
             CSDisplay.Text = newCS.ToString();
             CSSlider.Value = (decimal)newCS;
             if (newCS > originalCS)
@@ -289,15 +291,15 @@ namespace osu_trainer
             }
 
             // AR
-            float newAR      = beatmapEditor.NewBeatmap.ApproachRate;
+            float newAR      = editor.NewBeatmap.ApproachRate;
             ARDisplay.Text = newAR.ToString();
             ARSlider.Value = (decimal)newAR;
-            if (newAR > beatmapEditor.GetScaledAR())
+            if (newAR > editor.GetScaledAR())
             {
                 ARDisplay.ForeColor = accentRed;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
-            else if (newAR < beatmapEditor.GetScaledAR())
+            else if (newAR < editor.GetScaledAR())
             {
                 ARDisplay.ForeColor = easierColor;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
@@ -309,8 +311,8 @@ namespace osu_trainer
             }
             
             // OD
-            float newOD      = beatmapEditor.NewBeatmap.OverallDifficulty;
-            float originalOD = beatmapEditor.OriginalBeatmap.OverallDifficulty;
+            float newOD      = editor.NewBeatmap.OverallDifficulty;
+            float originalOD = editor.OriginalBeatmap.OverallDifficulty;
             ODDisplay.Text = newOD.ToString();
             ODSlider.Value = (decimal)newOD;
             if (newOD > originalOD)
@@ -330,44 +332,67 @@ namespace osu_trainer
             }
         }
 
+        void ToggleDifficultyDisplay(object sender, EventArgs e)
+        {
+            if (editor.GetState() == EditorState.NOT_READY)
+            {
+                StarLabel.ForeColor = labelDisabledColor;
+                StarLabel.Text = "☆";
+                AimLabel.ForeColor = labelDisabledColor;
+                AimLabel.Text = "";
+                SpeedLabel.ForeColor = labelDisabledColor;
+                SpeedLabel.Text = "";
+                AimSpeedBar.LeftColour = labelDisabledColor;
+                AimSpeedBar.RightColour = labelDisabledColor;
+            }
+            else if (editor.GetState() == EditorState.READY)
+            {
+                StarLabel.ForeColor = starsColor;
+                AimLabel.ForeColor = aimColor;
+                SpeedLabel.ForeColor = speedColor;
+                AimSpeedBar.LeftColour = aimColor;
+                AimSpeedBar.RightColour = speedColor;
+            }
+        }
+        void ToggleBpmUpDown(object sender, EventArgs e)
+        {
+            bool enabled = (editor.GetState() != EditorState.NOT_READY);
+            BpmMultiplierUpDown.Enabled   = enabled ? true : false;
+            BpmMultiplierUpDown.BackColor = enabled ? textBoxBg : SystemColors.ControlDark;
+        }
         void UpdateDifficultyDisplay(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
-            switch (editor.GetState())
-            {
-                case EditorState.NOT_READY:
-                    break;
-                case EditorState.READY:
-                    break;
-                case EditorState.LOADING_BEATMAP:
-                    break;
-                case EditorState.GENERATING_BEATMAP:
-                    break;
-            }
+            StarLabel.Text = $"{editor.starRating:0.00} ☆";
+            AimLabel.Text = $"aim: {editor.aimRating}";
+            SpeedLabel.Text = $"spd: {editor.speedRating}";
+            float aimPercent = 100 * editor.aimRating / (editor.aimRating + editor.speedRating);
+            AimSpeedBar.LeftPercent = (int)aimPercent;
         }
 
 
-        void UpdateGenerateButton(object sender, EventArgs e)
+        void ToggleGenerateButton(object sender, EventArgs e)
         {
-            BeatmapEditor editor = (BeatmapEditor)sender;
+            bool enabled = false;
             switch (editor.GetState())
             {
-                case EditorState.NOT_READY:
-                    break;
                 case EditorState.READY:
+                    enabled = editor.NewMapIsDifferent() ? true : false;
                     break;
-                case EditorState.LOADING_BEATMAP:
-                    break;
+                case EditorState.NOT_READY:
                 case EditorState.GENERATING_BEATMAP:
+                    enabled = false;
                     break;
             }
+            GenerateMapButton.Enabled   = enabled ? true : false;
+            GenerateMapButton.ForeColor = enabled ? Color.White : Color.DimGray;
+            GenerateMapButton.BackColor = enabled ? accentPink : SystemColors.ControlLight;
         }
         
 
 
         private void GenerateMapButton_Click(object sender, EventArgs e)
         {
-            beatmapEditor.GenerateBeatmap();
+            editor.GenerateBeatmap();
         }
 
         public void PlayDoneSound()
@@ -381,7 +406,7 @@ namespace osu_trainer
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
         {
             // set new multiplier
-            beatmapEditor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
+            editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -390,9 +415,6 @@ namespace osu_trainer
                 GenerateMapButton_Click(null, null);
         }
 
-        private void LoadBeatmap(string beatmapPath)
-        {
-        }
         private string TruncateLabelText(string txt, Label label)
         {
             if (TextRenderer.MeasureText(txt, label.Font).Width > label.Width)
@@ -404,81 +426,6 @@ namespace osu_trainer
                 return truncated;
             }
             return txt;
-        }
-
-        // Detection of user Songs folder also happens here
-        private void DetectCurrentBeatmap()
-        {
-            // Try to get osu install folder
-            if (userSongsFolder == null)
-            {
-                if (Directory.Exists(Properties.Settings.Default.SongsFolder))
-                    userSongsFolder = Properties.Settings.Default.SongsFolder;
-            }
-            if (userSongsFolder == null)
-            {
-                // check if osu!.exe is running
-                var processes = Process.GetProcessesByName("osu!");
-                if (processes.Length == 0)
-                    return;
-
-                // set path
-                var osuExePath = processes[0].MainModule.FileName;
-                userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
-                Properties.Settings.Default.SongsFolder = userSongsFolder;
-                Properties.Settings.Default.Save();
-            }
-
-            // Read memory for current map
-            string beatmapFolder = osu.GetMapFolderName();
-            string beatmapFilename = osu.GetOsuFileName();
-
-            // Read unsuccessful (osu might not be running)
-            if (beatmapFilename == "")
-                return;
-
-            // Beatmap name hasn't changed since last read
-            if (previousBeatmapRead != null && previousBeatmapRead == beatmapFilename)
-                return;
-            previousBeatmapRead = beatmapFilename;
-
-            // Try to locate the beatmap
-            string absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
-            if (!File.Exists(absoluteFilename))
-            {
-                Console.WriteLine(beatmapFindFailCounter + 1);
-                if (++beatmapFindFailCounter == 10)
-                {
-                    string msg = "Automatic beatmap detection failed 10 times in a row. ";
-                    msg += "Your songs folder is probably somewhere else. ";
-                    msg += "Please manually select your Songs folder in the next window.";
-                    MessageBox.Show(msg, "Having trouble finding your beatmaps...", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
-                    using (var folderDialog = new OpenFileDialog())
-                    {
-                        folderDialog.Title = "Select your osu! installation folder";
-                        folderDialog.ValidateNames = false;
-                        folderDialog.CheckFileExists = false;
-                        folderDialog.CheckPathExists = true;
-                        folderDialog.FileName = "Select Folder";
-                        if (folderDialog.ShowDialog() != DialogResult.OK)
-                            return;
-
-                        userSongsFolder = Path.GetDirectoryName(folderDialog.FileName);
-                        Properties.Settings.Default.SongsFolder = userSongsFolder;
-                        Properties.Settings.Default.Save();
-                        // try again
-                        absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
-                        if (!File.Exists(absoluteFilename))
-                            return;
-                    }
-                }
-                return;
-            }
-            beatmapFindFailCounter = 0;
-
-            // No beatmap currently loaded, or beatmap changed
-            //if (originalBeatmap == null || beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
-            //    LoadBeatmap(absoluteFilename);
         }
 
         private void UpdateSongBg(Beatmap map)
@@ -627,7 +574,7 @@ namespace osu_trainer
         }
         private void EnableGenerateMapButton()
         {
-            if (!beatmapEditor.NewMapIsDifferent())
+            if (!editor.NewMapIsDifferent())
                 return;
             GenerateMapButton.Enabled = true;
             GenerateMapButton.ForeColor = Color.White;
@@ -716,50 +663,113 @@ namespace osu_trainer
         #region Event Handlers
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (busyUpdatingBeatmap)
+            // Try to get osu install folder
+            if (userSongsFolder == null)
+            {
+                if (Directory.Exists(Properties.Settings.Default.SongsFolder))
+                    userSongsFolder = Properties.Settings.Default.SongsFolder;
+            }
+            if (userSongsFolder == null)
+            {
+                // check if osu!.exe is running
+                var processes = Process.GetProcessesByName("osu!");
+                if (processes.Length == 0)
+                    return;
+
+                // set path
+                var osuExePath = processes[0].MainModule.FileName;
+                userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
+                Properties.Settings.Default.SongsFolder = userSongsFolder;
+                Properties.Settings.Default.Save();
+            }
+
+            // Read memory for current map
+            string beatmapFolder = osu.GetMapFolderName();
+            string beatmapFilename = osu.GetOsuFileName();
+
+            // Read unsuccessful (osu might not be running)
+            if (beatmapFilename == "")
                 return;
-            busyUpdatingBeatmap = true;
-            DetectCurrentBeatmap();
-            busyUpdatingBeatmap = false;
+
+            // Beatmap name hasn't changed since last read
+            if (previousBeatmapRead != null && previousBeatmapRead == beatmapFilename)
+                return;
+            previousBeatmapRead = beatmapFilename;
+
+            // Try to locate the beatmap
+            string absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+            if (!File.Exists(absoluteFilename))
+            {
+                if (++beatmapFindFailCounter == 10)
+                {
+                    string msg = "Automatic beatmap detection failed 10 times in a row. ";
+                    msg += "Your songs folder is probably somewhere else. ";
+                    msg += "Please manually select your Songs folder in the next window.";
+                    MessageBox.Show(msg, "Having trouble finding your beatmaps...", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
+                    using (var folderDialog = new OpenFileDialog())
+                    {
+                        folderDialog.Title = "Select your osu! installation folder";
+                        folderDialog.ValidateNames = false;
+                        folderDialog.CheckFileExists = false;
+                        folderDialog.CheckPathExists = true;
+                        folderDialog.FileName = "Select Folder";
+                        if (folderDialog.ShowDialog() != DialogResult.OK)
+                            return;
+
+                        userSongsFolder = Path.GetDirectoryName(folderDialog.FileName);
+                        Properties.Settings.Default.SongsFolder = userSongsFolder;
+                        Properties.Settings.Default.Save();
+                        // try again
+                        absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+                        if (!File.Exists(absoluteFilename))
+                            return;
+                    }
+                }
+                return;
+            }
+            beatmapFindFailCounter = 0;
+
+            // signal the editor class to load this beatmap sometime in the future
+            editor.RequestBeatmapLoad(absoluteFilename);
         }
         private void HPSlider_ValueChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetHP((float)HPSlider.Value);
+            editor.SetHP((float)HPSlider.Value);
         }
 
         private void CSSlider_ValueChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetCS((float)CSSlider.Value);
+            editor.SetCS((float)CSSlider.Value);
         }
 
         private void ARSlider_ValueChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetAR((float)ARSlider.Value);
+            editor.SetAR((float)ARSlider.Value);
         }
 
         private void ODSlider_ValueChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetCS((float)ODSlider.Value);
+            editor.SetCS((float)ODSlider.Value);
         }
         private void HPLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetHPLock(HPLockCheck.Checked);
+            editor.SetHPLock(HPLockCheck.Checked);
         }
         private void CSLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetCSLock(CSLockCheck.Checked);
+            editor.SetCSLock(CSLockCheck.Checked);
         }
         private void ARLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetARLock(ARLockCheck.Checked);
+            editor.SetARLock(ARLockCheck.Checked);
         }
         private void ODLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetODLock(ODLockCheck.Checked);
+            editor.SetODLock(ODLockCheck.Checked);
         }
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)
         {
-            beatmapEditor.SetScaleAR(ScaleARCheck.Checked);
+            editor.SetScaleAR(ScaleARCheck.Checked);
         }
 
         private void DiffCalcCooldown_Tick(object sender, EventArgs e)
