@@ -347,8 +347,14 @@ namespace osu_trainer
             if (!Enabled)
                 return;
             dragging = false;
+            expanded = GetNippleRect().Contains(e.Location);
             nippleCurrentDiameter = NippleDiameter;
             Invalidate();
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            expanded = false;
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)
