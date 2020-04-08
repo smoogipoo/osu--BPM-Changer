@@ -63,6 +63,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BeatmapEditor.cs" />
     <Compile Include="DifficultyCalculator.cs" />
     <Compile Include="funorControls\RatioBar.cs">
       <SubType>Component</SubType>

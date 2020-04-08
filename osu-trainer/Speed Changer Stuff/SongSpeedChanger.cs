@@ -25,10 +25,10 @@ namespace osu_trainer
             //temp2: Decoded wav
             //temp3: stretched file
             //temp4: Encoded mp3
-            string temp1 = getTempFilename("mp3");
-            string temp2 = getTempFilename("wav");
-            string temp3 = getTempFilename("wav");
-            string temp4 = getTempFilename("mp3");
+            string temp1 = Helper.GetTempFilename("mp3");
+            string temp2 = Helper.GetTempFilename("wav");
+            string temp3 = Helper.GetTempFilename("wav");
+            string temp4 = Helper.GetTempFilename("mp3");
 
             // TODO: try catch
             CopyFile(originalMap.Filename.Substring(0, originalMap.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + originalMap.AudioFilename, temp1);
@@ -79,14 +79,6 @@ namespace osu_trainer
             {
                 srcStream.CopyTo(dstStream);
             }
-        }
-        public static string NormalizeText(string str)
-        {
-            return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
-        }
-        private static string getTempFilename(string ext)
-        {
-            return Path.GetTempPath() + Guid.NewGuid() + '.' + ext;
         }
     }
 }

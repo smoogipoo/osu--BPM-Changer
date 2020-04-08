@@ -30,22 +30,14 @@ namespace osu_trainer
 
         // Beatmap
         string userSongsFolder = null;
-        Beatmap pureBeatmap;
-        Beatmap originalBeatmap;
-        Beatmap newBeatmap;
-        float bpmMultiplier = 1.0f;
-        float lockedHP = 0f;
-        float lockedCS = 0f;
-        float lockedAR = 0f;
-        float lockedOD = 0f;
         IOsuMemoryReader osu;
 
         // Color Theme
         Color formBg = Color.FromArgb(38, 35, 53);
         Color textBoxBg = Color.FromArgb(23, 16, 25);
         Color textBoxFg = Color.FromArgb(224, 224, 224);
-        Color labelColor1 = Color.FromArgb(249, 126, 114);
-        Color labelColor2 = Color.FromArgb(254, 222, 93);
+        Color accentSalmon = Color.FromArgb(249, 126, 114);
+        Color accentYellow = Color.FromArgb(254, 222, 93);
         Color labelDisabledColor = Color.FromArgb(136, 134, 144);
         Color accentPink = Color.FromArgb(243, 114, 185);
         Color accentBlue = Color.FromArgb(46, 226, 250);
@@ -58,12 +50,13 @@ namespace osu_trainer
         Color starsColor = Color.FromArgb(225, 132, 65);
 
         // Common Control Lists
-        List<Label> labels;
+        List<Label> dumbLabels;
         List<TextBox> diffDisplays;
         List<OptionSlider> diffSliders;
 
         // Single Object Instances
         SoundPlayer sound = new SoundPlayer();
+        BeatmapEditor beatmapEditor;
 
         // other
         private bool scaleARPreviousState;
@@ -72,208 +65,323 @@ namespace osu_trainer
         private bool busyUpdatingBeatmap = false;
         private int beatmapFindFailCounter = 0;
 
-
         public MainForm()
         {
             InitializeComponent();
-            InitializeControlLists();
 
             nobg = Image.FromFile(nobgpng);
 
-            // Init osu memory reader
-            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
-
-            // Controls will be enabled when a beatmap is loaded in
-            DisableFormControls();
-            BeatmapUpdateTimer.Start();
-        }
-
-        private void InitializeControlLists()
-        {
-            labels = new List<Label>
+            // init control lists
+            dumbLabels = new List<Label>
             {
-                hplabel,
-                cslabel,
-                arlabel,
-                odlabel,
-                label2,
-                label4,
-                label5
+                hplabel, cslabel, arlabel, odlabel,
+                label2, label4, label5
             };
             diffDisplays = new List<TextBox>
             {
-                HPDisplay,
-                CSDisplay,
-                ARDisplay,
-                ODDisplay,
+                HPDisplay, CSDisplay, ARDisplay, ODDisplay
             };
-            diffSliders = new List<OptionSlider>
-            {
-                HPSlider,
-                CSSlider,
-                ARSlider,
-                ODSlider,
-            };
-        }
 
-        private async void GenerateMapButton_Click(object sender, EventArgs e)
-        {
-            // pre
-            DisableGenerateMapButton();
-            var oldButtonText = GenerateMapButton.Text;
-            GenerateMapButton.Text = "Working...";
-            BeatmapUpdateTimer.Stop();
 
-            // main phase
-            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier);
-            ModifyBeatmapMetadata(newBeatmap, bpmMultiplier);
-            if (!File.Exists(GetBeatmapDirectoryName() + "\\" + newBeatmap.AudioFilename))
-                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(originalBeatmap, newBeatmap, bpmMultiplier));
-            newBeatmap.Save();
+            // Init object instances
+            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
+            beatmapEditor = new BeatmapEditor(this);
 
-            // post
-            sound.SoundLocation = matchConfirmWav;
-            sound.Play();
+            // Add event handlers
+            beatmapEditor.StateChanged     += UpdateDumbLabels;
+            beatmapEditor.StateChanged     += UpdateGenerateButton;
+            beatmapEditor.BeatmapModified  += UpdateSongDisplay;
+            beatmapEditor.BeatmapModified  += UpdateBpmDisplay;
+            beatmapEditor.BeatmapModified  += UpdateHpCsArOdDisplay;
+            beatmapEditor.BeatmapModified  += UpdateDifficultyDisplay;
+            beatmapEditor.ControlsModified += UpdateLockButtons;
+            beatmapEditor.ControlsModified += UpdateScaleButtons;
+
+            beatmapEditor.SetState(EditorState.NOT_READY);
+            beatmapEditor.NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
+
+            beatmapEditor.ForceUpdate();
 
             BeatmapUpdateTimer.Start();
-
-            EnableGenerateMapButton();
-            GenerateMapButton.Text = oldButtonText;
-
-            // reset diff name
-            newBeatmap.Version = originalBeatmap.Version;
         }
 
-        // it is safe to call this function repeatedly
-        private void ModifyBeatmapTiming(Beatmap originalMap, Beatmap newMap, float multiplier)
+        void UpdateSongDisplay(object sender, EventArgs e)
         {
-            if (multiplier == 1)
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    switch (editor.NotReadyReason)
+                    {
+                        case BadBeatmapReason.NO_BEATMAP_LOADED:
+                            SongLabel.Text = "no beatmap";
+                            SongLabel.ForeColor = labelDisabledColor;
+                            StaticGif.Visible = true;
+                            DiffLabel.Visible = false;
+                            break;
+                        case BadBeatmapReason.ERROR_LOADING_BEATMAP:
+                            SongLabel.Text = "Unable to read .osu file";
+                            SongLabel.ForeColor = labelDisabledColor;
+                            StaticGif.Visible = true;
+                            DiffLabel.Visible = false;
+                            break;
+                        case BadBeatmapReason.DIFF_NOT_OSUSTD:
+                            break;
+                        default:
+                            break;
+                    }
+                    break;
+                case EditorState.READY:
+                case EditorState.LOADING_BEATMAP:
+                case EditorState.GENERATING_BEATMAP:
+                    SongLabel.ForeColor = accentYellow;
+                    StaticGif.Visible = false;
+                    DiffLabel.Visible = true;
+
+                    string artist = beatmapEditor.OriginalBeatmap.Artist;
+                    string title = beatmapEditor.OriginalBeatmap.Title;
+                    string diff = beatmapEditor.OriginalBeatmap.Version;
+                    SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
+                    DiffLabel.Text = TruncateLabelText(diff, DiffLabel);
+                    break;
+            }
+        }
+
+        void UpdateDumbLabels(object sender, EventArgs e)
+        {
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            Color labelColor = accentSalmon;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    labelColor = labelDisabledColor;
+                    break;
+                case EditorState.READY:
+                case EditorState.LOADING_BEATMAP:
+                case EditorState.GENERATING_BEATMAP:
+                    labelColor = accentSalmon;
+                    break;
+            }
+            foreach (var label in dumbLabels)
+                label.ForeColor = labelColor;
+        }
+
+        void UpdateBpmDisplay(object sender, EventArgs e)
+        {
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    break;
+                case EditorState.READY:
+                case EditorState.LOADING_BEATMAP:
+                    //var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
+                    //var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
+
+                    //NewBpmTextBox.ForeColor = (bpmMultiplier > 1) ? accentRed : (bpmMultiplier < 1) ? easierColor : textBoxFg;
+
+                    //OriginalBpmTextBox.Text = GetDominantBpm(originalBeatmap).ToString("0");
+                    //NewBpmTextBox.Text = GetDominantBpm(newBeatmap).ToString("0");
+                    //if (GetBpmList(originalBeatmap).Distinct().ToList().Count > 1)
+                    //{
+                    //    var oldbpms = GetBpmList(originalBeatmap);
+                    //    float oldmin = oldbpms.Min();
+                    //    float oldmax = oldbpms.Max();
+                    //    OriginalBpmTextBox.Text += $" ({oldmin.ToString("0")} - {oldmax.ToString("0")})";
+
+                    //    var newbpms = GetBpmList(newBeatmap);
+                    //    float newmin = newbpms.Min();
+                    //    float newmax = newbpms.Max();
+                    //    NewBpmTextBox.Text += $" ({newmin.ToString("0")} - {newmax.ToString("0")})";
+                    //}
+                    break;
+                case EditorState.GENERATING_BEATMAP:
+                    break;
+            }
+        }
+
+
+        void UpdateLockButtons(object sender, EventArgs e)
+        {
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    break;
+                case EditorState.READY:
+                    break;
+                case EditorState.LOADING_BEATMAP:
+                    break;
+                case EditorState.GENERATING_BEATMAP:
+                    break;
+            }
+        }
+
+        void UpdateScaleButtons(object sender, EventArgs e)
+        {
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    break;
+                case EditorState.READY:
+                    break;
+                case EditorState.LOADING_BEATMAP:
+                    break;
+                case EditorState.GENERATING_BEATMAP:
+                    break;
+            }
+        }
+
+        void UpdateHpCsArOdDisplay(object sender, EventArgs e)
+        {
+            bool enabled = (beatmapEditor.GetState() == EditorState.READY || beatmapEditor.GetState() == EditorState.LOADING_BEATMAP);
+            foreach (var textbox in diffDisplays)
+            {
+                textbox.Enabled = enabled ? true : false;
+                textbox.BackColor = enabled ? textBoxBg : SystemColors.ControlDark;
+                textbox.ForeColor = textBoxFg;
+                textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+            }
+            if (!enabled)
                 return;
 
-            // Want to divide timestamps since high multiplier => shorter time
-            // OUT: tp.BpmDelay          for each timing point in beatmap
-            // OUT: tp.Time              for each timing point in beatmap
-            // OUT: tp.Time              for each timing point in beatmap
-            for (int i = 0; i < originalMap.TimingPoints.Count; i++)
+            // HP
+            float newHP      = beatmapEditor.NewBeatmap.HPDrainRate;
+            float originalHP = beatmapEditor.OriginalBeatmap.HPDrainRate;
+            HPDisplay.Text = newHP.ToString();
+            HPSlider.Value = (decimal)newHP;
+            if (newHP > originalHP)
             {
-                var originalTimingPoint = originalMap.TimingPoints[i];
-                var newTimingPoint = newMap.TimingPoints[i];
-                if (originalTimingPoint.InheritsBPM == false)
-                {
-                    float oldBpm = 60000 / originalTimingPoint.BpmDelay;
-                    float newBpm = oldBpm * multiplier;
-                    float newDelay = 60000 / newBpm;
-                    newTimingPoint.BpmDelay = newDelay;
-                    newTimingPoint.Time = (int)(originalTimingPoint.Time / multiplier);
-                }
-                else
-                {
-                    newTimingPoint.Time = (int)(originalTimingPoint.Time / multiplier);
-                }
+                HPDisplay.ForeColor = accentRed;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
             }
-            //foreach (TimingPoint timingPoint in newMap.TimingPoints)
-            //{
-            //    if (timingPoint.InheritsBPM == false)
-            //    {
-            //        float oldBpm = 60000 / timingPoint.BpmDelay;
-            //        float newBpm = oldBpm * multiplier;
-            //        float newDelay = 60000 / newBpm;
-            //        timingPoint.BpmDelay = newDelay;
-            //        timingPoint.Time = (int)(timingPoint.Time / multiplier);
-            //    }
-            //    else
-            //    {
-            //        timingPoint.Time = (int)(timingPoint.Time / multiplier);
-            //    }
-            //}
-
-            // OUT: event.StartTime      for each event in beatmap
-            // OUT: event.EndTime        for each break event in beatmap
-            for (int i = 0; i < originalMap.Events.Count; i++)
+            else if (newHP < originalHP)
             {
-                var originalEvent = originalMap.Events[i];
-                var newEvent = newMap.Events[i];
-                newEvent.StartTime = (int)(originalEvent.StartTime / multiplier);
-                if (originalEvent.GetType() == typeof(BreakEvent))
-                    ((BreakEvent)newEvent).EndTime = (int)(((BreakEvent)originalEvent).EndTime / multiplier);
-            }
-            //foreach (EventBase e in newMap.Events)
-            //{
-            //    e.StartTime = (int)(e.StartTime / multiplier);
-            //    if (e.GetType() == typeof(BreakEvent))
-            //        ((BreakEvent)e).EndTime = (int)(((BreakEvent)e).EndTime / multiplier);
-            //}
-
-            // OUT: hitobject.StartTime         for each hit object in beatmap
-            // OUT: hitobject.EndTime           for each spinner in beatmap
-            for (int i = 0; i < originalMap.HitObjects.Count; i++)
-            {
-                var originalObject = originalMap.HitObjects[i];
-                var newObject = newMap.HitObjects[i];
-                newObject.StartTime = (int)(originalObject.StartTime / multiplier);
-                if (originalObject.GetType() == typeof(SpinnerObject))
-                    ((SpinnerObject)newObject).EndTime = (int)(((SpinnerObject)originalObject).EndTime / multiplier);
-            }
-            //foreach (CircleObject hitobject in newMap.HitObjects)
-            //{
-            //    hitobject.StartTime = (int)(hitobject.StartTime / multiplier);
-            //    if (hitobject.GetType() == typeof(SpinnerObject))
-            //        ((SpinnerObject)hitobject).EndTime = (int)(((SpinnerObject)hitobject).EndTime / multiplier);
-            //}
-        }
-
-        // OUT: beatmap.Version
-        // OUT: beatmap.Filename
-        // OUT: beatmap.AudioFilename (if multiplier is not 1x)
-        // OUT: beatmap.Tags
-        private void ModifyBeatmapMetadata(Beatmap map, float multiplier)
-        {
-            if (multiplier == 1)
-            {
-                string ARODCS = "";
-                if (newBeatmap.ApproachRate != originalBeatmap.ApproachRate)
-                    ARODCS += $" AR{newBeatmap.ApproachRate}";
-                if (newBeatmap.OverallDifficulty != originalBeatmap.OverallDifficulty)
-                    ARODCS += $" OD{newBeatmap.OverallDifficulty}";
-                if (newBeatmap.CircleSize != originalBeatmap.CircleSize)
-                    ARODCS += $" CS{newBeatmap.CircleSize}";
-                map.Version += ARODCS;
+                HPDisplay.ForeColor = easierColor;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
             }
             else
             {
-                // If song has changed, no ARODCS in diff name
-                var bpmsUnique = GetBpmList(map).Distinct().ToList();
-                if (bpmsUnique.Count >= 2)
-                    map.Version += $" x{multiplier}";
-                else
-                    map.Version += $" {(bpmsUnique[0]).ToString("0")}bpm";
-                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + NormalizeText(map.Version) + ".mp3";
+                HPDisplay.ForeColor = textBoxFg;
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Regular);
             }
 
-            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + NormalizeText(map.Artist) + " - " + NormalizeText(map.Title) + " (" + NormalizeText(map.Creator) + ")" + " [" + NormalizeText(map.Version) + "].osu";
-            // make this map searchable in the in-game menus
-            map.Tags.Add("osutrainer");
+            // CS
+            float newCS      = beatmapEditor.NewBeatmap.CircleSize;
+            float originalCS = beatmapEditor.OriginalBeatmap.CircleSize;
+            CSDisplay.Text = newCS.ToString();
+            CSSlider.Value = (decimal)newCS;
+            if (newCS > originalCS)
+            {
+                CSDisplay.ForeColor = accentRed;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
+            }
+            else if (newCS < originalCS)
+            {
+                CSDisplay.ForeColor = easierColor;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                CSDisplay.ForeColor = textBoxFg;
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Regular);
+            }
+
+            // AR
+            float newAR      = beatmapEditor.NewBeatmap.ApproachRate;
+            ARDisplay.Text = newAR.ToString();
+            ARSlider.Value = (decimal)newAR;
+            if (newAR > beatmapEditor.GetScaledAR())
+            {
+                ARDisplay.ForeColor = accentRed;
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
+            }
+            else if (newAR < beatmapEditor.GetScaledAR())
+            {
+                ARDisplay.ForeColor = easierColor;
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                ARDisplay.ForeColor = textBoxFg;
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+            }
+            
+            // OD
+            float newOD      = beatmapEditor.NewBeatmap.OverallDifficulty;
+            float originalOD = beatmapEditor.OriginalBeatmap.OverallDifficulty;
+            ODDisplay.Text = newOD.ToString();
+            ODSlider.Value = (decimal)newOD;
+            if (newOD > originalOD)
+            {
+                ODDisplay.ForeColor = accentRed;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
+            }
+            else if (newOD < originalOD)
+            {
+                ODDisplay.ForeColor = easierColor;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
+            }
+            else
+            {
+                ODDisplay.ForeColor = textBoxFg;
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
+            }
         }
 
-        public static string NormalizeText(string str)
+        void UpdateDifficultyDisplay(object sender, EventArgs e)
         {
-            return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    break;
+                case EditorState.READY:
+                    break;
+                case EditorState.LOADING_BEATMAP:
+                    break;
+                case EditorState.GENERATING_BEATMAP:
+                    break;
+            }
         }
+
+
+        void UpdateGenerateButton(object sender, EventArgs e)
+        {
+            BeatmapEditor editor = (BeatmapEditor)sender;
+            switch (editor.GetState())
+            {
+                case EditorState.NOT_READY:
+                    break;
+                case EditorState.READY:
+                    break;
+                case EditorState.LOADING_BEATMAP:
+                    break;
+                case EditorState.GENERATING_BEATMAP:
+                    break;
+            }
+        }
+        
+
+
+        private void GenerateMapButton_Click(object sender, EventArgs e)
+        {
+            beatmapEditor.GenerateBeatmap();
+        }
+
+        public void PlayDoneSound()
+        {
+            sound.SoundLocation = matchConfirmWav;
+            sound.Play();
+        }
+
+
 
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
         {
             // set new multiplier
-            bpmMultiplier = (float)BpmMultiplierUpDown.Value;
-
-            // calculate new approach rate
-            if (ScaleARCheck.Checked && !ARLockCheck.Checked)
-            {
-                newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier);
-            }
-            // apply changes to objects
-            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier);
-            // always need to update new bpm display
-            BeatmapChanged(bpmChanged: true);
+            beatmapEditor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
         }
 
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
@@ -284,93 +392,6 @@ namespace osu_trainer
 
         private void LoadBeatmap(string beatmapPath)
         {
-            // test if the beatmap is valid before committing to using it
-            Beatmap test;
-            try
-            {
-                test = new Beatmap(beatmapPath);
-            }
-            catch (FormatException e)
-            {
-                Console.WriteLine("Bad .osu file format");
-                originalBeatmap = null;
-                newBeatmap = null;
-                DisableFormControls();
-                SongLabel.Text = $"Error reading .osu file";
-                return;
-            }
-            // Check if beatmap was loaded successfully
-            if (test.Filename == null && test.Title == null)
-            {
-                return;
-            }
-
-            // Check if this map was generated by osu-trainer
-            if (test.Tags.Contains("osutrainer"))
-            {
-                string[] diffFiles = Directory.GetFiles(Path.GetDirectoryName(test.Filename), "*.osu");
-                int candidateSimilarity = int.MaxValue;
-                Beatmap candidate = null;
-                foreach (string diff in diffFiles)
-                {
-                    Beatmap map = new Beatmap(diff);
-                    if (map.Tags.Contains("osutrainer"))
-                        continue;
-                    // lower value => more similar
-                    int similarity = Helper.LevenshteinDistance(test.Version, map.Version);
-                    if (similarity < candidateSimilarity)
-                    {
-                        candidate = map;
-                        candidateSimilarity = similarity;
-                    }
-                }
-                // just assume this shit is the original beatmap
-                if (candidate != null)
-                    test = candidate;
-            }
-
-            // Commit to new beatmap
-            pureBeatmap = null;
-            originalBeatmap = new Beatmap(test.Filename);
-            newBeatmap = new Beatmap(test.Filename);
-            ModifyBeatmapTiming(originalBeatmap, newBeatmap, bpmMultiplier); // for diffcalc
-
-            // Check if game mode is osu! standard
-            if (newBeatmap.Mode != GameMode.osu)
-            {
-                // Partially enable controls
-                DisableFormControls();
-                StaticGif.Visible = false;
-                UpdateSongBg(newBeatmap);
-                SongLabel.Visible = true;
-                SongLabel.ForeColor = labelColor2;
-                SongLabel.Text = TruncateLabelText($"{newBeatmap.Artist} - {newBeatmap.Title}", SongLabel);
-                DiffLabel.Visible = true;
-                DiffLabel.ForeColor = accentRed;
-                DiffLabel.Text = $"not osu!std";
-                return;
-            }
-
-            // Apply locked settings
-            if (HPLockCheck.Checked)
-                newBeatmap.HPDrainRate = lockedHP;
-            if (CSLockCheck.Checked)
-                newBeatmap.CircleSize = lockedCS;
-            if (ODLockCheck.Checked)
-                newBeatmap.OverallDifficulty = lockedOD;
-            if (ARLockCheck.Checked)
-                newBeatmap.ApproachRate = lockedAR;
-            else if (ScaleARCheck.Checked)
-                newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier);
-
-            // Update
-            EnableFormControls();
-            BeatmapChanged(newBeatmapLoaded: true);
-            UpdateSongBg(newBeatmap);
-            SongLabel.Text = TruncateLabelText($"{newBeatmap.Artist} - {newBeatmap.Title}", SongLabel);
-            DiffLabel.Text = TruncateLabelText(newBeatmap.Version, DiffLabel);
-            GetDominantBpm(newBeatmap);
-            return;
         }
         private string TruncateLabelText(string txt, Label label)
         {
@@ -456,8 +477,8 @@ namespace osu_trainer
             beatmapFindFailCounter = 0;
 
             // No beatmap currently loaded, or beatmap changed
-            if (originalBeatmap == null || beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
-                LoadBeatmap(absoluteFilename);
+            //if (originalBeatmap == null || beatmapFilename != Path.GetFileName(originalBeatmap.Filename))
+            //    LoadBeatmap(absoluteFilename);
         }
 
         private void UpdateSongBg(Beatmap map)
@@ -493,96 +514,6 @@ namespace osu_trainer
             return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
         }
 
-        private float GetDominantBpm(Beatmap map)
-        {
-            var bpms = GetBpmList(map);
-            if (bpms.Count == 1)
-                return bpms[0];
-            // store bpm => prominence (as in, how long that bpm is active in the map)
-            float previousTime = 0;
-            float previousBpm = 0;
-            var bpmTimingPoints = map.TimingPoints.Where(tp => !tp.InheritsBPM).ToList();
-            var bpmProminenceValues = new Dictionary<float, float>();
-
-            for (int i = 0; i < bpmTimingPoints.Count; i++)
-            {
-                var tp = bpmTimingPoints[i];
-                var currentBpm = 60000 / tp.BpmDelay;
-                var currentTime = tp.Time;
-                // case: first timing point
-                if (i == 0)
-                {
-                    previousBpm = currentBpm;
-                    previousTime = currentTime;
-                }
-                // case: middle timing point
-                else if (i < bpmTimingPoints.Count - 1)
-                {
-                    if (!bpmProminenceValues.ContainsKey(previousBpm))
-                        bpmProminenceValues.Add(previousBpm, 0);
-                    float duration = currentTime - previousTime;
-                    bpmProminenceValues[previousBpm] += duration;
-
-                    previousBpm = currentBpm;
-                    previousTime = currentTime;
-                }
-                // case: last timing point
-                else if (i == bpmTimingPoints.Count - 1)
-                {
-                    if (!bpmProminenceValues.ContainsKey(previousBpm))
-                        bpmProminenceValues.Add(previousBpm, 0);
-                    float duration = currentTime - previousTime;
-                    bpmProminenceValues[previousBpm] += duration;
-
-                    // jump ahead in time to last hit object in map
-                    if (!bpmProminenceValues.ContainsKey(currentBpm))
-                        bpmProminenceValues.Add(currentBpm, 0);
-                    float finalTime = map.HitObjects.Last().StartTime;
-                    bpmProminenceValues[currentBpm] += finalTime - currentTime;
-                }
-            }
-            var lines = bpmProminenceValues.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-            Console.WriteLine(string.Join(Environment.NewLine, lines));
-
-            float candidateBpm = 0;
-            float maxProminence = float.MinValue;
-            foreach (KeyValuePair<float, float> entry in bpmProminenceValues)
-            {
-                if (entry.Value > maxProminence)
-                {
-                    candidateBpm = entry.Key;
-                    maxProminence = entry.Value;
-                }
-            }
-            return candidateBpm;
-        }
-
-        private List<float> GetBpmList(Beatmap map)
-        {
-            if (map == null)
-                return new List<float> { 0.0f };
-            var bpms = map.TimingPoints.Where((tp) => !tp.InheritsBPM).Select((tp) => 60000 / tp.BpmDelay).ToList();
-            var bpmsUnique = bpms.Distinct().ToList();
-            if (bpmsUnique.Count == 1)
-                return bpmsUnique;
-            return bpms;
-        }
-
-        private bool NewMapIsDifferent()
-        {
-            return (
-                newBeatmap.HPDrainRate != originalBeatmap.HPDrainRate ||
-                newBeatmap.CircleSize != originalBeatmap.CircleSize ||
-                newBeatmap.ApproachRate != originalBeatmap.ApproachRate ||
-                newBeatmap.OverallDifficulty != originalBeatmap.OverallDifficulty ||
-                bpmMultiplier != 1.0f
-                );
-        }
-
-        private string GetBeatmapDirectoryName()
-        {
-            return Path.GetDirectoryName(originalBeatmap.Filename);
-        }
 
         #region Control State and Appearance
         private void DisableFormControls()
@@ -591,7 +522,7 @@ namespace osu_trainer
             DisableSongDisplay();
 
             // labels
-            foreach (var label in labels)
+            foreach (var label in dumbLabels)
                 label.ForeColor = labelDisabledColor;
 
             // updowns
@@ -622,8 +553,8 @@ namespace osu_trainer
             EnableSongDisplay();
 
             // Labels
-            foreach (var label in labels)
-                label.ForeColor = labelColor1;
+            foreach (var label in dumbLabels)
+                label.ForeColor = accentSalmon;
 
             // Diff Controls
             EnableDiffControls();
@@ -655,7 +586,7 @@ namespace osu_trainer
         }
         private void EnableSongDisplay()
         {
-            SongLabel.ForeColor = labelColor2;
+            SongLabel.ForeColor = accentYellow;
             DiffLabel.Visible = true;
             StaticGif.Visible = false;
         }
@@ -696,7 +627,7 @@ namespace osu_trainer
         }
         private void EnableGenerateMapButton()
         {
-            if (!NewMapIsDifferent())
+            if (!beatmapEditor.NewMapIsDifferent())
                 return;
             GenerateMapButton.Enabled = true;
             GenerateMapButton.ForeColor = Color.White;
@@ -712,139 +643,45 @@ namespace osu_trainer
         // making this async seems to be causing a lot of headaches...
         private async void BeatmapChanged(bool bpmChanged = false, bool csChanged = false, bool newBeatmapLoaded = false)
         {
-            // HP
-            HPDisplay.Text = newBeatmap.HPDrainRate.ToString();
-            HPSlider.Value = (decimal)newBeatmap.HPDrainRate;
-            if (newBeatmap.HPDrainRate > originalBeatmap.HPDrainRate)
-            {
-                HPDisplay.ForeColor = accentRed;
-                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
-            }
-            else if (newBeatmap.HPDrainRate < originalBeatmap.HPDrainRate)
-            {
-                HPDisplay.ForeColor = easierColor;
-                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
-            }
-            else
-            {
-                HPDisplay.ForeColor = textBoxFg;
-                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Regular);
-            }
 
-            // CS
-            CSDisplay.Text = newBeatmap.CircleSize.ToString();
-            CSSlider.Value = (decimal)newBeatmap.CircleSize;
-            if (newBeatmap.CircleSize > originalBeatmap.CircleSize)
-            {
-                CSDisplay.ForeColor = accentRed;
-                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
-            }
-            else if (newBeatmap.CircleSize < originalBeatmap.CircleSize)
-            {
-                CSDisplay.ForeColor = easierColor;
-                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
-            }
-            else
-            {
-                CSDisplay.ForeColor = textBoxFg;
-                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Regular);
-            }
+            //// Star Rating
+            //if ((bpmChanged || csChanged || newBeatmapLoaded) && diffCalcReady)
+            //{
+            //    diffCalcReady = false;
+            //    DiffCalcCooldown.Start();
+            //    float stars, aimStars, speedStars = -1.0f;
+            //    try
+            //    {
+            //        (stars, aimStars, speedStars) = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap));
+            //    }
+            //    catch (NullReferenceException e) {
+            //        // just do nothing, wait for next chance to recalculate difficulty
+            //        Console.WriteLine(e);
+            //        Console.WriteLine("lol asdfasdf;lkjasdf");
+            //        return;
+            //    }
+            //    if (stars < 0)
+            //        return;
 
-            // AR
-            ARDisplay.Text = newBeatmap.ApproachRate.ToString();
-            ARSlider.Value = (decimal)newBeatmap.ApproachRate;
-            if (newBeatmap.ApproachRate > DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier))
-            {
-                ARDisplay.ForeColor = accentRed;
-                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
-            }
-            else if (newBeatmap.ApproachRate < DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier))
-            {
-                ARDisplay.ForeColor = easierColor;
-                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
-            }
-            else
-            {
-                ARDisplay.ForeColor = textBoxFg;
-                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
-            }
-            
-            // OD
-            ODDisplay.Text = newBeatmap.OverallDifficulty.ToString();
-            ODSlider.Value = (decimal)newBeatmap.OverallDifficulty;
-            if (newBeatmap.OverallDifficulty > originalBeatmap.OverallDifficulty)
-            {
-                ODDisplay.ForeColor = accentRed;
-                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
-            }
-            else if (newBeatmap.OverallDifficulty < originalBeatmap.OverallDifficulty)
-            {
-                ODDisplay.ForeColor = easierColor;
-                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
-            }
-            else
-            {
-                ODDisplay.ForeColor = textBoxFg;
-                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
-            }
+            //    int aimPercent = (int)(100.0f * aimStars / (aimStars + speedStars));
+            //    int speedPercent = 100 - aimPercent;
+            //    StarLabel.Text = $"{stars:0.00} ☆";
+            //    AimLabel.Text = $"aim: {aimPercent}%";
+            //    SpeedLabel.Text = $"spd: {speedPercent}%";
+            //    AimSpeedBar.LeftPercent = aimPercent;
+            //}
 
-            // Star Rating
-            if ((bpmChanged || csChanged || newBeatmapLoaded) && diffCalcReady)
-            {
-                diffCalcReady = false;
-                DiffCalcCooldown.Start();
-                float stars, aimStars, speedStars = -1.0f;
-                try
-                {
-                    (stars, aimStars, speedStars) = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap));
-                }
-                catch (NullReferenceException e) {
-                    // just do nothing, wait for next chance to recalculate difficulty
-                    Console.WriteLine(e);
-                    Console.WriteLine("lol asdfasdf;lkjasdf");
-                    return;
-                }
-                if (stars < 0)
-                    return;
+            //UpdateBpmDisplay();
 
-                int aimPercent = (int)(100.0f * aimStars / (aimStars + speedStars));
-                int speedPercent = 100 - aimPercent;
-                StarLabel.Text = $"{stars:0.00} ☆";
-                AimLabel.Text = $"aim: {aimPercent}%";
-                SpeedLabel.Text = $"spd: {speedPercent}%";
-                AimSpeedBar.LeftPercent = aimPercent;
-            }
-
-            UpdateBpmDisplay();
-
-            // Generate Map Button
-            if (NewMapIsDifferent())
-                EnableGenerateMapButton();
-            else
-                DisableGenerateMapButton();
+            //// Generate Map Button
+            //if (beatmapEditor.NewMapIsDifferent())
+            //    EnableGenerateMapButton();
+            //else
+            //    DisableGenerateMapButton();
 
         }
         private void UpdateBpmDisplay()
         {
-            var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
-            var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
-
-            NewBpmTextBox.ForeColor = (bpmMultiplier > 1) ? accentRed : (bpmMultiplier < 1) ? easierColor : textBoxFg;
-
-            OriginalBpmTextBox.Text = GetDominantBpm(originalBeatmap).ToString("0");
-            NewBpmTextBox.Text = GetDominantBpm(newBeatmap).ToString("0");
-            if (GetBpmList(originalBeatmap).Distinct().ToList().Count > 1)
-            {
-                var oldbpms = GetBpmList(originalBeatmap);
-                float oldmin = oldbpms.Min();
-                float oldmax = oldbpms.Max();
-                OriginalBpmTextBox.Text += $" ({oldmin.ToString("0")} - {oldmax.ToString("0")})";
-
-                var newbpms = GetBpmList(newBeatmap);
-                float newmin = newbpms.Min();
-                float newmax = newbpms.Max();
-                NewBpmTextBox.Text += $" ({newmin.ToString("0")} - {newmax.ToString("0")})";
-            }
             return;
         }
         private void DisableTextbox(TextBox textbox)
@@ -874,18 +711,6 @@ namespace osu_trainer
             cb.ForeColor = Color.FromArgb(98, 96, 104);
         }
 
-        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            if (originalBeatmap == null && newBeatmap == null)
-                return;
-            if (HPLockCheck.Checked)
-            {
-                EnableTextCheckbox(HPLockCheck);
-                lockedHP = (float)HPSlider.Value;
-            }
-            else
-                DisableTextCheckbox(HPLockCheck);
-        }
         #endregion
 
         #region Event Handlers
@@ -899,105 +724,42 @@ namespace osu_trainer
         }
         private void HPSlider_ValueChanged(object sender, EventArgs e)
         {
-            newBeatmap.HPDrainRate = (float)HPSlider.Value;
-            BeatmapChanged();
-            if (HPLockCheck.Checked)
-                lockedHP = (float)HPSlider.Value;
+            beatmapEditor.SetHP((float)HPSlider.Value);
         }
 
         private void CSSlider_ValueChanged(object sender, EventArgs e)
         {
-            newBeatmap.CircleSize = (float)CSSlider.Value;
-            BeatmapChanged(csChanged: true);
-            if (CSLockCheck.Checked)
-                lockedCS = (float)CSSlider.Value;
+            beatmapEditor.SetCS((float)CSSlider.Value);
         }
 
         private void ARSlider_ValueChanged(object sender, EventArgs e)
         {
-            // disable ar scaling
-            if (!ARLockCheck.Checked)
-            {
-                ScaleARCheck.Checked = false;
-            }
-
-            newBeatmap.ApproachRate = (float)ARSlider.Value;
-            BeatmapChanged();
-            if (ARLockCheck.Checked)
-                lockedAR = (float)ARSlider.Value;
+            beatmapEditor.SetAR((float)ARSlider.Value);
         }
 
         private void ODSlider_ValueChanged(object sender, EventArgs e)
         {
-            newBeatmap.OverallDifficulty = (float)ODSlider.Value;
-            BeatmapChanged();
-            if (ODLockCheck.Checked)
-                lockedOD = (float)ODSlider.Value;
+            beatmapEditor.SetCS((float)ODSlider.Value);
+        }
+        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            beatmapEditor.SetHPLock(HPLockCheck.Checked);
         }
         private void CSLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            if (originalBeatmap == null && newBeatmap == null)
-                return;
-            if (CSLockCheck.Checked)
-            {
-                EnableTextCheckbox(CSLockCheck);
-                lockedCS = (float)CSSlider.Value;
-            }
-            else
-                DisableTextCheckbox(CSLockCheck);
+            beatmapEditor.SetCSLock(CSLockCheck.Checked);
         }
         private void ARLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            if (originalBeatmap == null && newBeatmap == null)
-                return;
-            if (ARLockCheck.Checked)
-            {
-                // save scale ar state
-                scaleARPreviousState = ScaleARCheck.Checked;
-                ScaleARCheck.Checked = false;
-                DisableTextCheckbox(ScaleARCheck);
-                EnableTextCheckbox(ARLockCheck);
-                lockedAR = (float)ARSlider.Value;
-            }
-            else
-            {
-                // restore scale ar state
-                ScaleARCheck.Checked = scaleARPreviousState;
-                if (ScaleARCheck.Checked)
-                    EnableTextCheckbox(ScaleARCheck);
-                DisableTextCheckbox(ARLockCheck);
-            }
+            beatmapEditor.SetARLock(ARLockCheck.Checked);
         }
         private void ODLockCheck_CheckedChanged(object sender, EventArgs e)
         {
-            if (originalBeatmap == null && newBeatmap == null)
-                return;
-            if (ODLockCheck.Checked)
-            {
-                EnableTextCheckbox(ODLockCheck);
-                lockedOD = (float)ODSlider.Value;
-            }
-            else
-                DisableTextCheckbox(ODLockCheck);
+            beatmapEditor.SetODLock(ODLockCheck.Checked);
         }
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)
         {
-            if (ARLockCheck.Checked)
-            {
-                // negate input
-                ScaleARCheck.Checked = false;
-                return;
-            }
-            if (ScaleARCheck.Checked)
-            {
-                newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(originalBeatmap, bpmMultiplier);
-                BeatmapChanged();
-                EnableTextCheckbox(ScaleARCheck);
-            }
-            else
-            {
-                DisableTextCheckbox(ScaleARCheck);
-            }
+            beatmapEditor.SetScaleAR(ScaleARCheck.Checked);
         }
 
         private void DiffCalcCooldown_Tick(object sender, EventArgs e)

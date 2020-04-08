@@ -1,5 +1,7 @@
-﻿using System;
+﻿using BMAPI.v1;
+using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -50,6 +52,19 @@ namespace osu_trainer
                 }
             }
             return d[n, m];
+        }
+
+        public static string NormalizeText(string str)
+        {
+            return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");
+        }
+        public static string GetTempFilename(string ext)
+        {
+            return Path.GetTempPath() + Guid.NewGuid() + '.' + ext;
+        }
+        public static string GetBeatmapDirectoryName(Beatmap map)
+        {
+            return Path.GetDirectoryName(map.Filename);
         }
     }
 }
