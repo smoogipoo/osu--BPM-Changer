@@ -100,6 +100,7 @@ namespace osu_trainer
             editor.BeatmapModified  += UpdateHpCsArOdDisplay;
             editor.BeatmapModified  += UpdateDifficultyDisplay;
             editor.BeatmapModified  += ToggleGenerateButton;
+            editor.BeatmapModified  += UpdateBpmUpDown;
             editor.ControlsModified += UpdateLockButtons;
             editor.ControlsModified += UpdateScaleButtons;
 
@@ -108,6 +109,11 @@ namespace osu_trainer
             editor.ForceEventBeatmapSwitched();
 
             BeatmapUpdateTimer.Start();
+        }
+
+        private void UpdateBpmUpDown(object sender, EventArgs e)
+        {
+            BpmMultiplierUpDown.Value = (decimal)editor.BpmMultiplier;
         }
 
         void UpdateSongDisplay(object sender, EventArgs e)
@@ -511,49 +517,18 @@ namespace osu_trainer
             // signal the editor class to load this beatmap sometime in the future
             editor.RequestBeatmapLoad(absoluteFilename);
         }
-        private void HPSlider_ValueChanged(object sender, EventArgs e)
-        {
-            editor.SetHP((float)HPSlider.Value);
-        }
-        private void CSSlider_ValueChanged(object sender, EventArgs e)
-        {
-            editor.SetCS((float)CSSlider.Value);
-        }
-        private void ARSlider_ValueChanged(object sender, EventArgs e)
-        {
-            editor.SetAR((float)ARSlider.Value);
-        }
-        private void ODSlider_ValueChanged(object sender, EventArgs e)
-        {
-            editor.SetOD((float)ODSlider.Value);
-        }
-        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            editor.SetHPLock(HPLockCheck.Checked);
-        }
-        private void CSLockCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            editor.SetCSLock(CSLockCheck.Checked);
-        }
-        private void ARLockCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            editor.SetARLock(ARLockCheck.Checked);
-        }
-        private void ODLockCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            editor.SetODLock(ODLockCheck.Checked);
-        }
-        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)
-        {
-            editor.SetScaleAR(!editor.ScaleAR);
-        }
-        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
-        }
+        private void HPSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
+        private void CSSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
+        private void ARSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
+        private void ODSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
+        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
+        private void CSLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
+        private void ARLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
+        private void ODLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
+        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
+        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            Console.WriteLine(e.KeyCode);
             if (e.KeyCode == Keys.D1)
             {
                 ResetButton_Click(null, null);
@@ -565,15 +540,8 @@ namespace osu_trainer
                 GenerateMapButton.Focus();
             }
         }
-        private void GenerateMapButton_Click(object sender, EventArgs e)
-        {
-            editor.GenerateBeatmap();
-        }
+        private void GenerateMapButton_Click(object sender, EventArgs e) => editor.GenerateBeatmap();
+        private void ResetButton_Click(object sender, EventArgs e)       => editor.ResetBeatmap();
         #endregion
-
-        private void ResetButton_Click(object sender, EventArgs e)
-        {
-            editor.ResetBeatmap();
-        }
     }
 }

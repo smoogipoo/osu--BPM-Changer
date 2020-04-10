@@ -29,7 +29,6 @@ namespace osu_trainer
     class BeatmapEditor
     {
         MainForm form;
-        private EditorState state;
         public BadBeatmapReason NotReadyReason;
 
         public Beatmap OriginalBeatmap;
@@ -40,28 +39,21 @@ namespace osu_trainer
         public float starRating;
         public float aimRating;
         public float speedRating;
-
-        float bpmMultiplier = 1.0f;
         float lockedHP = 0f;
         float lockedCS = 0f;
         float lockedAR = 0f;
         float lockedOD = 0f;
-        private bool hpIsLocked = false;
-        private bool csIsLocked = false;
-        private bool arIsLocked = false;
-        private bool odIsLocked = false;
-        private bool scaleAR = true;
-        private bool scaleOD = true;
 
         // public getters only
         // to set, call set methods
-        public bool HpIsLocked { get => hpIsLocked; }
-        public bool CsIsLocked { get => csIsLocked; }
-        public bool ArIsLocked { get => arIsLocked; }
-        public bool OdIsLocked { get => odIsLocked; }
-        public bool ScaleAR { get => scaleAR; }
-        public bool ScaleOD { get => scaleOD; }
-        internal EditorState State { get => state; }
+        public bool HpIsLocked { get; private set; } = false;
+        public bool CsIsLocked { get; private set; } = false;
+        public bool ArIsLocked { get; private set; } = false;
+        public bool OdIsLocked { get; private set; } = false;
+        public bool ScaleAR { get; private set; } = true;
+        public bool ScaleOD { get; private set; } = true;
+        internal EditorState State { get; private set; }
+        public float BpmMultiplier { get; set; } = 1.0f;
 
         public BeatmapEditor(MainForm f)
         {
@@ -75,22 +67,10 @@ namespace osu_trainer
         public event EventHandler BeatmapModified;
         public event EventHandler ControlsModified;
 
-        public void ForceEventStateChanged()
-        {
-            StateChanged?.Invoke(this, EventArgs.Empty);
-        }
-        public void ForceEventBeatmapSwitched()
-        {
-            BeatmapSwitched?.Invoke(this, EventArgs.Empty);
-        }
-        public void ForceEventBeatmapModified()
-        {
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
-        }
-        public void ForceEventControlsModified()
-        {
-            ControlsModified?.Invoke(this, EventArgs.Empty);
-        }
+        public void ForceEventStateChanged()     => StateChanged?.Invoke(this, EventArgs.Empty);
+        public void ForceEventBeatmapSwitched()  => BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+        public void ForceEventBeatmapModified()  => BeatmapModified?.Invoke(this, EventArgs.Empty);
+        public void ForceEventControlsModified() => ControlsModified?.Invoke(this, EventArgs.Empty);
 
         public async void GenerateBeatmap()
         {
@@ -101,10 +81,10 @@ namespace osu_trainer
             setState(EditorState.GENERATING_BEATMAP);
 
             // main phase
-            ModifyBeatmapTiming(bpmMultiplier);
-            ModifyBeatmapMetadata(NewBeatmap, bpmMultiplier);
+            ModifyBeatmapTiming(BpmMultiplier);
+            ModifyBeatmapMetadata(NewBeatmap, BpmMultiplier);
             if (!File.Exists(Helper.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + NewBeatmap.AudioFilename))
-                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, NewBeatmap, bpmMultiplier));
+                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, NewBeatmap, BpmMultiplier));
             NewBeatmap.Save();
 
             // post
@@ -131,7 +111,7 @@ namespace osu_trainer
             }
 
             // finish
-            ModifyBeatmapTiming(bpmMultiplier); // for calculating star rating
+            ModifyBeatmapTiming(BpmMultiplier); // for calculating star rating
             setState(EditorState.READY);
             BeatmapSwitched?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
@@ -139,7 +119,7 @@ namespace osu_trainer
 
         private void setState(EditorState s)
         {
-            state = s;
+            State = s;
             StateChanged?.Invoke(this, EventArgs.Empty);
         }
 
@@ -170,32 +150,32 @@ namespace osu_trainer
             if (ArIsLocked)
                 lockedAR = value;
 
-            scaleAR = false;
+            ScaleAR = false;
             BeatmapModified?.Invoke(this, EventArgs.Empty);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetARLock(bool locked)
         {
-            arIsLocked = locked;
-            if (arIsLocked)
-                scaleAR = false;
+            ArIsLocked = locked;
+            if (ArIsLocked)
+                ScaleAR = false;
             else
                 SetScaleAR(true);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetScaleAR(bool value)
         {
-            scaleAR = value;
+            ScaleAR = value;
 
             if (State == EditorState.NOT_READY)
                 return;
 
             if (ScaleAR)
             {
-                NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, bpmMultiplier);
+                NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
                 BeatmapModified?.Invoke(this, EventArgs.Empty);
             }
-            arIsLocked = false;
+            ArIsLocked = false;
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetOD(float value)
@@ -210,7 +190,7 @@ namespace osu_trainer
         }
         public void SetHPLock(bool locked)
         {
-            hpIsLocked = locked;
+            HpIsLocked = locked;
             if (!locked)
             {
                 NewBeatmap.HPDrainRate = OriginalBeatmap.HPDrainRate;
@@ -220,7 +200,7 @@ namespace osu_trainer
         }
         public void SetCSLock(bool locked)
         {
-            csIsLocked = locked;
+            CsIsLocked = locked;
             if (!locked)
             {
                 NewBeatmap.CircleSize = OriginalBeatmap.CircleSize;
@@ -230,7 +210,7 @@ namespace osu_trainer
         }
         public void SetODLock(bool locked)
         {
-            odIsLocked = locked;
+            OdIsLocked = locked;
             if (!locked)
             {
                 NewBeatmap.OverallDifficulty = OriginalBeatmap.OverallDifficulty;
@@ -240,7 +220,7 @@ namespace osu_trainer
         }
         public void SetBpmMultiplier(float multiplier)
         {
-            bpmMultiplier = multiplier;
+            BpmMultiplier = multiplier;
 
             // make no changes
             if (State == EditorState.NOT_READY)
@@ -248,14 +228,14 @@ namespace osu_trainer
 
             // scale AR
             if (ScaleAR && !ArIsLocked)
-                NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, bpmMultiplier);
+                NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
 
             // scale OD
             //if (scaleOD && !odIsLocked)
             //    newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedOD(originalBeatmap, bpmMultiplier);
             
             // modify beatmap timing
-            ModifyBeatmapTiming(bpmMultiplier);
+            ModifyBeatmapTiming(BpmMultiplier);
 
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
@@ -268,7 +248,7 @@ namespace osu_trainer
 
         public float GetScaledAR()
         {
-            return DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, bpmMultiplier);
+            return DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
         }
 
         public bool NewMapIsDifferent()
@@ -278,7 +258,7 @@ namespace osu_trainer
                 NewBeatmap.CircleSize != OriginalBeatmap.CircleSize ||
                 NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate ||
                 NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty ||
-                bpmMultiplier != 1.0f
+                BpmMultiplier != 1.0f
             );
         }
 
@@ -374,10 +354,10 @@ namespace osu_trainer
             NewBeatmap = new Beatmap(test.Filename);
 
             // Apply locked settings
-            if (hpIsLocked) NewBeatmap.HPDrainRate       = lockedHP;
-            if (csIsLocked) NewBeatmap.CircleSize        = lockedCS;
-            if (arIsLocked) NewBeatmap.ApproachRate      = lockedAR;
-            if (odIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
+            if (HpIsLocked) NewBeatmap.HPDrainRate       = lockedHP;
+            if (CsIsLocked) NewBeatmap.CircleSize        = lockedCS;
+            if (ArIsLocked) NewBeatmap.ApproachRate      = lockedAR;
+            if (OdIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
             return true;
         }
 
@@ -464,15 +444,9 @@ namespace osu_trainer
         }
 
         // dominant, min, max
-        public (float, float, float) GetOriginalBpmData()
-        {
-            return GetBpm(OriginalBeatmap);
-        }
+        public (float, float, float) GetOriginalBpmData() => GetBpm(OriginalBeatmap);
         // dominant, min, max
-        public (float, float, float) GetNewBpmData()
-        {
-            return GetBpm(NewBeatmap);
-        }
+        public (float, float, float) GetNewBpmData() => GetBpm(NewBeatmap);
         private (float, float, float) GetBpm(Beatmap map)
         {
             var bpmList = GetBpmList(map).Select((bpm) => (int)bpm).ToList();
@@ -482,69 +456,70 @@ namespace osu_trainer
                 return (bpmList[0], bpmList[0], bpmList[0]);
 
             return (GetDominantBpm(map), bpmList.Min(), bpmList.Max());
-        }
-        private float GetDominantBpm(Beatmap map)
-        {
-            var bpms = GetBpmList(map);
-            if (bpms.Count == 1)
-                return bpms[0];
-            // store bpm => prominence (as in, how long that bpm is active in the map)
-            float previousTime = 0;
-            float previousBpm = 0;
-            var bpmTimingPoints = map.TimingPoints.Where(tp => !tp.InheritsBPM).ToList();
-            var bpmProminenceValues = new Dictionary<float, float>();
 
-            for (int i = 0; i < bpmTimingPoints.Count; i++)
+            float GetDominantBpm(Beatmap m)
             {
-                var tp = bpmTimingPoints[i];
-                var currentBpm = 60000 / tp.BpmDelay;
-                var currentTime = tp.Time;
-                // case: first timing point
-                if (i == 0)
-                {
-                    previousBpm = currentBpm;
-                    previousTime = currentTime;
-                }
-                // case: middle timing point
-                else if (i < bpmTimingPoints.Count - 1)
-                {
-                    if (!bpmProminenceValues.ContainsKey(previousBpm))
-                        bpmProminenceValues.Add(previousBpm, 0);
-                    float duration = currentTime - previousTime;
-                    bpmProminenceValues[previousBpm] += duration;
+                var bpms = GetBpmList(m);
+                if (bpms.Count == 1)
+                    return bpms[0];
+                // store bpm => prominence (as in, how long that bpm is active in the map)
+                float previousTime = 0;
+                float previousBpm = 0;
+                var bpmTimingPoints = m.TimingPoints.Where(tp => !tp.InheritsBPM).ToList();
+                var bpmProminenceValues = new Dictionary<float, float>();
 
-                    previousBpm = currentBpm;
-                    previousTime = currentTime;
-                }
-                // case: last timing point
-                else if (i == bpmTimingPoints.Count - 1)
+                for (int i = 0; i < bpmTimingPoints.Count; i++)
                 {
-                    if (!bpmProminenceValues.ContainsKey(previousBpm))
-                        bpmProminenceValues.Add(previousBpm, 0);
-                    float duration = currentTime - previousTime;
-                    bpmProminenceValues[previousBpm] += duration;
+                    var tp = bpmTimingPoints[i];
+                    var currentBpm = 60000 / tp.BpmDelay;
+                    var currentTime = tp.Time;
+                    // case: first timing point
+                    if (i == 0)
+                    {
+                        previousBpm = currentBpm;
+                        previousTime = currentTime;
+                    }
+                    // case: middle timing point
+                    else if (i < bpmTimingPoints.Count - 1)
+                    {
+                        if (!bpmProminenceValues.ContainsKey(previousBpm))
+                            bpmProminenceValues.Add(previousBpm, 0);
+                        float duration = currentTime - previousTime;
+                        bpmProminenceValues[previousBpm] += duration;
 
-                    // jump ahead in time to last hit object in map
-                    if (!bpmProminenceValues.ContainsKey(currentBpm))
-                        bpmProminenceValues.Add(currentBpm, 0);
-                    float finalTime = map.HitObjects.Last().StartTime;
-                    bpmProminenceValues[currentBpm] += finalTime - currentTime;
+                        previousBpm = currentBpm;
+                        previousTime = currentTime;
+                    }
+                    // case: last timing point
+                    else if (i == bpmTimingPoints.Count - 1)
+                    {
+                        if (!bpmProminenceValues.ContainsKey(previousBpm))
+                            bpmProminenceValues.Add(previousBpm, 0);
+                        float duration = currentTime - previousTime;
+                        bpmProminenceValues[previousBpm] += duration;
+
+                        // jump ahead in time to last hit object in map
+                        if (!bpmProminenceValues.ContainsKey(currentBpm))
+                            bpmProminenceValues.Add(currentBpm, 0);
+                        float finalTime = m.HitObjects.Last().StartTime;
+                        bpmProminenceValues[currentBpm] += finalTime - currentTime;
+                    }
                 }
+                var lines = bpmProminenceValues.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
+                Console.WriteLine(string.Join(Environment.NewLine, lines));
+
+                float candidateBpm = 0;
+                float maxProminence = float.MinValue;
+                foreach (KeyValuePair<float, float> entry in bpmProminenceValues)
+                {
+                    if (entry.Value > maxProminence)
+                    {
+                        candidateBpm = entry.Key;
+                        maxProminence = entry.Value;
+                    }
+                }
+                return candidateBpm;
             }
-            var lines = bpmProminenceValues.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-            Console.WriteLine(string.Join(Environment.NewLine, lines));
-
-            float candidateBpm = 0;
-            float maxProminence = float.MinValue;
-            foreach (KeyValuePair<float, float> entry in bpmProminenceValues)
-            {
-                if (entry.Value > maxProminence)
-                {
-                    candidateBpm = entry.Key;
-                    maxProminence = entry.Value;
-                }
-            }
-            return candidateBpm;
         }
 
         private List<float> GetBpmList(Beatmap map)
@@ -564,13 +539,13 @@ namespace osu_trainer
             NewBeatmap.CircleSize = OriginalBeatmap.CircleSize;
             NewBeatmap.ApproachRate = OriginalBeatmap.ApproachRate;
             NewBeatmap.OverallDifficulty = OriginalBeatmap.OverallDifficulty;
-            hpIsLocked = false;
-            csIsLocked = false;
-            arIsLocked = false;
-            odIsLocked = false;
-            scaleAR = true;
-            scaleOD = true;
-            bpmMultiplier = 1.0f;
+            HpIsLocked = false;
+            CsIsLocked = false;
+            ArIsLocked = false;
+            OdIsLocked = false;
+            ScaleAR = true;
+            ScaleOD = true;
+            BpmMultiplier = 1.0f;
             ModifyBeatmapTiming(1.0f);
             ControlsModified?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
