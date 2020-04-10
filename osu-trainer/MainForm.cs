@@ -30,7 +30,7 @@ namespace osu_trainer
 
         // Beatmap
         string userSongsFolder = null;
-        IOsuMemoryReader osu;
+        IOsuMemoryReader osuReader;
 
         // Color Theme
         Color formBg = Color.FromArgb(38, 35, 53);
@@ -61,7 +61,6 @@ namespace osu_trainer
         // other
         private bool scaleARPreviousState;
         private string previousBeatmapRead;
-        private bool diffCalcReady = true;
         private int beatmapFindFailCounter = 0;
 
         public MainForm()
@@ -87,7 +86,7 @@ namespace osu_trainer
 
 
             // Init object instances
-            osu = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
+            osuReader = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
             editor = new BeatmapEditor(this);
 
             // Add event handlers (observers)
@@ -104,15 +103,16 @@ namespace osu_trainer
             editor.ControlsModified += UpdateLockButtons;
             editor.ControlsModified += UpdateScaleButtons;
 
-            editor.SetState(EditorState.NOT_READY);
-            editor.NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
+            // need controls to show up as disabled
+            editor.ForceEventStateChanged();
+            editor.ForceEventBeatmapSwitched();
 
             BeatmapUpdateTimer.Start();
         }
 
         void UpdateSongDisplay(object sender, EventArgs e)
         {
-            switch (editor.GetState())
+            switch (editor.State)
             {
                 case EditorState.NOT_READY:
                     switch (editor.NotReadyReason)
@@ -144,9 +144,9 @@ namespace osu_trainer
                     StaticGif.Visible = false;
                     DiffLabel.Visible = true;
 
-                    string artist = this.editor.OriginalBeatmap.Artist;
-                    string title = this.editor.OriginalBeatmap.Title;
-                    string diff = this.editor.OriginalBeatmap.Version;
+                    string artist = editor.OriginalBeatmap.Artist;
+                    string title = editor.OriginalBeatmap.Title;
+                    string diff = editor.OriginalBeatmap.Version;
                     SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
                     DiffLabel.Text = TruncateLabelText(diff, DiffLabel);
                     break;
@@ -156,7 +156,7 @@ namespace osu_trainer
         void ToggleDumbLabels(object sender, EventArgs e)
         {
             Color labelColor = accentSalmon;
-            switch (editor.GetState())
+            switch (editor.State)
             {
                 case EditorState.NOT_READY:
                     labelColor = labelDisabledColor;
@@ -172,32 +172,36 @@ namespace osu_trainer
 
         void UpdateBpmDisplay(object sender, EventArgs e)
         {
-            switch (editor.GetState())
+            switch (editor.State)
             {
                 case EditorState.NOT_READY:
+                    OriginalBpmTextBox.BackColor = labelDisabledColor;
+                    OriginalBpmRangeTextBox.Visible = false;
+                    NewBpmTextBox.BackColor = labelDisabledColor;
+                    NewBpmRangeTextBox.Visible = false;
                     break;
                 case EditorState.READY:
-                    //var originalBpms = GetBpmList(originalBeatmap).Select((bpm) => (int)bpm).ToList();
-                    //var newBpms = GetBpmList(newBeatmap).Select((bpm) => (int)(bpm)).ToList();
-
-                    //NewBpmTextBox.ForeColor = (bpmMultiplier > 1) ? accentRed : (bpmMultiplier < 1) ? easierColor : textBoxFg;
-
-                    //OriginalBpmTextBox.Text = GetDominantBpm(originalBeatmap).ToString("0");
-                    //NewBpmTextBox.Text = GetDominantBpm(newBeatmap).ToString("0");
-                    //if (GetBpmList(originalBeatmap).Distinct().ToList().Count > 1)
-                    //{
-                    //    var oldbpms = GetBpmList(originalBeatmap);
-                    //    float oldmin = oldbpms.Min();
-                    //    float oldmax = oldbpms.Max();
-                    //    OriginalBpmTextBox.Text += $" ({oldmin.ToString("0")} - {oldmax.ToString("0")})";
-
-                    //    var newbpms = GetBpmList(newBeatmap);
-                    //    float newmin = newbpms.Min();
-                    //    float newmax = newbpms.Max();
-                    //    NewBpmTextBox.Text += $" ({newmin.ToString("0")} - {newmax.ToString("0")})";
-                    //}
-                    break;
                 case EditorState.GENERATING_BEATMAP:
+                    (float oldbpm, float oldmin, float oldmax) = editor.GetOriginalBpmData();
+                    (float newbpm, float newmin, float newmax) = editor.GetNewBpmData();
+
+                    // bpm
+                    OriginalBpmTextBox.BackColor    = textBoxBg;
+                    NewBpmTextBox.BackColor         = textBoxBg;
+                    OriginalBpmTextBox.Text         = Math.Round(oldbpm).ToString("0");
+                    NewBpmTextBox.Text              = Math.Round(newbpm).ToString("0");
+                    if (newbpm > oldbpm)
+                        NewBpmTextBox.ForeColor = accentRed;
+                    else if (newbpm < oldbpm)
+                        NewBpmTextBox.ForeColor = easierColor;
+                    else
+                        NewBpmTextBox.ForeColor = textBoxFg;
+
+                    // bpm range
+                    OriginalBpmRangeTextBox.Text    = $"({Math.Round(oldmin).ToString("0")} - {Math.Round(oldmax).ToString("0")})";
+                    NewBpmRangeTextBox.Text         = $"({Math.Round(newmin).ToString("0")} - {Math.Round(newmax).ToString("0")})";
+                    OriginalBpmRangeTextBox.Visible = (oldmin != oldmax);
+                    NewBpmRangeTextBox.Visible      = (oldmin != oldmax);
                     break;
             }
         }
@@ -205,35 +209,25 @@ namespace osu_trainer
 
         void UpdateLockButtons(object sender, EventArgs e)
         {
-            switch (editor.GetState())
-            {
-                case EditorState.NOT_READY:
-                    break;
-                case EditorState.READY:
-                    break;
-                    break;
-                case EditorState.GENERATING_BEATMAP:
-                    break;
-            }
+            HPLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? accentBlue : Color.Gray;
+            HPLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? accentBlue : Color.Gray;
+            CSLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.CsIsLocked ? accentBlue : Color.Gray;
+            CSLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.CsIsLocked ? accentBlue : Color.Gray;
+            ARLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ArIsLocked ? accentBlue : Color.Gray;
+            ARLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ArIsLocked ? accentBlue : Color.Gray;
+            ODLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.OdIsLocked ? accentBlue : Color.Gray;
+            ODLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.OdIsLocked ? accentBlue : Color.Gray;
         }
 
         void UpdateScaleButtons(object sender, EventArgs e)
         {
-            switch (editor.GetState())
-            {
-                case EditorState.NOT_READY:
-                    break;
-                case EditorState.READY:
-                    break;
-                    break;
-                case EditorState.GENERATING_BEATMAP:
-                    break;
-            }
+            ScaleARCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
+            ScaleARCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
         }
 
         void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
-            bool enabled = (editor.GetState() != EditorState.NOT_READY);
+            bool enabled = (editor.State != EditorState.NOT_READY);
             foreach (var textbox in diffDisplays)
             {
                 textbox.Enabled = enabled ? true : false;
@@ -334,7 +328,7 @@ namespace osu_trainer
 
         void ToggleDifficultyDisplay(object sender, EventArgs e)
         {
-            if (editor.GetState() == EditorState.NOT_READY)
+            if (editor.State == EditorState.NOT_READY)
             {
                 StarLabel.ForeColor = labelDisabledColor;
                 StarLabel.Text = "☆";
@@ -345,7 +339,7 @@ namespace osu_trainer
                 AimSpeedBar.LeftColour = labelDisabledColor;
                 AimSpeedBar.RightColour = labelDisabledColor;
             }
-            else if (editor.GetState() == EditorState.READY)
+            else if (editor.State == EditorState.READY)
             {
                 StarLabel.ForeColor = starsColor;
                 AimLabel.ForeColor = aimColor;
@@ -356,7 +350,7 @@ namespace osu_trainer
         }
         void ToggleBpmUpDown(object sender, EventArgs e)
         {
-            bool enabled = (editor.GetState() != EditorState.NOT_READY);
+            bool enabled = (editor.State != EditorState.NOT_READY);
             BpmMultiplierUpDown.Enabled   = enabled ? true : false;
             BpmMultiplierUpDown.BackColor = enabled ? textBoxBg : SystemColors.ControlDark;
         }
@@ -373,7 +367,7 @@ namespace osu_trainer
         void ToggleGenerateButton(object sender, EventArgs e)
         {
             bool enabled = false;
-            switch (editor.GetState())
+            switch (editor.State)
             {
                 case EditorState.READY:
                     enabled = editor.NewMapIsDifferent() ? true : false;
@@ -386,14 +380,11 @@ namespace osu_trainer
             GenerateMapButton.Enabled   = enabled ? true : false;
             GenerateMapButton.ForeColor = enabled ? Color.White : Color.DimGray;
             GenerateMapButton.BackColor = enabled ? accentPink : SystemColors.ControlLight;
+            GenerateMapButton.Text      = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "2. Create Map";
         }
         
 
 
-        private void GenerateMapButton_Click(object sender, EventArgs e)
-        {
-            editor.GenerateBeatmap();
-        }
 
         public void PlayDoneSound()
         {
@@ -401,19 +392,6 @@ namespace osu_trainer
             sound.Play();
         }
 
-
-
-        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
-        {
-            // set new multiplier
-            editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
-        }
-
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Space && GenerateMapButton.Enabled)
-                GenerateMapButton_Click(null, null);
-        }
 
         private string TruncateLabelText(string txt, Label label)
         {
@@ -461,205 +439,6 @@ namespace osu_trainer
             return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
         }
 
-
-        #region Control State and Appearance
-        private void DisableFormControls()
-        {
-            // top
-            DisableSongDisplay();
-
-            // labels
-            foreach (var label in dumbLabels)
-                label.ForeColor = labelDisabledColor;
-
-            // updowns
-            DisableDiffControls();
-            DisableBpmUpDown();
-
-            // Star Rating Display
-            StarLabel.ForeColor = labelDisabledColor;
-            StarLabel.Text = "☆";
-            AimLabel.ForeColor = labelDisabledColor;
-            AimLabel.Text = "";
-            SpeedLabel.ForeColor = labelDisabledColor;
-            SpeedLabel.Text = "";
-            AimSpeedBar.LeftColour = labelDisabledColor;
-            AimSpeedBar.RightColour = labelDisabledColor;
-
-            // BPM Display
-            OriginalBpmTextBox.ForeColor = textBoxFg;
-            NewBpmTextBox.ForeColor = textBoxFg;
-
-            // generate map
-            DisableGenerateMapButton();
-
-        }
-        private void EnableFormControls()
-        {
-            // Song Display
-            EnableSongDisplay();
-
-            // Labels
-            foreach (var label in dumbLabels)
-                label.ForeColor = accentSalmon;
-
-            // Diff Controls
-            EnableDiffControls();
-
-            // BPM Multiplier Up Down
-            EnableBpmUpDown();
-
-            // Star Rating Display
-            StarLabel.ForeColor = starsColor;
-            AimLabel.ForeColor = aimColor;
-            SpeedLabel.ForeColor = speedColor;
-            AimSpeedBar.LeftColour = aimColor;
-            AimSpeedBar.RightColour = speedColor;
-
-            // BPM Display
-            OriginalBpmTextBox.ForeColor = textBoxFg;
-            NewBpmTextBox.ForeColor = textBoxFg;
-
-            // generate map
-            EnableGenerateMapButton();
-        }
-
-        private void DisableSongDisplay()
-        {
-            SongLabel.Text = "no beatmap";
-            SongLabel.ForeColor = labelDisabledColor;
-            DiffLabel.Visible = false;
-            StaticGif.Visible = true;
-        }
-        private void EnableSongDisplay()
-        {
-            SongLabel.ForeColor = accentYellow;
-            DiffLabel.Visible = true;
-            StaticGif.Visible = false;
-        }
-
-        private void EnableDiffControls()
-        {
-            foreach (var display in diffDisplays)
-            {
-                EnableTextbox(display);
-            }
-            foreach (var slider in diffSliders)
-            {
-                slider.Enabled = true;
-            }
-        }
-        private void DisableDiffControls()
-        {
-            foreach (var display in diffDisplays)
-            {
-                DisableTextbox(display);
-            }
-            foreach (var slider in diffSliders)
-            {
-                slider.Enabled = false;
-            }
-        }
-        private void EnableBpmUpDown()
-        {
-            BpmMultiplierUpDown.Enabled = true;
-            BpmMultiplierUpDown.BackColor = textBoxBg;
-        }
-        private void DisableBpmUpDown()
-        {
-            BpmMultiplierUpDown.Enabled = false;
-            BpmMultiplierUpDown.Font = new Font(BpmMultiplierUpDown.Font, FontStyle.Regular);
-            BpmMultiplierUpDown.ForeColor = textBoxFg;
-            BpmMultiplierUpDown.BackColor = SystemColors.ControlDark;
-        }
-        private void EnableGenerateMapButton()
-        {
-            if (!editor.NewMapIsDifferent())
-                return;
-            GenerateMapButton.Enabled = true;
-            GenerateMapButton.ForeColor = Color.White;
-            GenerateMapButton.BackColor = accentPink;
-        }
-        private void DisableGenerateMapButton()
-        {
-            GenerateMapButton.ForeColor = Color.DimGray;
-            GenerateMapButton.BackColor = SystemColors.ControlLight;
-            GenerateMapButton.Enabled = false;
-        }
-
-        // making this async seems to be causing a lot of headaches...
-        private async void BeatmapChanged(bool bpmChanged = false, bool csChanged = false, bool newBeatmapLoaded = false)
-        {
-
-            //// Star Rating
-            //if ((bpmChanged || csChanged || newBeatmapLoaded) && diffCalcReady)
-            //{
-            //    diffCalcReady = false;
-            //    DiffCalcCooldown.Start();
-            //    float stars, aimStars, speedStars = -1.0f;
-            //    try
-            //    {
-            //        (stars, aimStars, speedStars) = await Task.Run(() => DifficultyCalculator.CalculateStarRating(newBeatmap));
-            //    }
-            //    catch (NullReferenceException e) {
-            //        // just do nothing, wait for next chance to recalculate difficulty
-            //        Console.WriteLine(e);
-            //        Console.WriteLine("lol asdfasdf;lkjasdf");
-            //        return;
-            //    }
-            //    if (stars < 0)
-            //        return;
-
-            //    int aimPercent = (int)(100.0f * aimStars / (aimStars + speedStars));
-            //    int speedPercent = 100 - aimPercent;
-            //    StarLabel.Text = $"{stars:0.00} ☆";
-            //    AimLabel.Text = $"aim: {aimPercent}%";
-            //    SpeedLabel.Text = $"spd: {speedPercent}%";
-            //    AimSpeedBar.LeftPercent = aimPercent;
-            //}
-
-            //UpdateBpmDisplay();
-
-            //// Generate Map Button
-            //if (beatmapEditor.NewMapIsDifferent())
-            //    EnableGenerateMapButton();
-            //else
-            //    DisableGenerateMapButton();
-
-        }
-        private void UpdateBpmDisplay()
-        {
-            return;
-        }
-        private void DisableTextbox(TextBox textbox)
-        {
-            textbox.Enabled = false;
-            textbox.BackColor = SystemColors.ControlDark;
-            textbox.ForeColor = textBoxFg;
-            textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
-        }
-        private void EnableTextbox(TextBox textbox)
-        {
-            textbox.Enabled = true;
-            textbox.BackColor = textBoxBg;
-            textbox.ForeColor = textBoxFg;
-            textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
-        }
-        private void EnableTextCheckbox(CheckBox cb)
-        {
-            cb.BackColor = Color.FromArgb(38, 35, 53);
-            cb.FlatAppearance.BorderColor = accentCyan;
-            cb.ForeColor = accentCyan;
-        }
-        private void DisableTextCheckbox(CheckBox cb)
-        {
-            cb.BackColor = Color.FromArgb(38, 35, 53);
-            cb.FlatAppearance.BorderColor = Color.FromArgb(98, 96, 104);
-            cb.ForeColor = Color.FromArgb(98, 96, 104);
-        }
-
-        #endregion
-
         #region Event Handlers
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
@@ -684,8 +463,8 @@ namespace osu_trainer
             }
 
             // Read memory for current map
-            string beatmapFolder = osu.GetMapFolderName();
-            string beatmapFilename = osu.GetOsuFileName();
+            string beatmapFolder = osuReader.GetMapFolderName();
+            string beatmapFilename = osuReader.GetOsuFileName();
 
             // Read unsuccessful (osu might not be running)
             if (beatmapFilename == "")
@@ -736,20 +515,17 @@ namespace osu_trainer
         {
             editor.SetHP((float)HPSlider.Value);
         }
-
         private void CSSlider_ValueChanged(object sender, EventArgs e)
         {
             editor.SetCS((float)CSSlider.Value);
         }
-
         private void ARSlider_ValueChanged(object sender, EventArgs e)
         {
             editor.SetAR((float)ARSlider.Value);
         }
-
         private void ODSlider_ValueChanged(object sender, EventArgs e)
         {
-            editor.SetCS((float)ODSlider.Value);
+            editor.SetOD((float)ODSlider.Value);
         }
         private void HPLockCheck_CheckedChanged(object sender, EventArgs e)
         {
@@ -769,15 +545,35 @@ namespace osu_trainer
         }
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)
         {
-            editor.SetScaleAR(ScaleARCheck.Checked);
+            editor.SetScaleAR(!editor.ScaleAR);
         }
-
-        private void DiffCalcCooldown_Tick(object sender, EventArgs e)
+        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
         {
-            diffCalcReady = true;
-            DiffCalcCooldown.Stop();
+            editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
+        }
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        {
+            Console.WriteLine(e.KeyCode);
+            if (e.KeyCode == Keys.D1)
+            {
+                ResetButton_Click(null, null);
+                ResetButton.Focus();
+            }
+            if (e.KeyCode == Keys.D2 && GenerateMapButton.Enabled)
+            {
+                GenerateMapButton_Click(null, null);
+                GenerateMapButton.Focus();
+            }
+        }
+        private void GenerateMapButton_Click(object sender, EventArgs e)
+        {
+            editor.GenerateBeatmap();
         }
         #endregion
 
+        private void ResetButton_Click(object sender, EventArgs e)
+        {
+            editor.ResetBeatmap();
+        }
     }
 }

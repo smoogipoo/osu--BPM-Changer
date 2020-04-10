@@ -32,20 +32,22 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.label2 = new System.Windows.Forms.Label();
             this.BeatmapUpdateTimer = new System.Windows.Forms.Timer(this.components);
-            this.OriginalBpmTextBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.NewBpmTextBox = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
             this.GenerateMapButton = new System.Windows.Forms.Button();
             this.MiddlePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Panel3 = new System.Windows.Forms.Panel();
-            this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
             this.AimLabel = new System.Windows.Forms.Label();
             this.SpeedLabel = new System.Windows.Forms.Label();
             this.StarLabel = new System.Windows.Forms.Label();
+            this.NewBpmTextBox = new System.Windows.Forms.TextBox();
+            this.NewBpmRangeTextBox = new System.Windows.Forms.TextBox();
+            this.OriginalBpmRangeTextBox = new System.Windows.Forms.TextBox();
+            this.OriginalBpmTextBox = new System.Windows.Forms.TextBox();
+            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ODLockCheck = new System.Windows.Forms.CheckBox();
@@ -53,34 +55,36 @@
             this.CSLockCheck = new System.Windows.Forms.CheckBox();
             this.odlabel = new System.Windows.Forms.Label();
             this.ODDisplay = new System.Windows.Forms.TextBox();
-            this.ODSlider = new osu_trainer.OptionSlider();
             this.arlabel = new System.Windows.Forms.Label();
             this.ARDisplay = new System.Windows.Forms.TextBox();
-            this.ARSlider = new osu_trainer.OptionSlider();
             this.cslabel = new System.Windows.Forms.Label();
             this.CSDisplay = new System.Windows.Forms.TextBox();
-            this.CSSlider = new osu_trainer.OptionSlider();
             this.hplabel = new System.Windows.Forms.Label();
             this.HPDisplay = new System.Windows.Forms.TextBox();
-            this.HPSlider = new osu_trainer.OptionSlider();
             this.HPLockCheck = new System.Windows.Forms.CheckBox();
             this.BottomPanel = new System.Windows.Forms.Panel();
+            this.ResetButton = new System.Windows.Forms.Button();
             this.TopPanel = new System.Windows.Forms.Panel();
             this.SongLabel = new System.Windows.Forms.Label();
             this.DiffLabel = new System.Windows.Forms.Label();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
-            this.DiffCalcCooldown = new System.Windows.Forms.Timer(this.components);
+            this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
+            this.ODSlider = new osu_trainer.OptionSlider();
+            this.ARSlider = new osu_trainer.OptionSlider();
+            this.CSSlider = new osu_trainer.OptionSlider();
+            this.HPSlider = new osu_trainer.OptionSlider();
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.SuspendLayout();
             // 
             // label2
@@ -101,24 +105,12 @@
             this.BeatmapUpdateTimer.Interval = 50;
             this.BeatmapUpdateTimer.Tick += new System.EventHandler(this.BeatmapUpdateTimer_Tick);
             // 
-            // OriginalBpmTextBox
-            // 
-            this.OriginalBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.OriginalBpmTextBox.Location = new System.Drawing.Point(114, 43);
-            this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
-            this.OriginalBpmTextBox.ReadOnly = true;
-            this.OriginalBpmTextBox.Size = new System.Drawing.Size(130, 17);
-            this.OriginalBpmTextBox.TabIndex = 8;
-            // 
             // label4
             // 
             this.label4.AutoSize = true;
             this.label4.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label4.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label4.Location = new System.Drawing.Point(18, 43);
+            this.label4.Location = new System.Drawing.Point(18, 48);
             this.label4.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label4.Name = "label4";
             this.label4.Size = new System.Drawing.Size(90, 16);
@@ -126,24 +118,12 @@
             this.label4.Text = "Original BPM";
             this.label4.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // NewBpmTextBox
-            // 
-            this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.NewBpmTextBox.Location = new System.Drawing.Point(114, 66);
-            this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.NewBpmTextBox.Name = "NewBpmTextBox";
-            this.NewBpmTextBox.ReadOnly = true;
-            this.NewBpmTextBox.Size = new System.Drawing.Size(130, 17);
-            this.NewBpmTextBox.TabIndex = 8;
-            // 
             // label5
             // 
             this.label5.AutoSize = true;
             this.label5.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label5.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.label5.Location = new System.Drawing.Point(41, 67);
+            this.label5.Location = new System.Drawing.Point(41, 72);
             this.label5.Margin = new System.Windows.Forms.Padding(4, 0, 4, 0);
             this.label5.Name = "label5";
             this.label5.Size = new System.Drawing.Size(67, 16);
@@ -153,19 +133,18 @@
             // 
             // GenerateMapButton
             // 
-            this.GenerateMapButton.AutoSize = true;
             this.GenerateMapButton.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.GenerateMapButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(243)))), ((int)(((byte)(114)))), ((int)(((byte)(185)))));
-            this.GenerateMapButton.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.GenerateMapButton.Dock = System.Windows.Forms.DockStyle.Bottom;
             this.GenerateMapButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.GenerateMapButton.Font = new System.Drawing.Font("Microsoft Tai Le", 11F, System.Drawing.FontStyle.Bold);
             this.GenerateMapButton.ForeColor = System.Drawing.Color.White;
-            this.GenerateMapButton.Location = new System.Drawing.Point(10, 10);
+            this.GenerateMapButton.Location = new System.Drawing.Point(10, 37);
             this.GenerateMapButton.Margin = new System.Windows.Forms.Padding(30, 3, 30, 3);
             this.GenerateMapButton.Name = "GenerateMapButton";
             this.GenerateMapButton.Size = new System.Drawing.Size(407, 40);
             this.GenerateMapButton.TabIndex = 0;
-            this.GenerateMapButton.Text = "Generate Map";
+            this.GenerateMapButton.Text = "2. Create Map";
             this.GenerateMapButton.UseVisualStyleBackColor = false;
             this.GenerateMapButton.Click += new System.EventHandler(this.GenerateMapButton_Click);
             // 
@@ -177,7 +156,7 @@
             this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
-            this.MiddlePanel.Size = new System.Drawing.Size(427, 210);
+            this.MiddlePanel.Size = new System.Drawing.Size(427, 224);
             this.MiddlePanel.TabIndex = 10;
             // 
             // panel2
@@ -186,7 +165,7 @@
             this.panel2.Dock = System.Windows.Forms.DockStyle.Fill;
             this.panel2.Location = new System.Drawing.Point(0, 126);
             this.panel2.Name = "panel2";
-            this.panel2.Size = new System.Drawing.Size(427, 84);
+            this.panel2.Size = new System.Drawing.Size(427, 98);
             this.panel2.TabIndex = 11;
             // 
             // Panel3
@@ -195,37 +174,30 @@
             this.Panel3.Controls.Add(this.AimLabel);
             this.Panel3.Controls.Add(this.SpeedLabel);
             this.Panel3.Controls.Add(this.StarLabel);
+            this.Panel3.Controls.Add(this.NewBpmTextBox);
+            this.Panel3.Controls.Add(this.NewBpmRangeTextBox);
+            this.Panel3.Controls.Add(this.OriginalBpmRangeTextBox);
+            this.Panel3.Controls.Add(this.OriginalBpmTextBox);
+            this.Panel3.Controls.Add(this.checkBox3);
+            this.Panel3.Controls.Add(this.checkBox1);
             this.Panel3.Controls.Add(this.ScaleARCheck);
             this.Panel3.Controls.Add(this.label4);
-            this.Panel3.Controls.Add(this.OriginalBpmTextBox);
             this.Panel3.Controls.Add(this.label5);
-            this.Panel3.Controls.Add(this.NewBpmTextBox);
             this.Panel3.Controls.Add(this.label2);
             this.Panel3.Controls.Add(this.BpmMultiplierUpDown);
             this.Panel3.Dock = System.Windows.Forms.DockStyle.Fill;
             this.Panel3.Location = new System.Drawing.Point(0, 0);
             this.Panel3.Name = "Panel3";
             this.Panel3.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
-            this.Panel3.Size = new System.Drawing.Size(427, 84);
+            this.Panel3.Size = new System.Drawing.Size(427, 98);
             this.Panel3.TabIndex = 7;
-            // 
-            // AimSpeedBar
-            // 
-            this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
-            this.AimSpeedBar.LeftPercent = 40;
-            this.AimSpeedBar.Location = new System.Drawing.Point(276, 76);
-            this.AimSpeedBar.Name = "AimSpeedBar";
-            this.AimSpeedBar.RightColour = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
-            this.AimSpeedBar.Size = new System.Drawing.Size(135, 3);
-            this.AimSpeedBar.TabIndex = 21;
-            this.AimSpeedBar.Text = "ratioBar1";
             // 
             // AimLabel
             // 
             this.AimLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.AimLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AimLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
-            this.AimLabel.Location = new System.Drawing.Point(273, 60);
+            this.AimLabel.Location = new System.Drawing.Point(273, 66);
             this.AimLabel.Name = "AimLabel";
             this.AimLabel.Size = new System.Drawing.Size(66, 23);
             this.AimLabel.TabIndex = 20;
@@ -236,7 +208,7 @@
             this.SpeedLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.SpeedLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SpeedLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
-            this.SpeedLabel.Location = new System.Drawing.Point(350, 60);
+            this.SpeedLabel.Location = new System.Drawing.Point(350, 66);
             this.SpeedLabel.Name = "SpeedLabel";
             this.SpeedLabel.Size = new System.Drawing.Size(66, 23);
             this.SpeedLabel.TabIndex = 20;
@@ -248,12 +220,108 @@
             this.StarLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
             this.StarLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 15.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.StarLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(225)))), ((int)(((byte)(132)))), ((int)(((byte)(65)))));
-            this.StarLabel.Location = new System.Drawing.Point(306, 31);
+            this.StarLabel.Location = new System.Drawing.Point(306, 43);
             this.StarLabel.Name = "StarLabel";
             this.StarLabel.Size = new System.Drawing.Size(114, 23);
             this.StarLabel.TabIndex = 20;
             this.StarLabel.Text = "0.00 ☆";
             this.StarLabel.TextAlign = System.Drawing.ContentAlignment.TopRight;
+            // 
+            // NewBpmTextBox
+            // 
+            this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.NewBpmTextBox.Location = new System.Drawing.Point(118, 72);
+            this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.NewBpmTextBox.Name = "NewBpmTextBox";
+            this.NewBpmTextBox.ReadOnly = true;
+            this.NewBpmTextBox.Size = new System.Drawing.Size(42, 17);
+            this.NewBpmTextBox.TabIndex = 10;
+            this.NewBpmTextBox.Text = "200";
+            this.NewBpmTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // NewBpmRangeTextBox
+            // 
+            this.NewBpmRangeTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.NewBpmRangeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.NewBpmRangeTextBox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.NewBpmRangeTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.NewBpmRangeTextBox.Location = new System.Drawing.Point(166, 72);
+            this.NewBpmRangeTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.NewBpmRangeTextBox.Name = "NewBpmRangeTextBox";
+            this.NewBpmRangeTextBox.ReadOnly = true;
+            this.NewBpmRangeTextBox.Size = new System.Drawing.Size(85, 17);
+            this.NewBpmRangeTextBox.TabIndex = 10;
+            this.NewBpmRangeTextBox.Text = "(180 - 210)";
+            // 
+            // OriginalBpmRangeTextBox
+            // 
+            this.OriginalBpmRangeTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.OriginalBpmRangeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.OriginalBpmRangeTextBox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.OriginalBpmRangeTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.OriginalBpmRangeTextBox.Location = new System.Drawing.Point(166, 48);
+            this.OriginalBpmRangeTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.OriginalBpmRangeTextBox.Name = "OriginalBpmRangeTextBox";
+            this.OriginalBpmRangeTextBox.ReadOnly = true;
+            this.OriginalBpmRangeTextBox.Size = new System.Drawing.Size(85, 17);
+            this.OriginalBpmRangeTextBox.TabIndex = 10;
+            this.OriginalBpmRangeTextBox.Text = "(180 - 210)";
+            // 
+            // OriginalBpmTextBox
+            // 
+            this.OriginalBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.OriginalBpmTextBox.Location = new System.Drawing.Point(118, 48);
+            this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
+            this.OriginalBpmTextBox.ReadOnly = true;
+            this.OriginalBpmTextBox.Size = new System.Drawing.Size(42, 17);
+            this.OriginalBpmTextBox.TabIndex = 10;
+            this.OriginalBpmTextBox.Text = "200";
+            this.OriginalBpmTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // checkBox3
+            // 
+            this.checkBox3.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.checkBox3.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox3.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            this.checkBox3.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.checkBox3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.checkBox3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkBox3.Font = new System.Drawing.Font("Carlito", 8.25F);
+            this.checkBox3.ForeColor = System.Drawing.Color.Gray;
+            this.checkBox3.Location = new System.Drawing.Point(311, 8);
+            this.checkBox3.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.checkBox3.Name = "checkBox3";
+            this.checkBox3.Size = new System.Drawing.Size(80, 23);
+            this.checkBox3.TabIndex = 19;
+            this.checkBox3.Text = "Change pitch";
+            this.checkBox3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.checkBox3.UseVisualStyleBackColor = false;
+            // 
+            // checkBox1
+            // 
+            this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
+            this.checkBox1.AutoSize = true;
+            this.checkBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.checkBox1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
+            this.checkBox1.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.checkBox1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.checkBox1.Font = new System.Drawing.Font("Carlito", 8.25F);
+            this.checkBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
+            this.checkBox1.Location = new System.Drawing.Point(251, 8);
+            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.checkBox1.Name = "checkBox1";
+            this.checkBox1.Size = new System.Drawing.Size(56, 23);
+            this.checkBox1.TabIndex = 19;
+            this.checkBox1.Text = "Scale OD";
+            this.checkBox1.UseVisualStyleBackColor = false;
             // 
             // ScaleARCheck
             // 
@@ -261,8 +329,6 @@
             this.ScaleARCheck.AutoSize = true;
             this.ScaleARCheck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.ScaleARCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.ScaleARCheck.Checked = true;
-            this.ScaleARCheck.CheckState = System.Windows.Forms.CheckState.Checked;
             this.ScaleARCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
             this.ScaleARCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.ScaleARCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
@@ -277,41 +343,6 @@
             this.ScaleARCheck.Text = "Scale AR";
             this.ScaleARCheck.UseVisualStyleBackColor = false;
             this.ScaleARCheck.CheckedChanged += new System.EventHandler(this.ScaleARCheck_CheckedChanged);
-            // 
-            // BpmMultiplierUpDown
-            // 
-            this.BpmMultiplierUpDown.BackColor = System.Drawing.SystemColors.ControlDark;
-            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.BpmMultiplierUpDown.DecimalPlaces = 2;
-            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
-            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
-            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
-            this.BpmMultiplierUpDown.TabIndex = 4;
-            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
             // 
             // Middle1Panel
             // 
@@ -363,12 +394,12 @@
             // 
             this.ODLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
             this.ODLockCheck.AutoSize = true;
-            this.ODLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.ODLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.ODLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.ODLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
             this.ODLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ODLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ODLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.ODLockCheck.ForeColor = System.Drawing.Color.Gray;
             this.ODLockCheck.Location = new System.Drawing.Point(358, 92);
             this.ODLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ODLockCheck.Name = "ODLockCheck";
@@ -383,12 +414,12 @@
             // 
             this.ARLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
             this.ARLockCheck.AutoSize = true;
-            this.ARLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.ARLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.ARLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.ARLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
             this.ARLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.ARLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ARLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.ARLockCheck.ForeColor = System.Drawing.Color.Gray;
             this.ARLockCheck.Location = new System.Drawing.Point(358, 63);
             this.ARLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ARLockCheck.Name = "ARLockCheck";
@@ -403,12 +434,12 @@
             // 
             this.CSLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
             this.CSLockCheck.AutoSize = true;
-            this.CSLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.CSLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.CSLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.CSLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
             this.CSLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.CSLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.CSLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.CSLockCheck.ForeColor = System.Drawing.Color.Gray;
             this.CSLockCheck.Location = new System.Drawing.Point(358, 34);
             this.CSLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.CSLockCheck.Name = "CSLockCheck";
@@ -442,48 +473,11 @@
             this.ODDisplay.Location = new System.Drawing.Point(41, 92);
             this.ODDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ODDisplay.Name = "ODDisplay";
+            this.ODDisplay.ReadOnly = true;
             this.ODDisplay.Size = new System.Drawing.Size(42, 21);
             this.ODDisplay.TabIndex = 10;
             this.ODDisplay.Text = "0.0";
             this.ODDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // ODSlider
-            // 
-            this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.ODSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ODSlider.FillDraggingNipple = false;
-            this.ODSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ODSlider.Location = new System.Drawing.Point(89, 90);
-            this.ODSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ODSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ODSlider.Name = "ODSlider";
-            this.ODSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.ODSlider.NippleDiameter = 15;
-            this.ODSlider.NippleExpandedDiameter = 18;
-            this.ODSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.ODSlider.NippleStrokeWidth = 2;
-            this.ODSlider.Size = new System.Drawing.Size(263, 23);
-            this.ODSlider.TabIndex = 11;
-            this.ODSlider.Text = "HPSlider";
-            this.ODSlider.Thickness = 4;
-            this.ODSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
             // 
             // arlabel
             // 
@@ -508,48 +502,11 @@
             this.ARDisplay.Location = new System.Drawing.Point(41, 63);
             this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.ARDisplay.Name = "ARDisplay";
+            this.ARDisplay.ReadOnly = true;
             this.ARDisplay.Size = new System.Drawing.Size(42, 21);
             this.ARDisplay.TabIndex = 7;
             this.ARDisplay.Text = "0.0";
             this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // ARSlider
-            // 
-            this.ARSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.ARSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.ARSlider.FillDraggingNipple = false;
-            this.ARSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.ARSlider.Location = new System.Drawing.Point(89, 61);
-            this.ARSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.ARSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ARSlider.Name = "ARSlider";
-            this.ARSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.ARSlider.NippleDiameter = 15;
-            this.ARSlider.NippleExpandedDiameter = 18;
-            this.ARSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.ARSlider.NippleStrokeWidth = 2;
-            this.ARSlider.Size = new System.Drawing.Size(263, 23);
-            this.ARSlider.TabIndex = 8;
-            this.ARSlider.Text = "HPSlider";
-            this.ARSlider.Thickness = 4;
-            this.ARSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
             // 
             // cslabel
             // 
@@ -574,48 +531,11 @@
             this.CSDisplay.Location = new System.Drawing.Point(41, 34);
             this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.CSDisplay.Name = "CSDisplay";
+            this.CSDisplay.ReadOnly = true;
             this.CSDisplay.Size = new System.Drawing.Size(42, 21);
             this.CSDisplay.TabIndex = 4;
             this.CSDisplay.Text = "0.0";
             this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
-            // CSSlider
-            // 
-            this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.CSSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.CSSlider.FillDraggingNipple = false;
-            this.CSSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.CSSlider.Location = new System.Drawing.Point(89, 32);
-            this.CSSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.CSSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CSSlider.Name = "CSSlider";
-            this.CSSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.CSSlider.NippleDiameter = 15;
-            this.CSSlider.NippleExpandedDiameter = 18;
-            this.CSSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.CSSlider.NippleStrokeWidth = 2;
-            this.CSSlider.Size = new System.Drawing.Size(263, 23);
-            this.CSSlider.TabIndex = 5;
-            this.CSSlider.Text = "HPSlider";
-            this.CSSlider.Thickness = 4;
-            this.CSSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
             // 
             // hplabel
             // 
@@ -641,59 +561,22 @@
             this.HPDisplay.Location = new System.Drawing.Point(41, 5);
             this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.HPDisplay.Name = "HPDisplay";
+            this.HPDisplay.ReadOnly = true;
             this.HPDisplay.Size = new System.Drawing.Size(42, 21);
             this.HPDisplay.TabIndex = 1;
             this.HPDisplay.Text = "0.0";
             this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // HPSlider
-            // 
-            this.HPSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.HPSlider.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.HPSlider.FillDraggingNipple = false;
-            this.HPSlider.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.HPSlider.Location = new System.Drawing.Point(89, 3);
-            this.HPSlider.MaxValue = new decimal(new int[] {
-            10,
-            0,
-            0,
-            0});
-            this.HPSlider.MinValue = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.HPSlider.Name = "HPSlider";
-            this.HPSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
-            this.HPSlider.NippleDiameter = 15;
-            this.HPSlider.NippleExpandedDiameter = 18;
-            this.HPSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.HPSlider.NippleStrokeWidth = 2;
-            this.HPSlider.Size = new System.Drawing.Size(263, 23);
-            this.HPSlider.TabIndex = 2;
-            this.HPSlider.Text = "HPSlider";
-            this.HPSlider.Thickness = 4;
-            this.HPSlider.Value = new decimal(new int[] {
-            0,
-            0,
-            0,
-            0});
-            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
-            // 
             // HPLockCheck
             // 
             this.HPLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
             this.HPLockCheck.AutoSize = true;
-            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
             this.HPLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.HPLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
             this.HPLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.HPLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HPLockCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
+            this.HPLockCheck.ForeColor = System.Drawing.Color.Gray;
             this.HPLockCheck.Location = new System.Drawing.Point(358, 5);
             this.HPLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.HPLockCheck.Name = "HPLockCheck";
@@ -706,13 +589,27 @@
             // 
             // BottomPanel
             // 
+            this.BottomPanel.Controls.Add(this.ResetButton);
             this.BottomPanel.Controls.Add(this.GenerateMapButton);
             this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 310);
+            this.BottomPanel.Location = new System.Drawing.Point(0, 324);
             this.BottomPanel.Name = "BottomPanel";
-            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.BottomPanel.Size = new System.Drawing.Size(427, 60);
+            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10, 2, 10, 10);
+            this.BottomPanel.Size = new System.Drawing.Size(427, 87);
             this.BottomPanel.TabIndex = 11;
+            // 
+            // ResetButton
+            // 
+            this.ResetButton.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.ResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ResetButton.ForeColor = System.Drawing.Color.DarkGray;
+            this.ResetButton.Location = new System.Drawing.Point(10, 0);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(407, 31);
+            this.ResetButton.TabIndex = 1;
+            this.ResetButton.Text = "1. Reset";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
             // 
             // TopPanel
             // 
@@ -774,16 +671,210 @@
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
-            // DiffCalcCooldown
+            // AimSpeedBar
             // 
-            this.DiffCalcCooldown.Tick += new System.EventHandler(this.DiffCalcCooldown_Tick);
+            this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
+            this.AimSpeedBar.LeftPercent = 40;
+            this.AimSpeedBar.Location = new System.Drawing.Point(276, 82);
+            this.AimSpeedBar.Name = "AimSpeedBar";
+            this.AimSpeedBar.RightColour = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
+            this.AimSpeedBar.Size = new System.Drawing.Size(135, 3);
+            this.AimSpeedBar.TabIndex = 21;
+            this.AimSpeedBar.Text = "ratioBar1";
+            // 
+            // BpmMultiplierUpDown
+            // 
+            this.BpmMultiplierUpDown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BpmMultiplierUpDown.DecimalPlaces = 2;
+            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
+            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
+            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
+            this.BpmMultiplierUpDown.TabIndex = 4;
+            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
+            // 
+            // ODSlider
+            // 
+            this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.ODSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ODSlider.FillDraggingNipple = false;
+            this.ODSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ODSlider.Location = new System.Drawing.Point(89, 90);
+            this.ODSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ODSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ODSlider.Name = "ODSlider";
+            this.ODSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.ODSlider.NippleDiameter = 15;
+            this.ODSlider.NippleExpandedDiameter = 18;
+            this.ODSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.ODSlider.NippleStrokeWidth = 2;
+            this.ODSlider.Size = new System.Drawing.Size(263, 23);
+            this.ODSlider.TabIndex = 11;
+            this.ODSlider.Text = "HPSlider";
+            this.ODSlider.Thickness = 4;
+            this.ODSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
+            // 
+            // ARSlider
+            // 
+            this.ARSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.ARSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.ARSlider.FillDraggingNipple = false;
+            this.ARSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.ARSlider.Location = new System.Drawing.Point(89, 61);
+            this.ARSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.ARSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ARSlider.Name = "ARSlider";
+            this.ARSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.ARSlider.NippleDiameter = 15;
+            this.ARSlider.NippleExpandedDiameter = 18;
+            this.ARSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.ARSlider.NippleStrokeWidth = 2;
+            this.ARSlider.Size = new System.Drawing.Size(263, 23);
+            this.ARSlider.TabIndex = 8;
+            this.ARSlider.Text = "HPSlider";
+            this.ARSlider.Thickness = 4;
+            this.ARSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
+            // 
+            // CSSlider
+            // 
+            this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.CSSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.CSSlider.FillDraggingNipple = false;
+            this.CSSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.CSSlider.Location = new System.Drawing.Point(89, 32);
+            this.CSSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.CSSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CSSlider.Name = "CSSlider";
+            this.CSSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.CSSlider.NippleDiameter = 15;
+            this.CSSlider.NippleExpandedDiameter = 18;
+            this.CSSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.CSSlider.NippleStrokeWidth = 2;
+            this.CSSlider.Size = new System.Drawing.Size(263, 23);
+            this.CSSlider.TabIndex = 5;
+            this.CSSlider.Text = "HPSlider";
+            this.CSSlider.Thickness = 4;
+            this.CSSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
+            // 
+            // HPSlider
+            // 
+            this.HPSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.HPSlider.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.HPSlider.FillDraggingNipple = false;
+            this.HPSlider.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.HPSlider.Location = new System.Drawing.Point(89, 3);
+            this.HPSlider.MaxValue = new decimal(new int[] {
+            10,
+            0,
+            0,
+            0});
+            this.HPSlider.MinValue = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.HPSlider.Name = "HPSlider";
+            this.HPSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
+            this.HPSlider.NippleDiameter = 15;
+            this.HPSlider.NippleExpandedDiameter = 18;
+            this.HPSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
+            this.HPSlider.NippleStrokeWidth = 2;
+            this.HPSlider.Size = new System.Drawing.Size(263, 23);
+            this.HPSlider.TabIndex = 2;
+            this.HPSlider.Text = "HPSlider";
+            this.HPSlider.Thickness = 4;
+            this.HPSlider.Value = new decimal(new int[] {
+            0,
+            0,
+            0,
+            0});
+            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
             // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(427, 370);
+            this.ClientSize = new System.Drawing.Size(427, 411);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
@@ -800,15 +891,14 @@
             this.panel2.ResumeLayout(false);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.BottomPanel.ResumeLayout(false);
-            this.BottomPanel.PerformLayout();
             this.TopPanel.ResumeLayout(false);
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -817,9 +907,7 @@
         private System.Windows.Forms.Label label2;
         private NumericUpDownFix BpmMultiplierUpDown;
         private System.Windows.Forms.Timer BeatmapUpdateTimer;
-        private System.Windows.Forms.TextBox OriginalBpmTextBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.TextBox NewBpmTextBox;
         private System.Windows.Forms.Label label5;
         private System.Windows.Forms.Button GenerateMapButton;
         private System.Windows.Forms.Panel MiddlePanel;
@@ -851,9 +939,15 @@
         private System.Windows.Forms.CheckBox CSLockCheck;
         private System.Windows.Forms.CheckBox ScaleARCheck;
         private System.Windows.Forms.Label StarLabel;
-        private System.Windows.Forms.Timer DiffCalcCooldown;
         private funorControls.RatioBar AimSpeedBar;
         private System.Windows.Forms.Label AimLabel;
         private System.Windows.Forms.Label SpeedLabel;
+        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.TextBox NewBpmTextBox;
+        private System.Windows.Forms.TextBox NewBpmRangeTextBox;
+        private System.Windows.Forms.TextBox OriginalBpmRangeTextBox;
+        private System.Windows.Forms.TextBox OriginalBpmTextBox;
+        private System.Windows.Forms.Button ResetButton;
     }
 }
