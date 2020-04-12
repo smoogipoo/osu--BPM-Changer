@@ -59,7 +59,7 @@ namespace osu_trainer
             get => value;
             set
             {
-                this.value = Helper.Clamp(value, MinValue, MaxValue);
+                this.value = JunUtils.Clamp(value, MinValue, MaxValue);
                 Invalidate();
             }
         }
@@ -322,9 +322,9 @@ namespace osu_trainer
                 decimal oldValue = Value;
                 Value = MinValue + (MaxValue - MinValue) * sliderPercent;
                 // clamp value
-                Value = Helper.Clamp(Value, MinValue, MaxValue);
+                Value = JunUtils.Clamp(Value, MinValue, MaxValue);
                 // quantize value
-                Value = Helper.Quantize(Value, Increment);
+                Value = JunUtils.Quantize(Value, Increment);
                 if (Value != oldValue)
                     OnValueChanged(EventArgs.Empty);
             }
@@ -362,9 +362,9 @@ namespace osu_trainer
             if (!Enabled)
                 return;
             if (e.Delta > 0)
-                Value = Helper.Clamp(Value + Increment, MinValue, MaxValue);
+                Value = JunUtils.Clamp(Value + Increment, MinValue, MaxValue);
             if (e.Delta < 0)
-                Value = Helper.Clamp(Value - Increment, MinValue, MaxValue);
+                Value = JunUtils.Clamp(Value - Increment, MinValue, MaxValue);
             onValueChanged?.Invoke(this, e);
         }
         #endregion

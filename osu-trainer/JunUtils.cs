@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 
 namespace osu_trainer
 {
-    class Helper
+    class JunUtils
     {
         public static T Clamp<T>(T val, T min, T max) where T : IComparable {
             return val.CompareTo(max) > 0 ? max : val.CompareTo(min) < 0 ? min : val;

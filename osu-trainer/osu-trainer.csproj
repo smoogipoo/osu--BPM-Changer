@@ -68,7 +68,7 @@
     <Compile Include="funorControls\RatioBar.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Helper.cs" />
+    <Compile Include="JunUtils.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
     </Compile>

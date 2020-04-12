@@ -18,17 +18,14 @@ namespace osu_trainer
                 throw new ArgumentException("Don't call this function if multiplier is 1.0x");
 
 
-            var watch = new Stopwatch();
-            watch.Start();
-
             //temp1: Audio copy
             //temp2: Decoded wav
             //temp3: stretched file
             //temp4: Encoded mp3
-            string temp1 = Helper.GetTempFilename("mp3");
-            string temp2 = Helper.GetTempFilename("wav");
-            string temp3 = Helper.GetTempFilename("wav");
-            string temp4 = Helper.GetTempFilename("mp3");
+            string temp1 = JunUtils.GetTempFilename("mp3");
+            string temp2 = JunUtils.GetTempFilename("wav");
+            string temp3 = JunUtils.GetTempFilename("wav");
+            string temp4 = JunUtils.GetTempFilename("mp3");
 
             // TODO: try catch
             CopyFile(originalMap.Filename.Substring(0, originalMap.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + originalMap.AudioFilename, temp1);
@@ -61,9 +58,6 @@ namespace osu_trainer
             lame2.WaitForExit();
 
             CopyFile(temp4, Path.GetDirectoryName(newMap.Filename) + "\\" + newMap.AudioFilename);
-
-            watch.Stop();
-            Console.WriteLine($"Time elapsed: {watch.ElapsedMilliseconds}");
 
             // Clean up
             File.Delete(temp1);

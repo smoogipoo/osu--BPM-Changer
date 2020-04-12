@@ -26,6 +26,14 @@ namespace osu_trainer
         DIFF_NOT_OSUSTD
     }
 
+    // note: this code suffers from possible race conditions due to async functions modified shared resources (OriginalBeatmap, NewBeatmap)
+    // however, enough mechanisms are put in place so that this doesn't really happen in during real usage
+    // possible race condition: 
+    //
+    //    user changes bpm:                              user selects another beatmap:
+    //       NewBeatmap.TimingPoints are modified           NewBeatmap completely changes
+    //       
+
     class BeatmapEditor
     {
         MainForm form;
@@ -43,6 +51,22 @@ namespace osu_trainer
         float lockedCS = 0f;
         float lockedAR = 0f;
         float lockedOD = 0f;
+
+        class MapChangeRequest
+        {
+            static int globalRequestCounter = -1;
+            public int RequestNumber { get; set; }
+            public string Name { get; set; }
+
+            public MapChangeRequest(string name)
+            {
+                RequestNumber = ++globalRequestCounter;
+                Name = name;
+            }
+        }
+        private List<MapChangeRequest> mapChangeRequests = new List<MapChangeRequest>();
+        MapChangeRequest completedRequest = null;
+        bool changingMap = false;
 
         // public getters only
         // to set, call set methods
@@ -81,9 +105,9 @@ namespace osu_trainer
             setState(EditorState.GENERATING_BEATMAP);
 
             // main phase
-            ModifyBeatmapTiming(BpmMultiplier);
+            ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, BpmMultiplier);
             ModifyBeatmapMetadata(NewBeatmap, BpmMultiplier);
-            if (!File.Exists(Helper.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + NewBeatmap.AudioFilename))
+            if (!File.Exists(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + NewBeatmap.AudioFilename))
                 await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, NewBeatmap, BpmMultiplier));
             NewBeatmap.Save();
 
@@ -99,22 +123,53 @@ namespace osu_trainer
 
         // TODO: simulate long load time and test
         // TODO: set update interval to be really large and test
-        public async void RequestBeatmapLoad(string beatmapPath)
+        public void RequestBeatmapLoad(string beatmapPath)
         {
-            bool success = await Task.Run(() => LoadBeatmap(beatmapPath));
-            if (!success)
+            mapChangeRequests.Add(new MapChangeRequest(beatmapPath));
+            if (changingMap)
+                return;
+            serviceBeatmapChangeRequest();
+        }
+
+        private async void serviceBeatmapChangeRequest()
+        {
+            changingMap = true;
+            Beatmap candidateOriginalBeatmap = null, candidateNewBeatmap = null;
+            while (completedRequest == null || completedRequest.RequestNumber != mapChangeRequests.Last().RequestNumber)
+            {
+                completedRequest = mapChangeRequests.Last();
+                candidateOriginalBeatmap = await Task.Run(() => LoadBeatmap(mapChangeRequests.Last().Name));
+
+                if (candidateOriginalBeatmap != null)
+                {
+                    candidateNewBeatmap = candidateOriginalBeatmap.DeepCopy();
+                    ModifyBeatmapTiming(candidateOriginalBeatmap, candidateNewBeatmap, BpmMultiplier); // for calculating star rating
+                    // Apply locked settings
+                    if (HpIsLocked) candidateNewBeatmap.HPDrainRate       = lockedHP;
+                    if (CsIsLocked) candidateNewBeatmap.CircleSize        = lockedCS;
+                    if (ArIsLocked) candidateNewBeatmap.ApproachRate      = lockedAR;
+                    if (OdIsLocked) candidateNewBeatmap.OverallDifficulty = lockedOD;
+                }
+
+                // if a new request came in, invalidate candidate beatmap and service the new request
+            }
+            
+            // no new requests, we can commit to using this beatmap
+            OriginalBeatmap = candidateOriginalBeatmap;
+            NewBeatmap      = candidateNewBeatmap;
+            if (OriginalBeatmap == null)
             {
                 setState(EditorState.NOT_READY);
                 NotReadyReason = BadBeatmapReason.ERROR_LOADING_BEATMAP;
                 BeatmapSwitched?.Invoke(this, EventArgs.Empty);
-                return; // get out of here
             }
-
-            // finish
-            ModifyBeatmapTiming(BpmMultiplier); // for calculating star rating
-            setState(EditorState.READY);
-            BeatmapSwitched?.Invoke(this, EventArgs.Empty);
-            BeatmapModified?.Invoke(this, EventArgs.Empty);
+            else
+            {
+                setState(EditorState.READY);
+                BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+                BeatmapModified?.Invoke(this, EventArgs.Empty);
+            }
+            changingMap = false;
         }
 
         private void setState(EditorState s)
@@ -235,7 +290,7 @@ namespace osu_trainer
             //    newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedOD(originalBeatmap, bpmMultiplier);
             
             // modify beatmap timing
-            ModifyBeatmapTiming(BpmMultiplier);
+            ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, BpmMultiplier);
 
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
@@ -302,33 +357,34 @@ namespace osu_trainer
 
         #region private
 
-        // return true on success
-        private bool LoadBeatmap(string beatmapPath)
+        // return the new beatmap object if success
+        // return null on failure
+        private Beatmap LoadBeatmap(string beatmapPath)
         {
             // test if the beatmap is valid before committing to using it
-            Beatmap test;
+            Beatmap retMap;
             try
             {
-                test = new Beatmap(beatmapPath);
+                retMap = new Beatmap(beatmapPath);
             }
             catch (FormatException e)
             {
                 Console.WriteLine("Bad .osu file format");
                 OriginalBeatmap = null;
                 NewBeatmap = null;
-                return false;
+                return null;
             }
             // Check if beatmap was loaded successfully
-            if (test.Filename == null && test.Title == null)
+            if (retMap.Filename == null && retMap.Title == null)
             {
                 Console.WriteLine("Bad .osu file format");
-                return false;
+                return null;
             }
 
             // Check if this map was generated by osu-trainer
-            if (test.Tags.Contains("osutrainer"))
+            if (retMap.Tags.Contains("osutrainer"))
             {
-                string[] diffFiles = Directory.GetFiles(Path.GetDirectoryName(test.Filename), "*.osu");
+                string[] diffFiles = Directory.GetFiles(Path.GetDirectoryName(retMap.Filename), "*.osu");
                 int candidateSimilarity = int.MaxValue;
                 Beatmap candidate = null;
                 foreach (string diff in diffFiles)
@@ -337,7 +393,7 @@ namespace osu_trainer
                     if (map.Tags.Contains("osutrainer"))
                         continue;
                     // lower value => more similar
-                    int similarity = Helper.LevenshteinDistance(test.Version, map.Version);
+                    int similarity = JunUtils.LevenshteinDistance(retMap.Version, map.Version);
                     if (similarity < candidateSimilarity)
                     {
                         candidate = map;
@@ -346,33 +402,24 @@ namespace osu_trainer
                 }
                 // just assume this shit is the original beatmap
                 if (candidate != null)
-                    test = candidate;
+                    retMap = candidate;
             }
 
-            // Commit to new beatmap
-            OriginalBeatmap = new Beatmap(test.Filename);
-            NewBeatmap = new Beatmap(test.Filename);
-
-            // Apply locked settings
-            if (HpIsLocked) NewBeatmap.HPDrainRate       = lockedHP;
-            if (CsIsLocked) NewBeatmap.CircleSize        = lockedCS;
-            if (ArIsLocked) NewBeatmap.ApproachRate      = lockedAR;
-            if (OdIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
-            return true;
+            return retMap;
         }
 
 
         // it is safe to call this function repeatedly
-        private void ModifyBeatmapTiming(float multiplier)
+        private void ModifyBeatmapTiming(Beatmap oldMap, Beatmap newMap, float multiplier)
         {
             // Want to divide timestamps since high multiplier => shorter time
             // OUT: tp.BpmDelay          for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
-            for (int i = 0; i < OriginalBeatmap.TimingPoints.Count; i++)
+            for (int i = 0; i < oldMap.TimingPoints.Count; i++)
             {
-                var originalTimingPoint = OriginalBeatmap.TimingPoints[i];
-                var newTimingPoint = NewBeatmap.TimingPoints[i];
+                var originalTimingPoint = oldMap.TimingPoints[i];
+                var newTimingPoint = newMap.TimingPoints[i];
                 if (originalTimingPoint.InheritsBPM == false)
                 {
                     float oldBpm = 60000 / originalTimingPoint.BpmDelay;
@@ -389,10 +436,10 @@ namespace osu_trainer
 
             // OUT: event.StartTime      for each event in beatmap
             // OUT: event.EndTime        for each break event in beatmap
-            for (int i = 0; i < OriginalBeatmap.Events.Count; i++)
+            for (int i = 0; i < oldMap.Events.Count; i++)
             {
-                var originalEvent = OriginalBeatmap.Events[i];
-                var newEvent = NewBeatmap.Events[i];
+                var originalEvent = oldMap.Events[i];
+                var newEvent = newMap.Events[i];
                 newEvent.StartTime = (int)(originalEvent.StartTime / multiplier);
                 if (originalEvent.GetType() == typeof(BreakEvent))
                     ((BreakEvent)newEvent).EndTime = (int)(((BreakEvent)originalEvent).EndTime / multiplier);
@@ -400,10 +447,10 @@ namespace osu_trainer
 
             // OUT: hitobject.StartTime         for each hit object in beatmap
             // OUT: hitobject.EndTime           for each spinner in beatmap
-            for (int i = 0; i < OriginalBeatmap.HitObjects.Count; i++)
+            for (int i = 0; i < oldMap.HitObjects.Count; i++)
             {
-                var originalObject = OriginalBeatmap.HitObjects[i];
-                var newObject = NewBeatmap.HitObjects[i];
+                var originalObject = oldMap.HitObjects[i];
+                var newObject = newMap.HitObjects[i];
                 newObject.StartTime = (int)(originalObject.StartTime / multiplier);
                 if (originalObject.GetType() == typeof(SpinnerObject))
                     ((SpinnerObject)newObject).EndTime = (int)(((SpinnerObject)originalObject).EndTime / multiplier);
@@ -435,10 +482,10 @@ namespace osu_trainer
                     map.Version += $" x{multiplier}";
                 else
                     map.Version += $" {(bpmsUnique[0]).ToString("0")}bpm";
-                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + Helper.NormalizeText(map.Version) + ".mp3";
+                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + JunUtils.NormalizeText(map.Version) + ".mp3";
             }
 
-            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + Helper.NormalizeText(map.Artist) + " - " + Helper.NormalizeText(map.Title) + " (" + Helper.NormalizeText(map.Creator) + ")" + " [" + Helper.NormalizeText(map.Version) + "].osu";
+            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + JunUtils.NormalizeText(map.Artist) + " - " + JunUtils.NormalizeText(map.Title) + " (" + JunUtils.NormalizeText(map.Creator) + ")" + " [" + JunUtils.NormalizeText(map.Version) + "].osu";
             // make this map searchable in the in-game menus
             map.Tags.Add("osutrainer");
         }
@@ -450,6 +497,10 @@ namespace osu_trainer
         private (float, float, float) GetBpm(Beatmap map)
         {
             var bpmList = GetBpmList(map).Select((bpm) => (int)bpm).ToList();
+            if (bpmList.Count == 0)
+            {
+                Console.WriteLine("Very bad.");
+            }
             bpmList = bpmList.Distinct().ToList();
 
             if (bpmList.Count == 1)
@@ -546,7 +597,7 @@ namespace osu_trainer
             ScaleAR = true;
             ScaleOD = true;
             BpmMultiplier = 1.0f;
-            ModifyBeatmapTiming(1.0f);
+            ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, 1.0f);
             ControlsModified?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }

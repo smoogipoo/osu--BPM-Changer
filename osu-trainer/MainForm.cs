@@ -62,6 +62,7 @@ namespace osu_trainer
         private bool scaleARPreviousState;
         private string previousBeatmapRead;
         private int beatmapFindFailCounter = 0;
+        private bool gameLoaded = false;
 
         public MainForm()
         {
@@ -84,6 +85,9 @@ namespace osu_trainer
                 HPSlider, CSSlider, ARSlider, ODSlider
             };
 
+            // load user settings
+            if (Directory.Exists(Properties.Settings.Default.SongsFolder))
+                userSongsFolder = Properties.Settings.Default.SongsFolder;
 
             // Init object instances
             osuReader = OsuMemoryReader.Instance.GetInstanceForWindowTitleHint("");
@@ -104,19 +108,19 @@ namespace osu_trainer
             editor.ControlsModified += UpdateLockButtons;
             editor.ControlsModified += UpdateScaleButtons;
 
-            // need controls to show up as disabled
+            // need controls to show up as initially disabled
             editor.ForceEventStateChanged();
             editor.ForceEventBeatmapSwitched();
 
             BeatmapUpdateTimer.Start();
         }
 
+        #region Control Update Callbacks
         private void UpdateBpmUpDown(object sender, EventArgs e)
         {
             BpmMultiplierUpDown.Value = (decimal)editor.BpmMultiplier;
         }
-
-        void UpdateSongDisplay(object sender, EventArgs e)
+        private void UpdateSongDisplay(object sender, EventArgs e)
         {
             switch (editor.State)
             {
@@ -158,8 +162,30 @@ namespace osu_trainer
                     break;
             }
         }
+        private void UpdateSongBg(Beatmap map)
+        {
+            Console.WriteLine("UpdateSongBg called");
+            var imageEvent = map.Events.OfType<ContentEvent>().FirstOrDefault(e => e.Type == ContentType.Image);
+            if (imageEvent == null)
+            {
+                // no background for this map
+                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
+                return;
+            }
+                
+            string imageAbsolutePath = Path.GetDirectoryName(map.Filename) + "\\" + imageEvent.Filename;
+            if (!File.Exists(imageAbsolutePath))
+            {
+                // no background for this map
+                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
+                return;
+            }
 
-        void ToggleDumbLabels(object sender, EventArgs e)
+            // crop height to aspect ratio
+            Image bg = Image.FromFile(imageAbsolutePath);
+            BgPanel.BackgroundImage = CropAndPanToFit(bg, BgPanel.Size.Width, BgPanel.Size.Height);
+        }
+        private void ToggleDumbLabels(object sender, EventArgs e)
         {
             Color labelColor = accentSalmon;
             switch (editor.State)
@@ -175,8 +201,7 @@ namespace osu_trainer
             foreach (var label in dumbLabels)
                 label.ForeColor = labelColor;
         }
-
-        void UpdateBpmDisplay(object sender, EventArgs e)
+        private void UpdateBpmDisplay(object sender, EventArgs e)
         {
             switch (editor.State)
             {
@@ -211,9 +236,7 @@ namespace osu_trainer
                     break;
             }
         }
-
-
-        void UpdateLockButtons(object sender, EventArgs e)
+        private void UpdateLockButtons(object sender, EventArgs e)
         {
             HPLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? accentBlue : Color.Gray;
             HPLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? accentBlue : Color.Gray;
@@ -224,14 +247,12 @@ namespace osu_trainer
             ODLockCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.OdIsLocked ? accentBlue : Color.Gray;
             ODLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.OdIsLocked ? accentBlue : Color.Gray;
         }
-
-        void UpdateScaleButtons(object sender, EventArgs e)
+        private void UpdateScaleButtons(object sender, EventArgs e)
         {
             ScaleARCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
             ScaleARCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
         }
-
-        void ToggleHpCsArOdDisplay(object sender, EventArgs e)
+        private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
             foreach (var textbox in diffDisplays)
@@ -246,7 +267,7 @@ namespace osu_trainer
                 slider.Enabled = enabled;
             }
         }
-        void UpdateHpCsArOdDisplay(object sender, EventArgs e)
+        private void UpdateHpCsArOdDisplay(object sender, EventArgs e)
         {
             // HP
             float newHP      = editor.NewBeatmap.HPDrainRate;
@@ -331,8 +352,7 @@ namespace osu_trainer
                 ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
             }
         }
-
-        void ToggleDifficultyDisplay(object sender, EventArgs e)
+        private void ToggleDifficultyDisplay(object sender, EventArgs e)
         {
             if (editor.State == EditorState.NOT_READY)
             {
@@ -354,13 +374,13 @@ namespace osu_trainer
                 AimSpeedBar.RightColour = speedColor;
             }
         }
-        void ToggleBpmUpDown(object sender, EventArgs e)
+        private void ToggleBpmUpDown(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
             BpmMultiplierUpDown.Enabled   = enabled ? true : false;
             BpmMultiplierUpDown.BackColor = enabled ? textBoxBg : SystemColors.ControlDark;
         }
-        void UpdateDifficultyDisplay(object sender, EventArgs e)
+        private void UpdateDifficultyDisplay(object sender, EventArgs e)
         {
             StarLabel.Text = $"{editor.starRating:0.00} ☆";
             AimLabel.Text = $"aim: {editor.aimRating}";
@@ -368,9 +388,7 @@ namespace osu_trainer
             float aimPercent = 100 * editor.aimRating / (editor.aimRating + editor.speedRating);
             AimSpeedBar.LeftPercent = (int)aimPercent;
         }
-
-
-        void ToggleGenerateButton(object sender, EventArgs e)
+        private void ToggleGenerateButton(object sender, EventArgs e)
         {
             bool enabled = false;
             switch (editor.State)
@@ -388,7 +406,8 @@ namespace osu_trainer
             GenerateMapButton.BackColor = enabled ? accentPink : SystemColors.ControlLight;
             GenerateMapButton.Text      = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "2. Create Map";
         }
-        
+        #endregion
+
 
 
 
@@ -412,28 +431,6 @@ namespace osu_trainer
             return txt;
         }
 
-        private void UpdateSongBg(Beatmap map)
-        {
-            var imageEvent = map.Events.OfType<ContentEvent>().FirstOrDefault(e => e.Type == ContentType.Image);
-            if (imageEvent == null)
-            {
-                // no background for this map
-                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
-                return;
-            }
-                
-            string imageAbsolutePath = Path.GetDirectoryName(map.Filename) + "\\" + imageEvent.Filename;
-            if (!File.Exists(imageAbsolutePath))
-            {
-                // no background for this map
-                BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
-                return;
-            }
-
-            // crop height to aspect ratio
-            Image bg = Image.FromFile(imageAbsolutePath);
-            BgPanel.BackgroundImage = CropAndPanToFit(bg, BgPanel.Size.Width, BgPanel.Size.Height);
-        }
         private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
         {
             Bitmap bmpImage = new Bitmap(img);
@@ -445,15 +442,10 @@ namespace osu_trainer
             return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
         }
 
-        #region Event Handlers
+        #region User Input Event Handlers
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
             // Try to get osu install folder
-            if (userSongsFolder == null)
-            {
-                if (Directory.Exists(Properties.Settings.Default.SongsFolder))
-                    userSongsFolder = Properties.Settings.Default.SongsFolder;
-            }
             if (userSongsFolder == null)
             {
                 // check if osu!.exe is running
