@@ -140,6 +140,11 @@ namespace osu_trainer
                 {
                     candidateNewBeatmap = candidateOriginalBeatmap.Copy();
                     ModifyBeatmapTiming(candidateOriginalBeatmap, candidateNewBeatmap, BpmMultiplier);
+
+                    // Apply bpm scaled settings
+                    if (ScaleAR) candidateNewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(candidateOriginalBeatmap, BpmMultiplier);
+                    //if (ScaleOD) candidateNewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(candidateOriginalBeatmap, BpmMultiplier);
+
                     // Apply locked settings
                     if (HpIsLocked) candidateNewBeatmap.HPDrainRate       = lockedHP;
                     if (CsIsLocked) candidateNewBeatmap.CircleSize        = lockedCS;
