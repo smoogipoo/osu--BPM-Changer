@@ -52,20 +52,20 @@ namespace osu_trainer
         float lockedAR = 0f;
         float lockedOD = 0f;
 
-        class MapChangeRequest
+        class ConcurrentRequest
         {
             static int globalRequestCounter = -1;
             public int RequestNumber { get; set; }
             public string Name { get; set; }
 
-            public MapChangeRequest(string name)
+            public ConcurrentRequest(string name)
             {
                 RequestNumber = ++globalRequestCounter;
                 Name = name;
             }
         }
-        private List<MapChangeRequest> mapChangeRequests = new List<MapChangeRequest>();
-        MapChangeRequest completedRequest = null;
+        private List<ConcurrentRequest> mapChangeRequests = new List<ConcurrentRequest>();
+        ConcurrentRequest completedRequest = null;
         bool changingMap = false;
 
         // public getters only
@@ -105,18 +105,14 @@ namespace osu_trainer
             setState(EditorState.GENERATING_BEATMAP);
 
             // main phase
-            ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, BpmMultiplier);
-            ModifyBeatmapMetadata(NewBeatmap, BpmMultiplier);
-            if (!File.Exists(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + NewBeatmap.AudioFilename))
-                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, NewBeatmap, BpmMultiplier));
-            NewBeatmap.Save();
+            Beatmap exportBeatmap = NewBeatmap.Copy();
+            ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier);
+            if (!File.Exists(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + exportBeatmap.AudioFilename))
+                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, exportBeatmap, BpmMultiplier));
+            exportBeatmap.Save();
 
             // post
             form.PlayDoneSound();
-
-            // reset diff name
-            NewBeatmap.Version = OriginalBeatmap.Version;
-
             setState(EditorState.READY);
         }
 
@@ -125,7 +121,7 @@ namespace osu_trainer
         // TODO: set update interval to be really large and test
         public void RequestBeatmapLoad(string beatmapPath)
         {
-            mapChangeRequests.Add(new MapChangeRequest(beatmapPath));
+            mapChangeRequests.Add(new ConcurrentRequest(beatmapPath));
             if (changingMap)
                 return;
             serviceBeatmapChangeRequest();
@@ -142,8 +138,8 @@ namespace osu_trainer
 
                 if (candidateOriginalBeatmap != null)
                 {
-                    candidateNewBeatmap = candidateOriginalBeatmap.DeepCopy();
-                    ModifyBeatmapTiming(candidateOriginalBeatmap, candidateNewBeatmap, BpmMultiplier); // for calculating star rating
+                    candidateNewBeatmap = candidateOriginalBeatmap.Copy();
+                    ModifyBeatmapTiming(candidateOriginalBeatmap, candidateNewBeatmap, BpmMultiplier);
                     // Apply locked settings
                     if (HpIsLocked) candidateNewBeatmap.HPDrainRate       = lockedHP;
                     if (CsIsLocked) candidateNewBeatmap.CircleSize        = lockedCS;
@@ -412,7 +408,7 @@ namespace osu_trainer
         // it is safe to call this function repeatedly
         private void ModifyBeatmapTiming(Beatmap oldMap, Beatmap newMap, float multiplier)
         {
-            // Want to divide timestamps since high multiplier => shorter time
+            // Want to divide timestamps since higher multiplier => shorter time
             // OUT: tp.BpmDelay          for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
             // OUT: tp.Time              for each timing point in beatmap
