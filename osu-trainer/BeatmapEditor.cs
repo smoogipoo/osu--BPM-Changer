@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -119,10 +120,12 @@ namespace osu_trainer
                 await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, exportBeatmap, BpmMultiplier));
 
                 // take note of this mp3 in a text file, so we can clean it up later
-                string mp3ListFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
-                using (var writer = File.AppendText(mp3ListFile))
+                string mp3ManifestFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
+                using (var writer = File.AppendText(mp3ManifestFile))
                 {
-                    writer.WriteLine(exportBeatmap.AudioFilename + " | " + exportBeatmap.Filename);
+                    string beatmapFolder = Path.GetDirectoryName(exportBeatmap.Filename).Replace(Properties.Settings.Default.SongsFolder + "\\", "");
+                    string mp3RelativePath = beatmapFolder + "\\" + exportBeatmap.AudioFilename;
+                    writer.WriteLine(mp3RelativePath + " | " + exportBeatmap.Filename);
                 }
             }
             exportBeatmap.Save();
@@ -132,6 +135,51 @@ namespace osu_trainer
             setState(EditorState.READY);
         }
 
+        public List<string> GetUnusedMp3s()
+        {
+            // read manifest file
+            List<string> lines = new List<string>();
+            string mp3ManifestFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
+
+            if (!File.Exists(mp3ManifestFile))
+                return new List<string>();
+
+            using (var reader = File.OpenText(mp3ManifestFile))
+            {
+                string line = "";
+                while ((line = reader.ReadLine()) != null)
+                    lines.Add(line);
+            }
+
+            // convert that shit into a dictionary
+            var mp3Dict = new Dictionary<string, List<string>>();
+            string pattern = @"(.+) \| (.+)";
+            string matchGroup(string text, string re, int group)
+            {
+                foreach (Match m in Regex.Matches(text, re))
+                    return m.Groups[group].Value;
+                return "";
+            }
+            string parseMp3(string line) => matchGroup(line, pattern, 1);
+            string parseOsu(string line) => matchGroup(line, pattern, 2);
+
+            // create dictionary keys
+            lines
+                .Select(line => parseMp3(line)).ToList()
+                .ForEach(mp3 => mp3Dict.Add(mp3, new List<string>()));
+
+            // populate dictionary values
+            foreach ((string mp3, string osu) in lines.Select(line => (parseMp3(line), parseOsu(line))))
+                mp3Dict[mp3].Add(osu);
+
+            // find all keys where none of the associated beatmaps exist
+            bool noFilesExist(bool acc, string file) => acc && !File.Exists(file);
+            return lines
+                .Select(line => parseMp3(line))
+                .Where(
+                    mp3 => mp3Dict[mp3].Aggregate(true, noFilesExist)
+                ).ToList();
+        }
 
         // TODO: simulate long load time and test
         // TODO: set update interval to be really large and test

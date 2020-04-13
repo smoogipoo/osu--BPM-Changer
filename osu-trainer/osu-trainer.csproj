@@ -65,6 +65,9 @@
   <ItemGroup>
     <Compile Include="BeatmapEditor.cs" />
     <Compile Include="DifficultyCalculator.cs" />
+    <Compile Include="funorControls\DoubleBufferedPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="funorControls\RatioBar.cs">
       <SubType>Component</SubType>
     </Compile>

@@ -61,7 +61,7 @@ namespace osu_trainer
         // other
         private string previousBeatmapRead;
         private int beatmapFindFailCounter = 0;
-        private bool gameLoaded = false;
+        private bool? gameLoaded = null;
 
         public MainForm()
         {
@@ -180,7 +180,6 @@ namespace osu_trainer
         }
         private void UpdateSongBg(Beatmap map)
         {
-            Console.WriteLine("UpdateSongBg called");
             var imageEvent = map.Events.OfType<ContentEvent>().FirstOrDefault(e => e.Type == ContentType.Image);
             if (imageEvent == null)
             {
@@ -444,7 +443,12 @@ namespace osu_trainer
                 ResetButton_Click(null, null);
                 ResetButton.Focus();
             }
-            if (e.KeyCode == Keys.D2 && GenerateMapButton.Enabled)
+            if (e.KeyCode == Keys.D2)
+            {
+                DeleteButton_Click(null, null);
+                DeleteButton.Focus();
+            }
+            if (e.KeyCode == Keys.D3 && GenerateMapButton.Enabled)
             {
                 GenerateMapButton_Click(null, null);
                 GenerateMapButton.Focus();
@@ -457,13 +461,11 @@ namespace osu_trainer
 
 
         #region Timer events
-        int j = 0;
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (!gameLoaded)
+            if (gameLoaded == false || gameLoaded == null)
                 return;
 
-            Console.WriteLine($"beatmap update timer tick: {j++}");
 
             // this can be cleaned up...
             // Read memory for current map
@@ -515,21 +517,22 @@ namespace osu_trainer
             // signal the editor class to load this beatmap sometime in the future
             editor.RequestBeatmapLoad(absoluteFilename);
         }
-        int i = 0;
         private async void OsuRunningTimer_Tick(object sender, EventArgs e)
         {
-            Console.WriteLine($"osu running timer tick: {i++}");
             // check if osu!.exe is running
             var processes = Process.GetProcessesByName("osu!");
             if (processes.Length == 0)
                 gameLoaded = false;
             else
             {
-                if (!gameLoaded)
+                if (gameLoaded == false)
                 {
                     await Task.Run(() => Thread.Sleep(2000));
                     gameLoaded = true;
                 }
+                else if (gameLoaded == null)
+                    gameLoaded = true;
+
                 if (userSongsFolder == null)
                 {
                     // Try to get osu songs folder
@@ -574,5 +577,23 @@ namespace osu_trainer
         }
         #endregion Misc
 
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            var mp3List = editor.GetUnusedMp3s();
+            Console.WriteLine("Files to delete:");
+            foreach (string mp3 in mp3List)
+                Console.WriteLine(mp3);
+            MessageBox.Show("todo");
+        }
+
+        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show("todo");
+        }
+
+        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        {
+            MessageBox.Show("todo");
+        }
     }
 }
