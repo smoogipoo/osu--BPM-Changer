@@ -562,7 +562,7 @@ namespace osu_trainer
                     map.Version += $" x{multiplier}";
                 else
                     map.Version += $" {(bpmsUnique[0]).ToString("0")}bpm";
-                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + JunUtils.NormalizeText(map.Version) + ".mp3";
+                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + GetBpm(map).Item1 + "bpm.mp3";
             }
 
             map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + JunUtils.NormalizeText(map.Artist) + " - " + JunUtils.NormalizeText(map.Title) + " (" + JunUtils.NormalizeText(map.Creator) + ")" + " [" + JunUtils.NormalizeText(map.Version) + "].osu";
