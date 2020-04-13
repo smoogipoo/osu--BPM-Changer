@@ -59,7 +59,6 @@ namespace osu_trainer
         BeatmapEditor editor;
 
         // other
-        private bool scaleARPreviousState;
         private string previousBeatmapRead;
         private int beatmapFindFailCounter = 0;
         private bool gameLoaded = false;
@@ -113,15 +112,17 @@ namespace osu_trainer
             editor.ForceEventBeatmapSwitched();
 
             BeatmapUpdateTimer.Start();
+            OsuRunningTimer.Start();
         }
 
-        #region Control Update Callbacks
+        #region Callbacks for updating GUI controls
         private void UpdateBpmUpDown(object sender, EventArgs e)
         {
             BpmMultiplierUpDown.Value = (decimal)editor.BpmMultiplier;
         }
         private void UpdateSongDisplay(object sender, EventArgs e)
         {
+            string artist, title, diff;
             switch (editor.State)
             {
                 case EditorState.NOT_READY:
@@ -140,6 +141,21 @@ namespace osu_trainer
                             DiffLabel.Visible = false;
                             break;
                         case BadBeatmapReason.DIFF_NOT_OSUSTD:
+                            UpdateSongBg(editor.NewBeatmap);
+
+                            SongLabel.ForeColor = accentYellow;
+                            DiffLabel.ForeColor = accentRed;
+                            StaticGif.Visible = false;
+                            DiffLabel.Visible = true;
+
+                            artist = editor.OriginalBeatmap.Artist;
+                            title = editor.OriginalBeatmap.Title;
+                            SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
+                            string gamemode = "";
+                            if (editor.OriginalBeatmap.Mode == GameMode.Taiko)        gamemode = "taiko";
+                            if (editor.OriginalBeatmap.Mode == GameMode.Mania)        gamemode = "mania";
+                            if (editor.OriginalBeatmap.Mode == GameMode.CatchtheBeat) gamemode = "ctb";
+                            DiffLabel.Text = $"{gamemode} diff selected";
                             break;
                         default:
                             break;
@@ -154,9 +170,9 @@ namespace osu_trainer
                     StaticGif.Visible = false;
                     DiffLabel.Visible = true;
 
-                    string artist = editor.OriginalBeatmap.Artist;
-                    string title = editor.OriginalBeatmap.Title;
-                    string diff = editor.OriginalBeatmap.Version;
+                    artist = editor.OriginalBeatmap.Artist;
+                    title = editor.OriginalBeatmap.Title;
+                    diff = editor.OriginalBeatmap.Version;
                     SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
                     DiffLabel.Text = TruncateLabelText(diff, DiffLabel);
                     break;
@@ -382,10 +398,10 @@ namespace osu_trainer
         }
         private void UpdateDifficultyDisplay(object sender, EventArgs e)
         {
-            StarLabel.Text = $"{editor.starRating:0.00} ☆";
-            AimLabel.Text = $"aim: {editor.aimRating}";
-            SpeedLabel.Text = $"spd: {editor.speedRating}";
-            float aimPercent = 100 * editor.aimRating / (editor.aimRating + editor.speedRating);
+            StarLabel.Text = $"{editor.StarRating:0.00} ☆";
+            AimLabel.Text = $"aim: {editor.AimRating:0.0}";
+            SpeedLabel.Text = $"spd: {editor.SpeedRating:0.0}";
+            float aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
             AimSpeedBar.LeftPercent = (int)aimPercent;
         }
         private void ToggleGenerateButton(object sender, EventArgs e)
@@ -410,61 +426,51 @@ namespace osu_trainer
 
 
 
-
-        public void PlayDoneSound()
+        #region User input event handlers
+        private void HPSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
+        private void CSSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
+        private void ARSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
+        private void ODSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
+        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
+        private void CSLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
+        private void ARLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
+        private void ODLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
+        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
+        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
+        private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
-            sound.SoundLocation = matchConfirmWav;
-            sound.Play();
-        }
-
-
-        private string TruncateLabelText(string txt, Label label)
-        {
-            if (TextRenderer.MeasureText(txt, label.Font).Width > label.Width)
+            if (e.KeyCode == Keys.D1)
             {
-                string truncated = txt;
-                while (TextRenderer.MeasureText(truncated, label.Font).Width > label.Width - 10)
-                    truncated = truncated.Substring(0, truncated.Length-1);
-                truncated += "...";
-                return truncated;
+                ResetButton_Click(null, null);
+                ResetButton.Focus();
             }
-            return txt;
+            if (e.KeyCode == Keys.D2 && GenerateMapButton.Enabled)
+            {
+                GenerateMapButton_Click(null, null);
+                GenerateMapButton.Focus();
+            }
         }
+        private void GenerateMapButton_Click(object sender, EventArgs e) => editor.GenerateBeatmap();
+        private void ResetButton_Click(object sender, EventArgs e)       => editor.ResetBeatmap();
+        #endregion
 
-        private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
-        {
-            Bitmap bmpImage = new Bitmap(img);
-            float aspectRatio = destinationWidth / destinationHeight;
-            int cropHeight = (int)(bmpImage.Width / aspectRatio);
-            // pan down to center image
-            int panDown = (bmpImage.Height - cropHeight) / 3;
-            // crop and pan via cloning
-            return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
-        }
 
-        #region User Input Event Handlers
+
+        #region Timer events
+        int j = 0;
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
-            // Try to get osu install folder
-            if (userSongsFolder == null)
-            {
-                // check if osu!.exe is running
-                var processes = Process.GetProcessesByName("osu!");
-                if (processes.Length == 0)
-                    return;
+            if (!gameLoaded)
+                return;
 
-                // set path
-                var osuExePath = processes[0].MainModule.FileName;
-                userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
-                Properties.Settings.Default.SongsFolder = userSongsFolder;
-                Properties.Settings.Default.Save();
-            }
+            Console.WriteLine($"beatmap update timer tick: {j++}");
 
+            // this can be cleaned up...
             // Read memory for current map
             string beatmapFolder = osuReader.GetMapFolderName();
             string beatmapFilename = osuReader.GetOsuFileName();
 
-            // Read unsuccessful (osu might not be running)
+            // Read unsuccessful
             if (beatmapFilename == "")
                 return;
 
@@ -509,31 +515,64 @@ namespace osu_trainer
             // signal the editor class to load this beatmap sometime in the future
             editor.RequestBeatmapLoad(absoluteFilename);
         }
-        private void HPSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
-        private void CSSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
-        private void ARSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
-        private void ODSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
-        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
-        private void CSLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
-        private void ARLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
-        private void ODLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
-        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
-        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
+        int i = 0;
+        private async void OsuRunningTimer_Tick(object sender, EventArgs e)
         {
-            if (e.KeyCode == Keys.D1)
+            Console.WriteLine($"osu running timer tick: {i++}");
+            // check if osu!.exe is running
+            var processes = Process.GetProcessesByName("osu!");
+            if (processes.Length == 0)
+                gameLoaded = false;
+            else
             {
-                ResetButton_Click(null, null);
-                ResetButton.Focus();
-            }
-            if (e.KeyCode == Keys.D2 && GenerateMapButton.Enabled)
-            {
-                GenerateMapButton_Click(null, null);
-                GenerateMapButton.Focus();
+                if (!gameLoaded)
+                {
+                    await Task.Run(() => Thread.Sleep(2000));
+                    gameLoaded = true;
+                }
+                if (userSongsFolder == null)
+                {
+                    // Try to get osu songs folder
+                    var osuExePath = processes[0].MainModule.FileName;
+                    userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
+                    Properties.Settings.Default.SongsFolder = userSongsFolder;
+                    Properties.Settings.Default.Save();
+                }
             }
         }
-        private void GenerateMapButton_Click(object sender, EventArgs e) => editor.GenerateBeatmap();
-        private void ResetButton_Click(object sender, EventArgs e)       => editor.ResetBeatmap();
-        #endregion
+        #endregion Timer events
+
+
+
+        #region Misc
+        public void PlayDoneSound()
+        {
+            sound.SoundLocation = matchConfirmWav;
+            sound.Play();
+        }
+        private string TruncateLabelText(string txt, Label label)
+        {
+            if (TextRenderer.MeasureText(txt, label.Font).Width > label.Width)
+            {
+                string truncated = txt;
+                while (TextRenderer.MeasureText(truncated, label.Font).Width > label.Width - 10)
+                    truncated = truncated.Substring(0, truncated.Length-1);
+                truncated += "...";
+                return truncated;
+            }
+            return txt;
+        }
+        private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
+        {
+            Bitmap bmpImage = new Bitmap(img);
+            float aspectRatio = destinationWidth / destinationHeight;
+            int cropHeight = (int)(bmpImage.Width / aspectRatio);
+            // pan down to center image
+            int panDown = (bmpImage.Height - cropHeight) / 3;
+            // crop and pan via cloning
+            return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
+        }
+        #endregion Misc
+
     }
 }

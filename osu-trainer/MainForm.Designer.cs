@@ -69,6 +69,7 @@
             this.DiffLabel = new System.Windows.Forms.Label();
             this.BgPanel = new System.Windows.Forms.Panel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
+            this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
             this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.ODSlider = new osu_trainer.OptionSlider();
@@ -102,7 +103,7 @@
             // 
             // BeatmapUpdateTimer
             // 
-            this.BeatmapUpdateTimer.Interval = 50;
+            this.BeatmapUpdateTimer.Interval = 20;
             this.BeatmapUpdateTimer.Tick += new System.EventHandler(this.BeatmapUpdateTimer_Tick);
             // 
             // label4
@@ -671,6 +672,11 @@
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
+            // OsuRunningTimer
+            // 
+            this.OsuRunningTimer.Interval = 500;
+            this.OsuRunningTimer.Tick += new System.EventHandler(this.OsuRunningTimer_Tick);
+            // 
             // AimSpeedBar
             // 
             this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
@@ -949,5 +955,6 @@
         private System.Windows.Forms.TextBox OriginalBpmRangeTextBox;
         private System.Windows.Forms.TextBox OriginalBpmTextBox;
         private System.Windows.Forms.Button ResetButton;
+        private System.Windows.Forms.Timer OsuRunningTimer;
     }
 }
