@@ -683,6 +683,7 @@ namespace osu_trainer
             ScaleOD = true;
             BpmMultiplier = 1.0f;
             ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, 1.0f);
+            RequestDiffCalc();
             ControlsModified?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
