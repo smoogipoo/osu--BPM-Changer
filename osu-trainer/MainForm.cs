@@ -151,7 +151,7 @@ namespace osu_trainer
                             artist = editor.OriginalBeatmap.Artist;
                             title = editor.OriginalBeatmap.Title;
                             SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
-                            string gamemode = "";
+                            string gamemode = "???";
                             if (editor.OriginalBeatmap.Mode == GameMode.Taiko)        gamemode = "taiko";
                             if (editor.OriginalBeatmap.Mode == GameMode.Mania)        gamemode = "mania";
                             if (editor.OriginalBeatmap.Mode == GameMode.CatchtheBeat) gamemode = "ctb";
@@ -266,6 +266,8 @@ namespace osu_trainer
         {
             ScaleARCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
             ScaleARCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleAR ? accentBlue : Color.Gray;
+            ScaleODCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleOD ? accentBlue : Color.Gray;
+            ScaleODCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleOD ? accentBlue : Color.Gray;
         }
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
@@ -327,7 +329,7 @@ namespace osu_trainer
             }
 
             // AR
-            float newAR      = editor.NewBeatmap.ApproachRate;
+            float newAR    = editor.NewBeatmap.ApproachRate;
             ARDisplay.Text = newAR.ToString();
             ARSlider.Value = (decimal)newAR;
             if (newAR > editor.GetScaledAR())
@@ -351,12 +353,12 @@ namespace osu_trainer
             float originalOD = editor.OriginalBeatmap.OverallDifficulty;
             ODDisplay.Text = newOD.ToString();
             ODSlider.Value = (decimal)newOD;
-            if (newOD > originalOD)
+            if (newOD > editor.GetScaledOD())
             {
                 ODDisplay.ForeColor = accentRed;
                 ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
             }
-            else if (newOD < originalOD)
+            else if (newOD < editor.GetScaledOD())
             {
                 ODDisplay.ForeColor = easierColor;
                 ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
@@ -435,9 +437,12 @@ namespace osu_trainer
         private void ARLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
         private void ODLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
+        private void ScaleODCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleOD(!editor.ScaleOD);
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
+            if (BpmMultiplierUpDown.Focused || NewBpmTextBox.Focused)
+                return;
             if (e.KeyCode == Keys.D1)
             {
                 ResetButton_Click(null, null);
@@ -527,7 +532,7 @@ namespace osu_trainer
             {
                 if (gameLoaded == false)
                 {
-                    await Task.Run(() => Thread.Sleep(2000));
+                    await Task.Run(() => Thread.Sleep(5000));
                     gameLoaded = true;
                 }
                 else if (gameLoaded == null)
@@ -580,20 +585,48 @@ namespace osu_trainer
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             var mp3List = editor.GetUnusedMp3s();
-            Console.WriteLine("Files to delete:");
-            foreach (string mp3 in mp3List)
-                Console.WriteLine(mp3);
-            MessageBox.Show("todo");
+            if (new DeleteMp3sForm(mp3List).ShowDialog() == DialogResult.OK)
+            {
+                mp3List
+                    .Select(relativeMp3 => JunUtils.FullPathFromSongsFolder(relativeMp3))
+                    .Select(absMp3 => new FileInfo(absMp3))
+                    .ToList()
+                    .ForEach(file => file.Delete());
+                if (mp3List.Count > 0)
+                    MessageBox.Show($"Deleted {mp3List.Count} mp3 files.", "Success");
+                editor.CleanUpManifestFile();
+            }
         }
 
-        private void checkBox1_CheckedChanged(object sender, EventArgs e)
+        private void NewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
-            MessageBox.Show("todo");
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                e.Handled = true;
         }
 
-        private void checkBox3_CheckedChanged(object sender, EventArgs e)
+        // change this event to submit?
+        private void NewBpmTextBox_Submit()
         {
-            MessageBox.Show("todo");
+            int bpm;
+            if (int.TryParse(NewBpmTextBox.Text, out bpm))
+                editor.setBpm(bpm);
+        }
+
+        private void NewBpmTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                NewBpmTextBox_Submit();
+        }
+
+
+        private void NewBpmTextBox_Enter(object sender, EventArgs e)
+        {
+            Console.WriteLine("enter");
+        }
+
+        private void NewBpmTextBox_Leave(object sender, EventArgs e)
+        {
+            NewBpmTextBox_Submit();
         }
     }
 }

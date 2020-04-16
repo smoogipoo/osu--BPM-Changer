@@ -135,6 +135,12 @@ namespace osu_trainer
             setState(EditorState.READY);
         }
 
+        private string matchGroup(string text, string re, int group)
+        {
+            foreach (Match m in Regex.Matches(text, re))
+                return m.Groups[group].Value;
+            return "";
+        }
         public List<string> GetUnusedMp3s()
         {
             // read manifest file
@@ -154,12 +160,6 @@ namespace osu_trainer
             // convert that shit into a dictionary
             var mp3Dict = new Dictionary<string, List<string>>();
             string pattern = @"(.+) \| (.+)";
-            string matchGroup(string text, string re, int group)
-            {
-                foreach (Match m in Regex.Matches(text, re))
-                    return m.Groups[group].Value;
-                return "";
-            }
             string parseMp3(string line) => matchGroup(line, pattern, 1);
             string parseOsu(string line) => matchGroup(line, pattern, 2);
 
@@ -172,13 +172,36 @@ namespace osu_trainer
             foreach ((string mp3, string osu) in lines.Select(line => (parseMp3(line), parseOsu(line))))
                 mp3Dict[mp3].Add(osu);
 
-            // find all keys where none of the associated beatmaps exist
+            // find all keys where none of the associated beatmaps exist, but the mp3 still exists
             bool noFilesExist(bool acc, string file) => acc && !File.Exists(file);
+            bool filesExists(bool acc, string file) => acc && !File.Exists(file);
             return lines
                 .Select(line => parseMp3(line))
-                .Where(
-                    mp3 => mp3Dict[mp3].Aggregate(true, noFilesExist)
-                ).ToList();
+                .Where(mp3 => mp3Dict[mp3].Aggregate(true, noFilesExist))
+                .Where(mp3 => File.Exists(JunUtils.FullPathFromSongsFolder(mp3)))
+                .ToList();
+        }
+
+        public void CleanUpManifestFile()
+        {
+            // read file
+            string mp3ManifestFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
+            List<string> lines = File.ReadAllText(mp3ManifestFile).Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
+            string pattern = @"(.+) \| (.+)";
+            string parseMp3(string line) => matchGroup(line, pattern, 1);
+
+            // filter out lines whose mp3s no longer exist
+            List<string> keepLines = new List<string>();
+            foreach (string line in lines)
+            {
+                var relMp3 = parseMp3(line);
+                var absMp3 = JunUtils.FullPathFromSongsFolder(relMp3);
+                if (File.Exists(absMp3))
+                    keepLines.Add(line);
+            }
+
+            // write to file
+            File.WriteAllText(mp3ManifestFile, String.Join(Environment.NewLine, keepLines));
         }
 
         // TODO: simulate long load time and test
@@ -209,8 +232,8 @@ namespace osu_trainer
                     ModifyBeatmapTiming(candidateOriginalBeatmap, candidateNewBeatmap, BpmMultiplier);
 
                     // Apply bpm scaled settings
-                    if (ScaleAR) candidateNewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(candidateOriginalBeatmap, BpmMultiplier);
-                    //if (ScaleOD) candidateNewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(candidateOriginalBeatmap, BpmMultiplier);
+                    if (ScaleAR) candidateNewBeatmap.ApproachRate      = DifficultyCalculator.CalculateMultipliedAR(candidateOriginalBeatmap, BpmMultiplier);
+                    if (ScaleOD) candidateNewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(candidateOriginalBeatmap, BpmMultiplier);
 
                     // Apply locked settings
                     if (HpIsLocked) candidateNewBeatmap.HPDrainRate       = lockedHP;
@@ -351,6 +374,21 @@ namespace osu_trainer
             ArIsLocked = false;
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+        public void SetScaleOD(bool value)
+        {
+            ScaleOD = value;
+
+            if (State == EditorState.NOT_READY)
+                return;
+
+            if (ScaleOD)
+            {
+                NewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(OriginalBeatmap, BpmMultiplier);
+                BeatmapModified?.Invoke(this, EventArgs.Empty);
+            }
+            ArIsLocked = false;
+            ControlsModified?.Invoke(this, EventArgs.Empty);
+        }
         public void SetOD(float value)
         {
             if (State != EditorState.READY)
@@ -359,7 +397,10 @@ namespace osu_trainer
             NewBeatmap.OverallDifficulty = value;
             if (OdIsLocked)
                 lockedOD = value;
+
+            ScaleOD = false;
             BeatmapModified?.Invoke(this, EventArgs.Empty);
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetHPLock(bool locked)
         {
@@ -404,14 +445,20 @@ namespace osu_trainer
                 NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
 
             // scale OD
-            //if (scaleOD && !odIsLocked)
-            //    newBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedOD(originalBeatmap, bpmMultiplier);
-            
+            if (ScaleOD && !OdIsLocked)
+                NewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(OriginalBeatmap, BpmMultiplier);
+
             // modify beatmap timing
             ModifyBeatmapTiming(OriginalBeatmap, NewBeatmap, BpmMultiplier);
 
             RequestDiffCalc();
             BeatmapModified?.Invoke(this, EventArgs.Empty);
+        }
+        public void setBpm(int bpm) {
+            float originalBpm = GetOriginalBpmData().Item1;
+            float newMultiplier = bpm / originalBpm;
+            newMultiplier = JunUtils.Clamp(newMultiplier, 0.1f, 5.0f);
+            SetBpmMultiplier(newMultiplier);
         }
 
         public GameMode? GetMode()
@@ -420,10 +467,8 @@ namespace osu_trainer
         }
 
 
-        public float GetScaledAR()
-        {
-            return DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
-        }
+        public float GetScaledAR() => DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
+        public float GetScaledOD() => DifficultyCalculator.CalculateMultipliedOD(OriginalBeatmap, BpmMultiplier);
 
         public bool NewMapIsDifferent()
         {
@@ -562,7 +607,7 @@ namespace osu_trainer
                     map.Version += $" x{multiplier}";
                 else
                     map.Version += $" {(bpmsUnique[0]).ToString("0")}bpm";
-                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + GetBpm(map).Item1 + "bpm.mp3";
+                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + GetBpmData(map).Item1 + "bpm.mp3";
             }
 
             map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + JunUtils.NormalizeText(map.Artist) + " - " + JunUtils.NormalizeText(map.Title) + " (" + JunUtils.NormalizeText(map.Creator) + ")" + " [" + JunUtils.NormalizeText(map.Version) + "].osu";
@@ -571,12 +616,12 @@ namespace osu_trainer
         }
 
         // dominant, min, max
-        public (float, float, float) GetOriginalBpmData() => GetBpm(OriginalBeatmap);
+        public (float, float, float) GetOriginalBpmData() => GetBpmData(OriginalBeatmap);
         // dominant, min, max
-        public (float, float, float) GetNewBpmData() => GetBpm(NewBeatmap);
-        private (float, float, float) GetBpm(Beatmap map)
+        public (float, float, float) GetNewBpmData() => GetBpmData(NewBeatmap);
+        private (float, float, float) GetBpmData(Beatmap map)
         {
-            var bpmList = GetBpmList(map).Select((bpm) => (int)bpm).ToList();
+            var bpmList = GetBpmList(map).Select(bpm => (int)Math.Round(bpm)).ToList();
             if (bpmList.Count == 0)
             {
                 Console.WriteLine("Very bad.");

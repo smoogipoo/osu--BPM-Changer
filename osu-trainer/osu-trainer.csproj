@@ -64,6 +64,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeatmapEditor.cs" />
+    <Compile Include="DeleteMp3sForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DeleteMp3sForm.Designer.cs">
+      <DependentUpon>DeleteMp3sForm.cs</DependentUpon>
+    </Compile>
     <Compile Include="DifficultyCalculator.cs" />
     <Compile Include="funorControls\DoubleBufferedPanel.cs">
       <SubType>Component</SubType>
@@ -130,6 +136,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <EmbeddedResource Include="DeleteMp3sForm.resx">
+      <DependentUpon>DeleteMp3sForm.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="MainForm.resx">
       <DependentUpon>MainForm.cs</DependentUpon>
     </EmbeddedResource>

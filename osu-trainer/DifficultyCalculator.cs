@@ -27,7 +27,7 @@ namespace osu_trainer
             float newbpmAR = MsToApproachRate(newbpmMs);
             return (newbpmAR < 10) ? newbpmAR : 10;
         }
-        public static float ApproachRateToMs(float approachRate)
+        private static float ApproachRateToMs(float approachRate)
         {
             if (approachRate <= 50)
             {
@@ -39,9 +39,10 @@ namespace osu_trainer
                 return 1200.0f - remainder * 150.0f;
             }
         }
-        public static float MsToApproachRate(float ms)
+        private static float MsToApproachRate(float ms)
         {
             // bullshit
+            // TODO: check edge cases
             float smallestDiff = 100000.0f;
             for (int AR = 0; AR <= 110; AR++)
             {
@@ -53,7 +54,16 @@ namespace osu_trainer
             }
             return 300;
         }
-
+        public static float CalculateMultipliedOD(Beatmap map, float BpmMultiplier)
+        {
+            float newbpmMs = OverallDifficultyToMs(map.OverallDifficulty) / BpmMultiplier;
+            float newbpmOD = MsToOverallDifficulty(newbpmMs);
+            newbpmOD = (float)Math.Round(newbpmOD * 10.0f) / 10.0f;
+            newbpmOD = JunUtils.Clamp(newbpmOD, 0, 10);
+            return newbpmOD;
+        }
+        private static float OverallDifficultyToMs(float od) => -6.0f * od + 79.5f;
+        private static float MsToOverallDifficulty(float ms) => (79.5f - ms) / 6.0f;
         public static (float, float, float) CalculateStarRating(Beatmap map)
         {
             if (map == null)
@@ -84,8 +94,15 @@ namespace osu_trainer
             diffCalcInProgress.Release();
 
             // json parsing
-            JObject oppaiData = JObject.Parse(oppaiOutput);
-            string errstr     = oppaiData.GetValue("errstr").ToObject<string>();
+            JObject oppaiData;
+            try
+            {
+                oppaiData = JObject.Parse(oppaiOutput);
+            }
+            catch (Exception e)
+            {
+                return (-1, -1, -1);
+            }            string errstr     = oppaiData.GetValue("errstr").ToObject<string>();
             if (errstr != "no error")
             {
                 // TODO: An error occurs when opening a non-osu!standard map (mania, taiko, etc)

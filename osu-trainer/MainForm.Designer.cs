@@ -49,7 +49,7 @@ namespace osu_trainer
             this.OriginalBpmRangeTextBox = new System.Windows.Forms.TextBox();
             this.OriginalBpmTextBox = new System.Windows.Forms.TextBox();
             this.checkBox3 = new System.Windows.Forms.CheckBox();
-            this.checkBox1 = new System.Windows.Forms.CheckBox();
+            this.ScaleODCheck = new System.Windows.Forms.CheckBox();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
@@ -76,7 +76,7 @@ namespace osu_trainer
             this.TopPanel = new System.Windows.Forms.Panel();
             this.SongLabel = new System.Windows.Forms.Label();
             this.DiffLabel = new System.Windows.Forms.Label();
-            this.BgPanel = new DoubleBufferedPanel();
+            this.BgPanel = new osu_trainer.funorControls.DoubleBufferedPanel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
             this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
             this.MiddlePanel.SuspendLayout();
@@ -183,7 +183,7 @@ namespace osu_trainer
             this.Panel3.Controls.Add(this.OriginalBpmRangeTextBox);
             this.Panel3.Controls.Add(this.OriginalBpmTextBox);
             this.Panel3.Controls.Add(this.checkBox3);
-            this.Panel3.Controls.Add(this.checkBox1);
+            this.Panel3.Controls.Add(this.ScaleODCheck);
             this.Panel3.Controls.Add(this.ScaleARCheck);
             this.Panel3.Controls.Add(this.label4);
             this.Panel3.Controls.Add(this.label5);
@@ -250,11 +250,14 @@ namespace osu_trainer
             this.NewBpmTextBox.Location = new System.Drawing.Point(118, 72);
             this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.NewBpmTextBox.Name = "NewBpmTextBox";
-            this.NewBpmTextBox.ReadOnly = true;
             this.NewBpmTextBox.Size = new System.Drawing.Size(42, 17);
             this.NewBpmTextBox.TabIndex = 10;
             this.NewBpmTextBox.Text = "200";
             this.NewBpmTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.NewBpmTextBox.Enter += new System.EventHandler(this.NewBpmTextBox_Enter);
+            this.NewBpmTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NewBpmTextBox_KeyDown);
+            this.NewBpmTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NewBpmTextBox_KeyPress);
+            this.NewBpmTextBox.Leave += new System.EventHandler(this.NewBpmTextBox_Leave);
             // 
             // NewBpmRangeTextBox
             // 
@@ -317,28 +320,27 @@ namespace osu_trainer
             this.checkBox3.Text = "Change pitch";
             this.checkBox3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.checkBox3.UseVisualStyleBackColor = false;
-            this.checkBox3.CheckedChanged += new System.EventHandler(this.checkBox3_CheckedChanged);
             // 
-            // checkBox1
+            // ScaleODCheck
             // 
-            this.checkBox1.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox1.AutoSize = true;
-            this.checkBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.checkBox1.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox1.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
-            this.checkBox1.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.checkBox1.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
-            this.checkBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.checkBox1.Font = new System.Drawing.Font("Carlito", 8.25F);
-            this.checkBox1.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
-            this.checkBox1.Location = new System.Drawing.Point(251, 8);
-            this.checkBox1.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(56, 23);
-            this.checkBox1.TabIndex = 19;
-            this.checkBox1.Text = "Scale OD";
-            this.checkBox1.UseVisualStyleBackColor = false;
-            this.checkBox1.CheckedChanged += new System.EventHandler(this.checkBox1_CheckedChanged);
+            this.ScaleODCheck.Appearance = System.Windows.Forms.Appearance.Button;
+            this.ScaleODCheck.AutoSize = true;
+            this.ScaleODCheck.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.ScaleODCheck.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.ScaleODCheck.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
+            this.ScaleODCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.ScaleODCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.ScaleODCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ScaleODCheck.Font = new System.Drawing.Font("Carlito", 8.25F);
+            this.ScaleODCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(46)))), ((int)(((byte)(226)))), ((int)(((byte)(250)))));
+            this.ScaleODCheck.Location = new System.Drawing.Point(251, 8);
+            this.ScaleODCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.ScaleODCheck.Name = "ScaleODCheck";
+            this.ScaleODCheck.Size = new System.Drawing.Size(56, 23);
+            this.ScaleODCheck.TabIndex = 19;
+            this.ScaleODCheck.Text = "Scale OD";
+            this.ScaleODCheck.UseVisualStyleBackColor = false;
+            this.ScaleODCheck.CheckedChanged += new System.EventHandler(this.ScaleODCheck_CheckedChanged);
             // 
             // ScaleARCheck
             // 
@@ -969,7 +971,7 @@ namespace osu_trainer
         private funorControls.RatioBar AimSpeedBar;
         private System.Windows.Forms.Label AimLabel;
         private System.Windows.Forms.Label SpeedLabel;
-        private System.Windows.Forms.CheckBox checkBox1;
+        private System.Windows.Forms.CheckBox ScaleODCheck;
         private System.Windows.Forms.CheckBox checkBox3;
         private System.Windows.Forms.TextBox NewBpmTextBox;
         private System.Windows.Forms.TextBox NewBpmRangeTextBox;
