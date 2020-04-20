@@ -130,7 +130,9 @@
     <Content Include="Speed Changer Stuff\lame.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="resources\oof.ico" />
+    <Content Include="resources\oof.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Speed Changer Stuff\soundstretch.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

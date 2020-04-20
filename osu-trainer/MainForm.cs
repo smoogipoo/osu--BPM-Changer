@@ -625,5 +625,36 @@ namespace osu_trainer
         }
         #endregion Misc
 
+        #region borderless window title bar
+        private bool Drag;
+        private int MouseX;
+        private int MouseY;
+
+        private void PanelMove_MouseDown(object sender, MouseEventArgs e)
+        {
+            Drag = true;
+            MouseX = Cursor.Position.X - this.Left;
+            MouseY = Cursor.Position.Y - this.Top;
+        }
+        private void PanelMove_MouseMove(object sender, MouseEventArgs e)
+        {
+            if (Drag)
+            {
+                this.Top = Cursor.Position.Y - MouseY;
+                this.Left = Cursor.Position.X - MouseX;
+            }
+        }
+        private void PanelMove_MouseUp(object sender, MouseEventArgs e) { Drag = false; }
+        private void closeButton_Click(object sender, EventArgs e)
+        {
+            Close();
+        }
+
+        private void minimizeButton_Click(object sender, EventArgs e)
+        {
+            WindowState = FormWindowState.Minimized;
+            Show();
+        }
+        #endregion
     }
 }

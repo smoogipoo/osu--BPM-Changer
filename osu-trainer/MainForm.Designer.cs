@@ -40,7 +40,6 @@ namespace osu_trainer
             this.MiddlePanel = new System.Windows.Forms.Panel();
             this.panel2 = new System.Windows.Forms.Panel();
             this.Panel3 = new System.Windows.Forms.Panel();
-            this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
             this.AimLabel = new System.Windows.Forms.Label();
             this.SpeedLabel = new System.Windows.Forms.Label();
             this.StarLabel = new System.Windows.Forms.Label();
@@ -51,7 +50,6 @@ namespace osu_trainer
             this.changePitchButton = new System.Windows.Forms.CheckBox();
             this.ScaleODCheck = new System.Windows.Forms.CheckBox();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
-            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.Middle1Panel = new System.Windows.Forms.Panel();
             this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
             this.ODLockCheck = new System.Windows.Forms.CheckBox();
@@ -59,34 +57,42 @@ namespace osu_trainer
             this.CSLockCheck = new System.Windows.Forms.CheckBox();
             this.odlabel = new System.Windows.Forms.Label();
             this.ODDisplay = new System.Windows.Forms.TextBox();
-            this.ODSlider = new osu_trainer.OptionSlider();
             this.arlabel = new System.Windows.Forms.Label();
             this.ARDisplay = new System.Windows.Forms.TextBox();
-            this.ARSlider = new osu_trainer.OptionSlider();
             this.cslabel = new System.Windows.Forms.Label();
             this.CSDisplay = new System.Windows.Forms.TextBox();
-            this.CSSlider = new osu_trainer.OptionSlider();
             this.hplabel = new System.Windows.Forms.Label();
             this.HPDisplay = new System.Windows.Forms.TextBox();
-            this.HPSlider = new osu_trainer.OptionSlider();
             this.HPLockCheck = new System.Windows.Forms.CheckBox();
             this.BottomPanel = new System.Windows.Forms.Panel();
             this.DeleteButton = new System.Windows.Forms.Button();
             this.ResetButton = new System.Windows.Forms.Button();
             this.TopPanel = new System.Windows.Forms.Panel();
+            this.minimizeButton = new System.Windows.Forms.Button();
+            this.maximizeButton = new System.Windows.Forms.Button();
+            this.closeButton = new System.Windows.Forms.Button();
+            this.Title = new System.Windows.Forms.Label();
             this.SongLabel = new System.Windows.Forms.Label();
             this.DiffLabel = new System.Windows.Forms.Label();
+            this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
+            this.icon = new System.Windows.Forms.PictureBox();
+            this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
+            this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
+            this.ODSlider = new osu_trainer.OptionSlider();
+            this.ARSlider = new osu_trainer.OptionSlider();
+            this.CSSlider = new osu_trainer.OptionSlider();
+            this.HPSlider = new osu_trainer.OptionSlider();
             this.BgPanel = new osu_trainer.funorControls.DoubleBufferedPanel();
             this.StaticGif = new System.Windows.Forms.PictureBox();
-            this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
             this.MiddlePanel.SuspendLayout();
             this.panel2.SuspendLayout();
             this.Panel3.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.Middle1Panel.SuspendLayout();
             this.tableLayoutPanel1.SuspendLayout();
             this.BottomPanel.SuspendLayout();
             this.TopPanel.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.icon)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).BeginInit();
             this.BgPanel.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).BeginInit();
             this.SuspendLayout();
@@ -157,7 +163,7 @@ namespace osu_trainer
             this.MiddlePanel.Controls.Add(this.panel2);
             this.MiddlePanel.Controls.Add(this.Middle1Panel);
             this.MiddlePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.MiddlePanel.Location = new System.Drawing.Point(0, 100);
+            this.MiddlePanel.Location = new System.Drawing.Point(0, 125);
             this.MiddlePanel.Margin = new System.Windows.Forms.Padding(10);
             this.MiddlePanel.Name = "MiddlePanel";
             this.MiddlePanel.Size = new System.Drawing.Size(427, 226);
@@ -195,17 +201,6 @@ namespace osu_trainer
             this.Panel3.Padding = new System.Windows.Forms.Padding(0, 5, 0, 0);
             this.Panel3.Size = new System.Drawing.Size(427, 100);
             this.Panel3.TabIndex = 7;
-            // 
-            // AimSpeedBar
-            // 
-            this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
-            this.AimSpeedBar.LeftPercent = 40;
-            this.AimSpeedBar.Location = new System.Drawing.Point(276, 82);
-            this.AimSpeedBar.Name = "AimSpeedBar";
-            this.AimSpeedBar.RightColour = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
-            this.AimSpeedBar.Size = new System.Drawing.Size(135, 3);
-            this.AimSpeedBar.TabIndex = 21;
-            this.AimSpeedBar.Text = "ratioBar1";
             // 
             // AimLabel
             // 
@@ -363,41 +358,6 @@ namespace osu_trainer
             this.ScaleARCheck.UseVisualStyleBackColor = false;
             this.ScaleARCheck.CheckedChanged += new System.EventHandler(this.ScaleARCheck_CheckedChanged);
             // 
-            // BpmMultiplierUpDown
-            // 
-            this.BpmMultiplierUpDown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.BpmMultiplierUpDown.DecimalPlaces = 2;
-            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
-            1,
-            0,
-            0,
-            131072});
-            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
-            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
-            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
-            5,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
-            1,
-            0,
-            0,
-            65536});
-            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
-            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
-            this.BpmMultiplierUpDown.TabIndex = 4;
-            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
-            1,
-            0,
-            0,
-            0});
-            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
-            // 
             // Middle1Panel
             // 
             this.Middle1Panel.Controls.Add(this.tableLayoutPanel1);
@@ -533,6 +493,324 @@ namespace osu_trainer
             this.ODDisplay.Text = "0.0";
             this.ODDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
+            // arlabel
+            // 
+            this.arlabel.AutoSize = true;
+            this.arlabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.arlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.arlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.arlabel.Location = new System.Drawing.Point(3, 61);
+            this.arlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.arlabel.Name = "arlabel";
+            this.arlabel.Size = new System.Drawing.Size(32, 26);
+            this.arlabel.TabIndex = 6;
+            this.arlabel.Text = "AR";
+            this.arlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // ARDisplay
+            // 
+            this.ARDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.ARDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.ARDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.ARDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.ARDisplay.Location = new System.Drawing.Point(41, 63);
+            this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.ARDisplay.Name = "ARDisplay";
+            this.ARDisplay.ReadOnly = true;
+            this.ARDisplay.Size = new System.Drawing.Size(42, 21);
+            this.ARDisplay.TabIndex = 7;
+            this.ARDisplay.Text = "0.0";
+            this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // cslabel
+            // 
+            this.cslabel.AutoSize = true;
+            this.cslabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.cslabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.cslabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.cslabel.Location = new System.Drawing.Point(3, 32);
+            this.cslabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.cslabel.Name = "cslabel";
+            this.cslabel.Size = new System.Drawing.Size(32, 26);
+            this.cslabel.TabIndex = 3;
+            this.cslabel.Text = "CS";
+            this.cslabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // CSDisplay
+            // 
+            this.CSDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.CSDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.CSDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.CSDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.CSDisplay.Location = new System.Drawing.Point(41, 34);
+            this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.CSDisplay.Name = "CSDisplay";
+            this.CSDisplay.ReadOnly = true;
+            this.CSDisplay.Size = new System.Drawing.Size(42, 21);
+            this.CSDisplay.TabIndex = 4;
+            this.CSDisplay.Text = "0.0";
+            this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // hplabel
+            // 
+            this.hplabel.AutoSize = true;
+            this.hplabel.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.hplabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
+            this.hplabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
+            this.hplabel.Location = new System.Drawing.Point(3, 3);
+            this.hplabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
+            this.hplabel.Name = "hplabel";
+            this.hplabel.Size = new System.Drawing.Size(32, 26);
+            this.hplabel.TabIndex = 0;
+            this.hplabel.Text = "HP";
+            this.hplabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // HPDisplay
+            // 
+            this.HPDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.HPDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.HPDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.HPDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HPDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.HPDisplay.Location = new System.Drawing.Point(41, 5);
+            this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.HPDisplay.Name = "HPDisplay";
+            this.HPDisplay.ReadOnly = true;
+            this.HPDisplay.Size = new System.Drawing.Size(42, 21);
+            this.HPDisplay.TabIndex = 1;
+            this.HPDisplay.Text = "0.0";
+            this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // HPLockCheck
+            // 
+            this.HPLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
+            this.HPLockCheck.AutoSize = true;
+            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            this.HPLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.HPLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.HPLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.HPLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.HPLockCheck.ForeColor = System.Drawing.Color.Gray;
+            this.HPLockCheck.Location = new System.Drawing.Point(358, 5);
+            this.HPLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.HPLockCheck.Name = "HPLockCheck";
+            this.HPLockCheck.Size = new System.Drawing.Size(38, 21);
+            this.HPLockCheck.TabIndex = 12;
+            this.HPLockCheck.Text = "Lock";
+            this.HPLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.HPLockCheck.UseVisualStyleBackColor = true;
+            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HpLockCheck_CheckedChanged);
+            // 
+            // BottomPanel
+            // 
+            this.BottomPanel.Controls.Add(this.DeleteButton);
+            this.BottomPanel.Controls.Add(this.ResetButton);
+            this.BottomPanel.Controls.Add(this.GenerateMapButton);
+            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.BottomPanel.Location = new System.Drawing.Point(0, 351);
+            this.BottomPanel.Name = "BottomPanel";
+            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10, 2, 10, 10);
+            this.BottomPanel.Size = new System.Drawing.Size(427, 111);
+            this.BottomPanel.TabIndex = 11;
+            // 
+            // DeleteButton
+            // 
+            this.DeleteButton.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.DeleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.DeleteButton.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.DeleteButton.ForeColor = System.Drawing.Color.DarkGray;
+            this.DeleteButton.Location = new System.Drawing.Point(10, 31);
+            this.DeleteButton.Name = "DeleteButton";
+            this.DeleteButton.Size = new System.Drawing.Size(407, 25);
+            this.DeleteButton.TabIndex = 1;
+            this.DeleteButton.Text = "2. Delete Unused MP3s";
+            this.DeleteButton.UseVisualStyleBackColor = true;
+            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
+            // 
+            // ResetButton
+            // 
+            this.ResetButton.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
+            this.ResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.ResetButton.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ResetButton.ForeColor = System.Drawing.Color.DarkGray;
+            this.ResetButton.Location = new System.Drawing.Point(10, 0);
+            this.ResetButton.Name = "ResetButton";
+            this.ResetButton.Size = new System.Drawing.Size(407, 25);
+            this.ResetButton.TabIndex = 1;
+            this.ResetButton.Text = "1. Reset";
+            this.ResetButton.UseVisualStyleBackColor = true;
+            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
+            // 
+            // TopPanel
+            // 
+            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.TopPanel.Controls.Add(this.icon);
+            this.TopPanel.Controls.Add(this.minimizeButton);
+            this.TopPanel.Controls.Add(this.maximizeButton);
+            this.TopPanel.Controls.Add(this.closeButton);
+            this.TopPanel.Controls.Add(this.Title);
+            this.TopPanel.Controls.Add(this.SongLabel);
+            this.TopPanel.Controls.Add(this.DiffLabel);
+            this.TopPanel.Controls.Add(this.BgPanel);
+            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
+            this.TopPanel.Location = new System.Drawing.Point(0, 0);
+            this.TopPanel.Name = "TopPanel";
+            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
+            this.TopPanel.Size = new System.Drawing.Size(427, 125);
+            this.TopPanel.TabIndex = 12;
+            this.TopPanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseDown);
+            this.TopPanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseMove);
+            this.TopPanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseUp);
+            // 
+            // minimizeButton
+            // 
+            this.minimizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.minimizeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.minimizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.minimizeButton.Font = new System.Drawing.Font("Segoe UI Semilight", 9F);
+            this.minimizeButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.minimizeButton.Location = new System.Drawing.Point(287, -1);
+            this.minimizeButton.Name = "minimizeButton";
+            this.minimizeButton.Size = new System.Drawing.Size(45, 30);
+            this.minimizeButton.TabIndex = 3;
+            this.minimizeButton.Text = "🗕";
+            this.minimizeButton.UseVisualStyleBackColor = true;
+            this.minimizeButton.Click += new System.EventHandler(this.minimizeButton_Click);
+            // 
+            // maximizeButton
+            // 
+            this.maximizeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.maximizeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.maximizeButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.maximizeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.maximizeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.maximizeButton.Font = new System.Drawing.Font("Segoe UI Semilight", 9F);
+            this.maximizeButton.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.maximizeButton.Location = new System.Drawing.Point(335, -1);
+            this.maximizeButton.Name = "maximizeButton";
+            this.maximizeButton.Size = new System.Drawing.Size(45, 30);
+            this.maximizeButton.TabIndex = 3;
+            this.maximizeButton.Text = "🗖";
+            this.maximizeButton.UseVisualStyleBackColor = true;
+            // 
+            // closeButton
+            // 
+            this.closeButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.closeButton.FlatAppearance.BorderColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.closeButton.FlatAppearance.MouseDownBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(139)))), ((int)(((byte)(10)))), ((int)(((byte)(20)))));
+            this.closeButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(232)))), ((int)(((byte)(17)))), ((int)(((byte)(35)))));
+            this.closeButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.closeButton.Font = new System.Drawing.Font("Segoe UI Semilight", 9F);
+            this.closeButton.ForeColor = System.Drawing.SystemColors.ButtonFace;
+            this.closeButton.Location = new System.Drawing.Point(383, -1);
+            this.closeButton.Name = "closeButton";
+            this.closeButton.Size = new System.Drawing.Size(45, 30);
+            this.closeButton.TabIndex = 3;
+            this.closeButton.Text = "✕";
+            this.closeButton.UseVisualStyleBackColor = true;
+            this.closeButton.Click += new System.EventHandler(this.closeButton_Click);
+            // 
+            // Title
+            // 
+            this.Title.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.Title.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.Title.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Title.ForeColor = System.Drawing.Color.White;
+            this.Title.Location = new System.Drawing.Point(29, 7);
+            this.Title.Name = "Title";
+            this.Title.Size = new System.Drawing.Size(78, 24);
+            this.Title.TabIndex = 2;
+            this.Title.Text = "osu trainer";
+            this.Title.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseDown);
+            this.Title.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseMove);
+            this.Title.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseUp);
+            // 
+            // SongLabel
+            // 
+            this.SongLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.SongLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.SongLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.SongLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.SongLabel.Location = new System.Drawing.Point(8, 103);
+            this.SongLabel.Name = "SongLabel";
+            this.SongLabel.Size = new System.Drawing.Size(260, 14);
+            this.SongLabel.TabIndex = 2;
+            this.SongLabel.Text = "Artist - Title";
+            // 
+            // DiffLabel
+            // 
+            this.DiffLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
+            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
+            this.DiffLabel.Location = new System.Drawing.Point(282, 103);
+            this.DiffLabel.Name = "DiffLabel";
+            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
+            this.DiffLabel.TabIndex = 2;
+            this.DiffLabel.Text = "Extra";
+            this.DiffLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            // 
+            // OsuRunningTimer
+            // 
+            this.OsuRunningTimer.Interval = 500;
+            this.OsuRunningTimer.Tick += new System.EventHandler(this.OsuRunningTimer_Tick);
+            // 
+            // icon
+            // 
+            this.icon.Image = ((System.Drawing.Image)(resources.GetObject("icon.Image")));
+            this.icon.ImageLocation = "";
+            this.icon.Location = new System.Drawing.Point(11, 10);
+            this.icon.Name = "icon";
+            this.icon.Size = new System.Drawing.Size(16, 16);
+            this.icon.TabIndex = 4;
+            this.icon.TabStop = false;
+            // 
+            // AimSpeedBar
+            // 
+            this.AimSpeedBar.LeftColour = System.Drawing.Color.FromArgb(((int)(((byte)(255)))), ((int)(((byte)(133)))), ((int)(((byte)(201)))));
+            this.AimSpeedBar.LeftPercent = 40;
+            this.AimSpeedBar.Location = new System.Drawing.Point(276, 82);
+            this.AimSpeedBar.Name = "AimSpeedBar";
+            this.AimSpeedBar.RightColour = System.Drawing.Color.FromArgb(((int)(((byte)(114)))), ((int)(((byte)(241)))), ((int)(((byte)(184)))));
+            this.AimSpeedBar.Size = new System.Drawing.Size(135, 3);
+            this.AimSpeedBar.TabIndex = 21;
+            this.AimSpeedBar.Text = "ratioBar1";
+            // 
+            // BpmMultiplierUpDown
+            // 
+            this.BpmMultiplierUpDown.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
+            this.BpmMultiplierUpDown.BorderStyle = System.Windows.Forms.BorderStyle.None;
+            this.BpmMultiplierUpDown.DecimalPlaces = 2;
+            this.BpmMultiplierUpDown.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.BpmMultiplierUpDown.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
+            this.BpmMultiplierUpDown.Increment = new decimal(new int[] {
+            1,
+            0,
+            0,
+            131072});
+            this.BpmMultiplierUpDown.Location = new System.Drawing.Point(116, 8);
+            this.BpmMultiplierUpDown.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
+            this.BpmMultiplierUpDown.Maximum = new decimal(new int[] {
+            5,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.Minimum = new decimal(new int[] {
+            1,
+            0,
+            0,
+            65536});
+            this.BpmMultiplierUpDown.Name = "BpmMultiplierUpDown";
+            this.BpmMultiplierUpDown.Size = new System.Drawing.Size(68, 24);
+            this.BpmMultiplierUpDown.TabIndex = 4;
+            this.BpmMultiplierUpDown.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.BpmMultiplierUpDown.Value = new decimal(new int[] {
+            1,
+            0,
+            0,
+            0});
+            this.BpmMultiplierUpDown.ValueChanged += new System.EventHandler(this.BpmMultiplierUpDown_ValueChanged);
+            // 
             // ODSlider
             // 
             this.ODSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
@@ -570,35 +848,6 @@ namespace osu_trainer
             0,
             0});
             this.ODSlider.ValueChanged += new System.EventHandler(this.OdSlider_ValueChanged);
-            // 
-            // arlabel
-            // 
-            this.arlabel.AutoSize = true;
-            this.arlabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.arlabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.arlabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.arlabel.Location = new System.Drawing.Point(3, 61);
-            this.arlabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.arlabel.Name = "arlabel";
-            this.arlabel.Size = new System.Drawing.Size(32, 26);
-            this.arlabel.TabIndex = 6;
-            this.arlabel.Text = "AR";
-            this.arlabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // ARDisplay
-            // 
-            this.ARDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.ARDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.ARDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.ARDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.ARDisplay.Location = new System.Drawing.Point(41, 63);
-            this.ARDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.ARDisplay.Name = "ARDisplay";
-            this.ARDisplay.ReadOnly = true;
-            this.ARDisplay.Size = new System.Drawing.Size(42, 21);
-            this.ARDisplay.TabIndex = 7;
-            this.ARDisplay.Text = "0.0";
-            this.ARDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // ARSlider
             // 
@@ -638,35 +887,6 @@ namespace osu_trainer
             0});
             this.ARSlider.ValueChanged += new System.EventHandler(this.ArSlider_ValueChanged);
             // 
-            // cslabel
-            // 
-            this.cslabel.AutoSize = true;
-            this.cslabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.cslabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.cslabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.cslabel.Location = new System.Drawing.Point(3, 32);
-            this.cslabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.cslabel.Name = "cslabel";
-            this.cslabel.Size = new System.Drawing.Size(32, 26);
-            this.cslabel.TabIndex = 3;
-            this.cslabel.Text = "CS";
-            this.cslabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // CSDisplay
-            // 
-            this.CSDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.CSDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.CSDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.CSDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.CSDisplay.Location = new System.Drawing.Point(41, 34);
-            this.CSDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.CSDisplay.Name = "CSDisplay";
-            this.CSDisplay.ReadOnly = true;
-            this.CSDisplay.Size = new System.Drawing.Size(42, 21);
-            this.CSDisplay.TabIndex = 4;
-            this.CSDisplay.Text = "0.0";
-            this.CSDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            // 
             // CSSlider
             // 
             this.CSSlider.BodyColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
@@ -704,36 +924,6 @@ namespace osu_trainer
             0,
             0});
             this.CSSlider.ValueChanged += new System.EventHandler(this.CsSlider_ValueChanged);
-            // 
-            // hplabel
-            // 
-            this.hplabel.AutoSize = true;
-            this.hplabel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.hplabel.Font = new System.Drawing.Font("Microsoft New Tai Lue", 9.75F, System.Drawing.FontStyle.Bold);
-            this.hplabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(249)))), ((int)(((byte)(126)))), ((int)(((byte)(114)))));
-            this.hplabel.Location = new System.Drawing.Point(3, 3);
-            this.hplabel.Margin = new System.Windows.Forms.Padding(3, 3, 3, 0);
-            this.hplabel.Name = "hplabel";
-            this.hplabel.Size = new System.Drawing.Size(32, 26);
-            this.hplabel.TabIndex = 0;
-            this.hplabel.Text = "HP";
-            this.hplabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
-            // HPDisplay
-            // 
-            this.HPDisplay.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.HPDisplay.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
-            this.HPDisplay.BorderStyle = System.Windows.Forms.BorderStyle.None;
-            this.HPDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 12F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HPDisplay.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.HPDisplay.Location = new System.Drawing.Point(41, 5);
-            this.HPDisplay.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.HPDisplay.Name = "HPDisplay";
-            this.HPDisplay.ReadOnly = true;
-            this.HPDisplay.Size = new System.Drawing.Size(42, 21);
-            this.HPDisplay.TabIndex = 1;
-            this.HPDisplay.Text = "0.0";
-            this.HPDisplay.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
             // HPSlider
             // 
@@ -773,116 +963,20 @@ namespace osu_trainer
             0});
             this.HPSlider.ValueChanged += new System.EventHandler(this.HpSlider_ValueChanged);
             // 
-            // HPLockCheck
-            // 
-            this.HPLockCheck.Appearance = System.Windows.Forms.Appearance.Button;
-            this.HPLockCheck.AutoSize = true;
-            this.HPLockCheck.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-            this.HPLockCheck.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.HPLockCheck.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
-            this.HPLockCheck.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.HPLockCheck.Font = new System.Drawing.Font("Carlito", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.HPLockCheck.ForeColor = System.Drawing.Color.Gray;
-            this.HPLockCheck.Location = new System.Drawing.Point(358, 5);
-            this.HPLockCheck.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.HPLockCheck.Name = "HPLockCheck";
-            this.HPLockCheck.Size = new System.Drawing.Size(38, 21);
-            this.HPLockCheck.TabIndex = 12;
-            this.HPLockCheck.Text = "Lock";
-            this.HPLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.HPLockCheck.UseVisualStyleBackColor = true;
-            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HpLockCheck_CheckedChanged);
-            // 
-            // BottomPanel
-            // 
-            this.BottomPanel.Controls.Add(this.DeleteButton);
-            this.BottomPanel.Controls.Add(this.ResetButton);
-            this.BottomPanel.Controls.Add(this.GenerateMapButton);
-            this.BottomPanel.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.BottomPanel.Location = new System.Drawing.Point(0, 326);
-            this.BottomPanel.Name = "BottomPanel";
-            this.BottomPanel.Padding = new System.Windows.Forms.Padding(10, 2, 10, 10);
-            this.BottomPanel.Size = new System.Drawing.Size(427, 111);
-            this.BottomPanel.TabIndex = 11;
-            // 
-            // DeleteButton
-            // 
-            this.DeleteButton.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.DeleteButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.DeleteButton.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.DeleteButton.ForeColor = System.Drawing.Color.DarkGray;
-            this.DeleteButton.Location = new System.Drawing.Point(10, 31);
-            this.DeleteButton.Name = "DeleteButton";
-            this.DeleteButton.Size = new System.Drawing.Size(407, 25);
-            this.DeleteButton.TabIndex = 1;
-            this.DeleteButton.Text = "2. Delete Unused MP3s";
-            this.DeleteButton.UseVisualStyleBackColor = true;
-            this.DeleteButton.Click += new System.EventHandler(this.DeleteButton_Click);
-            // 
-            // ResetButton
-            // 
-            this.ResetButton.FlatAppearance.BorderColor = System.Drawing.Color.DarkGray;
-            this.ResetButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.ResetButton.Font = new System.Drawing.Font("Microsoft Tai Le", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.ResetButton.ForeColor = System.Drawing.Color.DarkGray;
-            this.ResetButton.Location = new System.Drawing.Point(10, 0);
-            this.ResetButton.Name = "ResetButton";
-            this.ResetButton.Size = new System.Drawing.Size(407, 25);
-            this.ResetButton.TabIndex = 1;
-            this.ResetButton.Text = "1. Reset";
-            this.ResetButton.UseVisualStyleBackColor = true;
-            this.ResetButton.Click += new System.EventHandler(this.ResetButton_Click);
-            // 
-            // TopPanel
-            // 
-            this.TopPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.TopPanel.Controls.Add(this.SongLabel);
-            this.TopPanel.Controls.Add(this.DiffLabel);
-            this.TopPanel.Controls.Add(this.BgPanel);
-            this.TopPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.TopPanel.Location = new System.Drawing.Point(0, 0);
-            this.TopPanel.Name = "TopPanel";
-            this.TopPanel.Padding = new System.Windows.Forms.Padding(10);
-            this.TopPanel.Size = new System.Drawing.Size(427, 100);
-            this.TopPanel.TabIndex = 12;
-            // 
-            // SongLabel
-            // 
-            this.SongLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.SongLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.SongLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
-            this.SongLabel.Location = new System.Drawing.Point(8, 78);
-            this.SongLabel.Name = "SongLabel";
-            this.SongLabel.Size = new System.Drawing.Size(260, 14);
-            this.SongLabel.TabIndex = 2;
-            this.SongLabel.Text = "Artist - Title";
-            // 
-            // DiffLabel
-            // 
-            this.DiffLabel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
-            this.DiffLabel.Font = new System.Drawing.Font("Microsoft YaHei UI", 8.25F);
-            this.DiffLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(254)))), ((int)(((byte)(222)))), ((int)(((byte)(93)))));
-            this.DiffLabel.Location = new System.Drawing.Point(282, 78);
-            this.DiffLabel.Name = "DiffLabel";
-            this.DiffLabel.Size = new System.Drawing.Size(139, 14);
-            this.DiffLabel.TabIndex = 2;
-            this.DiffLabel.Text = "Extra";
-            this.DiffLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-            // 
             // BgPanel
             // 
+            this.BgPanel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.BgPanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(98)))), ((int)(((byte)(96)))), ((int)(((byte)(104)))));
             this.BgPanel.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Stretch;
             this.BgPanel.Controls.Add(this.StaticGif);
-            this.BgPanel.Dock = System.Windows.Forms.DockStyle.Top;
-            this.BgPanel.Location = new System.Drawing.Point(10, 10);
+            this.BgPanel.Location = new System.Drawing.Point(10, 35);
             this.BgPanel.Name = "BgPanel";
             this.BgPanel.Size = new System.Drawing.Size(407, 62);
             this.BgPanel.TabIndex = 0;
             // 
             // StaticGif
             // 
-            this.StaticGif.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.StaticGif.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.StaticGif.ErrorImage = null;
             this.StaticGif.ImageLocation = "resources\\static.gif";
             this.StaticGif.InitialImage = null;
@@ -893,22 +987,17 @@ namespace osu_trainer
             this.StaticGif.TabStop = false;
             this.StaticGif.Visible = false;
             // 
-            // OsuRunningTimer
-            // 
-            this.OsuRunningTimer.Interval = 500;
-            this.OsuRunningTimer.Tick += new System.EventHandler(this.OsuRunningTimer_Tick);
-            // 
             // MainForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.ClientSize = new System.Drawing.Size(427, 437);
+            this.ClientSize = new System.Drawing.Size(427, 462);
             this.Controls.Add(this.MiddlePanel);
             this.Controls.Add(this.TopPanel);
             this.Controls.Add(this.BottomPanel);
             this.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedSingle;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.KeyPreview = true;
             this.Margin = new System.Windows.Forms.Padding(4, 3, 4, 3);
@@ -920,12 +1009,13 @@ namespace osu_trainer
             this.panel2.ResumeLayout(false);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.Middle1Panel.ResumeLayout(false);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.BottomPanel.ResumeLayout(false);
             this.TopPanel.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.icon)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.BpmMultiplierUpDown)).EndInit();
             this.BgPanel.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.StaticGif)).EndInit();
             this.ResumeLayout(false);
@@ -980,5 +1070,10 @@ namespace osu_trainer
         private System.Windows.Forms.Button ResetButton;
         private System.Windows.Forms.Timer OsuRunningTimer;
         private System.Windows.Forms.Button DeleteButton;
+        private System.Windows.Forms.Button closeButton;
+        private System.Windows.Forms.Label Title;
+        private System.Windows.Forms.Button minimizeButton;
+        private System.Windows.Forms.Button maximizeButton;
+        private System.Windows.Forms.PictureBox icon;
     }
 }
