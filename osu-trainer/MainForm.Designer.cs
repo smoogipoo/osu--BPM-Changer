@@ -48,7 +48,7 @@ namespace osu_trainer
             this.NewBpmRangeTextBox = new System.Windows.Forms.TextBox();
             this.OriginalBpmRangeTextBox = new System.Windows.Forms.TextBox();
             this.OriginalBpmTextBox = new System.Windows.Forms.TextBox();
-            this.checkBox3 = new System.Windows.Forms.CheckBox();
+            this.changePitchButton = new System.Windows.Forms.CheckBox();
             this.ScaleODCheck = new System.Windows.Forms.CheckBox();
             this.ScaleARCheck = new System.Windows.Forms.CheckBox();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
@@ -182,7 +182,7 @@ namespace osu_trainer
             this.Panel3.Controls.Add(this.NewBpmRangeTextBox);
             this.Panel3.Controls.Add(this.OriginalBpmRangeTextBox);
             this.Panel3.Controls.Add(this.OriginalBpmTextBox);
-            this.Panel3.Controls.Add(this.checkBox3);
+            this.Panel3.Controls.Add(this.changePitchButton);
             this.Panel3.Controls.Add(this.ScaleODCheck);
             this.Panel3.Controls.Add(this.ScaleARCheck);
             this.Panel3.Controls.Add(this.label4);
@@ -254,7 +254,6 @@ namespace osu_trainer
             this.NewBpmTextBox.TabIndex = 10;
             this.NewBpmTextBox.Text = "200";
             this.NewBpmTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
-            this.NewBpmTextBox.Enter += new System.EventHandler(this.NewBpmTextBox_Enter);
             this.NewBpmTextBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.NewBpmTextBox_KeyDown);
             this.NewBpmTextBox.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.NewBpmTextBox_KeyPress);
             this.NewBpmTextBox.Leave += new System.EventHandler(this.NewBpmTextBox_Leave);
@@ -301,25 +300,26 @@ namespace osu_trainer
             this.OriginalBpmTextBox.Text = "200";
             this.OriginalBpmTextBox.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
             // 
-            // checkBox3
+            // changePitchButton
             // 
-            this.checkBox3.Appearance = System.Windows.Forms.Appearance.Button;
-            this.checkBox3.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.checkBox3.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
-            this.checkBox3.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
-            this.checkBox3.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
-            this.checkBox3.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
-            this.checkBox3.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.checkBox3.Font = new System.Drawing.Font("Carlito", 8.25F);
-            this.checkBox3.ForeColor = System.Drawing.Color.Gray;
-            this.checkBox3.Location = new System.Drawing.Point(311, 8);
-            this.checkBox3.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
-            this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new System.Drawing.Size(80, 23);
-            this.checkBox3.TabIndex = 19;
-            this.checkBox3.Text = "Change pitch";
-            this.checkBox3.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
-            this.checkBox3.UseVisualStyleBackColor = false;
+            this.changePitchButton.Appearance = System.Windows.Forms.Appearance.Button;
+            this.changePitchButton.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.changePitchButton.CheckAlign = System.Drawing.ContentAlignment.MiddleRight;
+            this.changePitchButton.FlatAppearance.BorderColor = System.Drawing.Color.Gray;
+            this.changePitchButton.FlatAppearance.CheckedBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.changePitchButton.FlatAppearance.MouseOverBackColor = System.Drawing.Color.FromArgb(((int)(((byte)(67)))), ((int)(((byte)(61)))), ((int)(((byte)(85)))));
+            this.changePitchButton.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
+            this.changePitchButton.Font = new System.Drawing.Font("Carlito", 8.25F);
+            this.changePitchButton.ForeColor = System.Drawing.Color.Gray;
+            this.changePitchButton.Location = new System.Drawing.Point(311, 8);
+            this.changePitchButton.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
+            this.changePitchButton.Name = "changePitchButton";
+            this.changePitchButton.Size = new System.Drawing.Size(80, 23);
+            this.changePitchButton.TabIndex = 19;
+            this.changePitchButton.Text = "Change pitch";
+            this.changePitchButton.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            this.changePitchButton.UseVisualStyleBackColor = false;
+            this.changePitchButton.CheckedChanged += new System.EventHandler(this.ChangePitchButton_CheckedChanged);
             // 
             // ScaleODCheck
             // 
@@ -462,7 +462,7 @@ namespace osu_trainer
             this.ODLockCheck.Text = "Lock";
             this.ODLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.ODLockCheck.UseVisualStyleBackColor = true;
-            this.ODLockCheck.CheckedChanged += new System.EventHandler(this.ODLockCheck_CheckedChanged);
+            this.ODLockCheck.CheckedChanged += new System.EventHandler(this.OdLockCheck_CheckedChanged);
             // 
             // ARLockCheck
             // 
@@ -482,7 +482,7 @@ namespace osu_trainer
             this.ARLockCheck.Text = "Lock";
             this.ARLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.ARLockCheck.UseVisualStyleBackColor = true;
-            this.ARLockCheck.CheckedChanged += new System.EventHandler(this.ARLockCheck_CheckedChanged);
+            this.ARLockCheck.CheckedChanged += new System.EventHandler(this.ArLockCheck_CheckedChanged);
             // 
             // CSLockCheck
             // 
@@ -502,7 +502,7 @@ namespace osu_trainer
             this.CSLockCheck.Text = "Lock";
             this.CSLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.CSLockCheck.UseVisualStyleBackColor = true;
-            this.CSLockCheck.CheckedChanged += new System.EventHandler(this.CSLockCheck_CheckedChanged);
+            this.CSLockCheck.CheckedChanged += new System.EventHandler(this.CsLockCheck_CheckedChanged);
             // 
             // odlabel
             // 
@@ -569,7 +569,7 @@ namespace osu_trainer
             0,
             0,
             0});
-            this.ODSlider.ValueChanged += new System.EventHandler(this.ODSlider_ValueChanged);
+            this.ODSlider.ValueChanged += new System.EventHandler(this.OdSlider_ValueChanged);
             // 
             // arlabel
             // 
@@ -636,7 +636,7 @@ namespace osu_trainer
             0,
             0,
             0});
-            this.ARSlider.ValueChanged += new System.EventHandler(this.ARSlider_ValueChanged);
+            this.ARSlider.ValueChanged += new System.EventHandler(this.ArSlider_ValueChanged);
             // 
             // cslabel
             // 
@@ -703,7 +703,7 @@ namespace osu_trainer
             0,
             0,
             0});
-            this.CSSlider.ValueChanged += new System.EventHandler(this.CSSlider_ValueChanged);
+            this.CSSlider.ValueChanged += new System.EventHandler(this.CsSlider_ValueChanged);
             // 
             // hplabel
             // 
@@ -771,7 +771,7 @@ namespace osu_trainer
             0,
             0,
             0});
-            this.HPSlider.ValueChanged += new System.EventHandler(this.HPSlider_ValueChanged);
+            this.HPSlider.ValueChanged += new System.EventHandler(this.HpSlider_ValueChanged);
             // 
             // HPLockCheck
             // 
@@ -791,7 +791,7 @@ namespace osu_trainer
             this.HPLockCheck.Text = "Lock";
             this.HPLockCheck.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
             this.HPLockCheck.UseVisualStyleBackColor = true;
-            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HPLockCheck_CheckedChanged);
+            this.HPLockCheck.CheckedChanged += new System.EventHandler(this.HpLockCheck_CheckedChanged);
             // 
             // BottomPanel
             // 
@@ -972,7 +972,7 @@ namespace osu_trainer
         private System.Windows.Forms.Label AimLabel;
         private System.Windows.Forms.Label SpeedLabel;
         private System.Windows.Forms.CheckBox ScaleODCheck;
-        private System.Windows.Forms.CheckBox checkBox3;
+        private System.Windows.Forms.CheckBox changePitchButton;
         private System.Windows.Forms.TextBox NewBpmTextBox;
         private System.Windows.Forms.TextBox NewBpmRangeTextBox;
         private System.Windows.Forms.TextBox OriginalBpmRangeTextBox;

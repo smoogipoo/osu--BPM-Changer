@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
             "audio.mp3",
             "4/21/2020",
             "3MB"}, -1);
@@ -97,7 +97,7 @@
             this.textBox1.TabIndex = 2;
             this.textBox1.Text = "The following mp3s will be deleted.";
             // 
-            // fileList
+            // fileListView
             // 
             this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
@@ -108,9 +108,9 @@
             this.columnHeader3});
             this.fileListView.HideSelection = false;
             this.fileListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem1});
+            listViewItem4});
             this.fileListView.Location = new System.Drawing.Point(0, 16);
-            this.fileListView.Name = "fileList";
+            this.fileListView.Name = "fileListView";
             this.fileListView.Size = new System.Drawing.Size(549, 224);
             this.fileListView.TabIndex = 3;
             this.fileListView.UseCompatibleStateImageBehavior = false;
@@ -152,7 +152,7 @@
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(569, 289);
             this.Controls.Add(this.panel1);
-            this.MinimumSize = new System.Drawing.Size(300, 39);
+            this.MinimumSize = new System.Drawing.Size(350, 160);
             this.Name = "DeleteMp3sForm";
             this.Padding = new System.Windows.Forms.Padding(10);
             this.Text = "DeleteMp3sForm";

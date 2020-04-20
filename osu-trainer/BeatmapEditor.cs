@@ -86,11 +86,12 @@ namespace osu_trainer
         public bool ScaleOD { get; private set; } = true;
         internal EditorState State { get; private set; }
         public float BpmMultiplier { get; set; } = 1.0f;
+        public bool ChangePitch { get; private set; } = false;
 
         public BeatmapEditor(MainForm f)
         {
             form = f;
-            setState(EditorState.NOT_READY);
+            SetState(EditorState.NOT_READY);
             NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
         }
 
@@ -110,14 +111,16 @@ namespace osu_trainer
                 return;
 
             // pre
-            setState(EditorState.GENERATING_BEATMAP);
+            SetState(EditorState.GENERATING_BEATMAP);
 
             // main phase
             Beatmap exportBeatmap = NewBeatmap.Copy();
-            ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier);
+            ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch);
             if (!File.Exists(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap) + "\\" + exportBeatmap.AudioFilename))
             {
-                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(OriginalBeatmap, exportBeatmap, BpmMultiplier));
+                string inFile = $"{Path.GetDirectoryName(OriginalBeatmap.Filename)}\\{OriginalBeatmap.AudioFilename}";
+                string outFile = $"{Path.GetDirectoryName(exportBeatmap.Filename)}\\{exportBeatmap.AudioFilename}";
+                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, ChangePitch));
 
                 // take note of this mp3 in a text file, so we can clean it up later
                 string mp3ManifestFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
@@ -132,10 +135,10 @@ namespace osu_trainer
 
             // post
             form.PlayDoneSound();
-            setState(EditorState.READY);
+            SetState(EditorState.READY);
         }
 
-        private string matchGroup(string text, string re, int group)
+        private string MatchGroup(string text, string re, int group)
         {
             foreach (Match m in Regex.Matches(text, re))
                 return m.Groups[group].Value;
@@ -160,8 +163,8 @@ namespace osu_trainer
             // convert that shit into a dictionary
             var mp3Dict = new Dictionary<string, List<string>>();
             string pattern = @"(.+) \| (.+)";
-            string parseMp3(string line) => matchGroup(line, pattern, 1);
-            string parseOsu(string line) => matchGroup(line, pattern, 2);
+            string parseMp3(string line) => MatchGroup(line, pattern, 1);
+            string parseOsu(string line) => MatchGroup(line, pattern, 2);
 
             // create dictionary keys
             lines
@@ -188,7 +191,7 @@ namespace osu_trainer
             string mp3ManifestFile = Properties.Settings.Default.SongsFolder + "\\modified_mp3_list.txt";
             List<string> lines = File.ReadAllText(mp3ManifestFile).Split(new[] { Environment.NewLine }, StringSplitOptions.None).ToList();
             string pattern = @"(.+) \| (.+)";
-            string parseMp3(string line) => matchGroup(line, pattern, 1);
+            string parseMp3(string line) => MatchGroup(line, pattern, 1);
 
             // filter out lines whose mp3s no longer exist
             List<string> keepLines = new List<string>();
@@ -212,10 +215,10 @@ namespace osu_trainer
 
             // acquire mutually exclusive entry into this method
             if (!serviceBeatmapRequestLocked)
-                serviceBeatmapChangeRequest();
+                ServiceBeatmapChangeRequest();
             else return; // this method is already being run in another async "thread"
         }
-        private async void serviceBeatmapChangeRequest()
+        private async void ServiceBeatmapChangeRequest()
         {
             // acquire mutually exclusive entry into this method
             serviceBeatmapRequestLocked = true;
@@ -250,7 +253,7 @@ namespace osu_trainer
             NewBeatmap      = candidateNewBeatmap;
             if (OriginalBeatmap == null)
             {
-                setState(EditorState.NOT_READY);
+                SetState(EditorState.NOT_READY);
                 NotReadyReason = BadBeatmapReason.ERROR_LOADING_BEATMAP;
                 BeatmapSwitched?.Invoke(this, EventArgs.Empty);
             }
@@ -258,19 +261,20 @@ namespace osu_trainer
             {
                 if (OriginalBeatmap.Mode != GameMode.osu)
                 {
-                    setState(EditorState.NOT_READY);
+                    SetState(EditorState.NOT_READY);
                     NotReadyReason = BadBeatmapReason.DIFF_NOT_OSUSTD;
                     BeatmapSwitched?.Invoke(this, EventArgs.Empty);
                 }
                 else
                 {
-                    setState(EditorState.READY);
+                    SetState(EditorState.READY);
                     RequestDiffCalc();
                     BeatmapSwitched?.Invoke(this, EventArgs.Empty);
                     BeatmapModified?.Invoke(this, EventArgs.Empty);
 
                 }
             }
+            ControlsModified?.Invoke(this, EventArgs.Empty);
             serviceBeatmapRequestLocked = false;
         }
 
@@ -280,10 +284,10 @@ namespace osu_trainer
 
             // acquire mutually exclusive entry into this method
             if (!serviceDiffCalcRequestLocked)
-                serviceDiffCalcRequest();
+                ServiceDiffCalcRequest();
             else return; // this method is already being run in another async "thread"
         }
-        private async void serviceDiffCalcRequest()
+        private async void ServiceDiffCalcRequest()
         {
             // acquire mutually exclusive entry into this method
             serviceDiffCalcRequestLocked = true;
@@ -312,7 +316,7 @@ namespace osu_trainer
             serviceDiffCalcRequestLocked = false;
         }
 
-        private void setState(EditorState s)
+        private void SetState(EditorState s)
         {
             State = s;
             StateChanged?.Invoke(this, EventArgs.Empty);
@@ -425,11 +429,10 @@ namespace osu_trainer
         public void SetODLock(bool locked)
         {
             OdIsLocked = locked;
-            if (!locked)
-            {
-                NewBeatmap.OverallDifficulty = OriginalBeatmap.OverallDifficulty;
-                BeatmapModified?.Invoke(this, EventArgs.Empty);
-            }
+            if (OdIsLocked)
+                ScaleOD = false;
+            else
+                SetScaleOD(true);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
         public void SetBpmMultiplier(float multiplier)
@@ -454,11 +457,16 @@ namespace osu_trainer
             RequestDiffCalc();
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
-        public void setBpm(int bpm) {
+        public void SetBpm(int bpm) {
             float originalBpm = GetOriginalBpmData().Item1;
             float newMultiplier = bpm / originalBpm;
             newMultiplier = JunUtils.Clamp(newMultiplier, 0.1f, 5.0f);
             SetBpmMultiplier(newMultiplier);
+        }
+        public void ToggleChangePitchSetting()
+        {
+            ChangePitch = !ChangePitch;
+            ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
         public GameMode? GetMode()
@@ -586,7 +594,7 @@ namespace osu_trainer
         // OUT: beatmap.Filename
         // OUT: beatmap.AudioFilename (if multiplier is not 1x)
         // OUT: beatmap.Tags
-        private void ModifyBeatmapMetadata(Beatmap map, float multiplier)
+        private void ModifyBeatmapMetadata(Beatmap map, float multiplier, bool changePitch=false)
         {
             if (multiplier == 1)
             {
@@ -608,6 +616,10 @@ namespace osu_trainer
                 else
                     map.Version += $" {(bpmsUnique[0]).ToString("0")}bpm";
                 map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + GetBpmData(map).Item1 + "bpm.mp3";
+                if (changePitch)
+                    map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x.mp3";
+                if (changePitch)
+                    map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x (pitch {(multiplier < 1 ? "lowered" : "raised")}).mp3";
             }
 
             map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + JunUtils.NormalizeText(map.Artist) + " - " + JunUtils.NormalizeText(map.Title) + " (" + JunUtils.NormalizeText(map.Creator) + ")" + " [" + JunUtils.NormalizeText(map.Version) + "].osu";
@@ -682,7 +694,6 @@ namespace osu_trainer
                     }
                 }
                 var lines = bpmProminenceValues.Select(kvp => kvp.Key + ": " + kvp.Value.ToString());
-                Console.WriteLine(string.Join(Environment.NewLine, lines));
 
                 float candidateBpm = 0;
                 float maxProminence = float.MinValue;

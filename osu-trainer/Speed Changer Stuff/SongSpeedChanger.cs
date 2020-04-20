@@ -11,53 +11,52 @@ namespace osu_trainer
 {
     class SongSpeedChanger
     {
-        // (in: originalMap.AudioFilename) => (out: newMap.AudioFilename)
-        public static void GenerateAudioFile(Beatmap originalMap, Beatmap newMap, double multiplier)
+        public static void GenerateAudioFile(string inFile, string outFile, double multiplier, bool changePitch=false)
         {
             if (multiplier == 1)
                 throw new ArgumentException("Don't call this function if multiplier is 1.0x");
 
-
-            //temp1: Audio copy
-            //temp2: Decoded wav
-            //temp3: stretched file
-            //temp4: Encoded mp3
-            string temp1 = JunUtils.GetTempFilename("mp3");
-            string temp2 = JunUtils.GetTempFilename("wav");
-            string temp3 = JunUtils.GetTempFilename("wav");
-            string temp4 = JunUtils.GetTempFilename("mp3");
+            string temp1 = JunUtils.GetTempFilename("mp3"); // audio copy
+            string temp2 = JunUtils.GetTempFilename("wav"); // decoded wav
+            string temp3 = JunUtils.GetTempFilename("wav"); // stretched file
+            string temp4 = JunUtils.GetTempFilename("mp3"); // encoded mp3
 
             // TODO: try catch
-            CopyFile(originalMap.Filename.Substring(0, originalMap.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + originalMap.AudioFilename, temp1);
+            CopyFile(inFile, temp1);
 
-            // lame.exe
+            // mp3 => wav
             Process lame1 = new Process();
             lame1.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
-            lame1.StartInfo.Arguments = string.Format("-q 9 --priority 4 --decode \"{0}\" \"{1}\"", temp1, temp2);
+            lame1.StartInfo.Arguments = $"-q 9 --priority 4 --decode \"{temp1}\" \"{temp2}\"";
             lame1.StartInfo.UseShellExecute = false;
             lame1.StartInfo.CreateNoWindow = true;
             lame1.Start();
             lame1.WaitForExit();
 
-            // soundstretch.exe
+            // stretch (or speed up) wav
+            float cents = (float)(1200.0f * Math.Log(multiplier) / Math.Log(2));
+            float semitones = cents / 100.0f;
             Process soundstretch = new Process();
             soundstretch.StartInfo.FileName = "Speed Changer Stuff\\soundstretch.exe";
-            soundstretch.StartInfo.Arguments = string.Format($"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100}");
+            if (changePitch)
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100} -pitch={semitones}";
+            else
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100}";
             soundstretch.StartInfo.UseShellExecute = false;
             soundstretch.StartInfo.CreateNoWindow = true;
             soundstretch.Start();
             soundstretch.WaitForExit();
 
-            // lame.exe again
+            // wav => mp3
             Process lame2 = new Process();
             lame2.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
-            lame2.StartInfo.Arguments = string.Format("-q 9 --priority 4 \"{0}\" \"{1}\"", temp3, temp4);
+            lame2.StartInfo.Arguments = $"-q 9 --priority 4 \"{temp3}\" \"{temp4}\"";
             lame2.StartInfo.UseShellExecute = false;
             lame2.StartInfo.CreateNoWindow = true;
             lame2.Start();
             lame2.WaitForExit();
 
-            CopyFile(temp4, Path.GetDirectoryName(newMap.Filename) + "\\" + newMap.AudioFilename);
+            CopyFile(temp4, outFile);
 
             // Clean up
             File.Delete(temp1);

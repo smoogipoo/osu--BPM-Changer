@@ -55,8 +55,8 @@ namespace osu_trainer
         List<OptionSlider> diffSliders;
 
         // Single Object Instances
-        SoundPlayer sound = new SoundPlayer();
-        BeatmapEditor editor;
+        readonly SoundPlayer sound = new SoundPlayer();
+        readonly BeatmapEditor editor;
 
         // other
         private string previousBeatmapRead;
@@ -106,10 +106,12 @@ namespace osu_trainer
             editor.BeatmapModified  += UpdateBpmUpDown;
             editor.ControlsModified += UpdateLockButtons;
             editor.ControlsModified += UpdateScaleButtons;
+            editor.ControlsModified += UpdateChanGePitchButton;
 
             // need controls to show up as initially disabled
             editor.ForceEventStateChanged();
             editor.ForceEventBeatmapSwitched();
+            editor.ForceEventControlsModified();
 
             BeatmapUpdateTimer.Start();
             OsuRunningTimer.Start();
@@ -269,6 +271,11 @@ namespace osu_trainer
             ScaleODCheck.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleOD ? accentBlue : Color.Gray;
             ScaleODCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ScaleOD ? accentBlue : Color.Gray;
         }
+        private void UpdateChanGePitchButton(object sender, EventArgs e)
+        {
+            changePitchButton.ForeColor                  = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ChangePitch ? accentBlue : Color.Gray;
+            changePitchButton.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ChangePitch ? accentBlue : Color.Gray;
+        }
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
@@ -421,23 +428,24 @@ namespace osu_trainer
             GenerateMapButton.Enabled   = enabled ? true : false;
             GenerateMapButton.ForeColor = enabled ? Color.White : Color.DimGray;
             GenerateMapButton.BackColor = enabled ? accentPink : SystemColors.ControlLight;
-            GenerateMapButton.Text      = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "2. Create Map";
+            GenerateMapButton.Text      = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "3. Create Map";
         }
         #endregion
 
 
 
         #region User input event handlers
-        private void HPSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
-        private void CSSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
-        private void ARSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
-        private void ODSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
-        private void HPLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
-        private void CSLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
-        private void ARLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
-        private void ODLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
+        private void HpSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
+        private void CsSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
+        private void ArSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
+        private void OdSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
+        private void HpLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
+        private void CsLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
+        private void ArLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
+        private void OdLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetODLock(ODLockCheck.Checked);
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
         private void ScaleODCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleOD(!editor.ScaleOD);
+        private void ChangePitchButton_CheckedChanged(object sender, EventArgs e) => editor.ToggleChangePitchSetting();
         private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
@@ -459,8 +467,43 @@ namespace osu_trainer
                 GenerateMapButton.Focus();
             }
         }
-        private void GenerateMapButton_Click(object sender, EventArgs e) => editor.GenerateBeatmap();
-        private void ResetButton_Click(object sender, EventArgs e)       => editor.ResetBeatmap();
+        private void NewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
+                e.Handled = true;
+        }
+        private void NewBpmTextBox_Submit()
+        {
+            int bpm;
+            if (int.TryParse(NewBpmTextBox.Text, out bpm))
+                editor.SetBpm(bpm);
+        }
+        private void NewBpmTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+                NewBpmTextBox_Submit();
+        }
+        private void NewBpmTextBox_Leave(object sender, EventArgs e)
+        {
+            NewBpmTextBox_Submit();
+        }
+        private void ResetButton_Click(object sender, EventArgs e)                => editor.ResetBeatmap();
+        private void DeleteButton_Click(object sender, EventArgs e)
+        {
+            var mp3List = editor.GetUnusedMp3s();
+            if (new DeleteMp3sForm(mp3List).ShowDialog() == DialogResult.OK)
+            {
+                mp3List
+                    .Select(relativeMp3 => JunUtils.FullPathFromSongsFolder(relativeMp3))
+                    .Select(absMp3 => new FileInfo(absMp3))
+                    .ToList()
+                    .ForEach(file => file.Delete());
+                if (mp3List.Count > 0)
+                    MessageBox.Show($"Deleted {mp3List.Count} files.", "Success");
+                editor.CleanUpManifestFile();
+            }
+        }
+        private void GenerateMapButton_Click(object sender, EventArgs e)          => editor.GenerateBeatmap();
         #endregion
 
 
@@ -582,51 +625,5 @@ namespace osu_trainer
         }
         #endregion Misc
 
-        private void DeleteButton_Click(object sender, EventArgs e)
-        {
-            var mp3List = editor.GetUnusedMp3s();
-            if (new DeleteMp3sForm(mp3List).ShowDialog() == DialogResult.OK)
-            {
-                mp3List
-                    .Select(relativeMp3 => JunUtils.FullPathFromSongsFolder(relativeMp3))
-                    .Select(absMp3 => new FileInfo(absMp3))
-                    .ToList()
-                    .ForEach(file => file.Delete());
-                if (mp3List.Count > 0)
-                    MessageBox.Show($"Deleted {mp3List.Count} mp3 files.", "Success");
-                editor.CleanUpManifestFile();
-            }
-        }
-
-        private void NewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-                e.Handled = true;
-        }
-
-        // change this event to submit?
-        private void NewBpmTextBox_Submit()
-        {
-            int bpm;
-            if (int.TryParse(NewBpmTextBox.Text, out bpm))
-                editor.setBpm(bpm);
-        }
-
-        private void NewBpmTextBox_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (e.KeyCode == Keys.Enter)
-                NewBpmTextBox_Submit();
-        }
-
-
-        private void NewBpmTextBox_Enter(object sender, EventArgs e)
-        {
-            Console.WriteLine("enter");
-        }
-
-        private void NewBpmTextBox_Leave(object sender, EventArgs e)
-        {
-            NewBpmTextBox_Submit();
-        }
     }
 }
