@@ -499,7 +499,7 @@ namespace osu_trainer
                     .ToList()
                     .ForEach(file => file.Delete());
                 if (mp3List.Count > 0)
-                    MessageBox.Show($"Deleted {mp3List.Count} files.", "Success");
+                    MessageBox.Show($"Deleted {mp3List.Count} file(s).", "Success");
                 editor.CleanUpManifestFile();
             }
         }
