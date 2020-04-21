@@ -36,6 +36,8 @@ namespace osu_trainer
         Color formBg = Color.FromArgb(38, 35, 53);
         Color textBoxBg = Color.FromArgb(23, 16, 25);
         Color textBoxFg = Color.FromArgb(224, 224, 224);
+        Color readOnlyTextBoxBg = Color.FromArgb(36, 24, 38);
+        Color readOnlyTextBoxFg = Color.Silver;
         Color accentSalmon = Color.FromArgb(249, 126, 114);
         Color accentYellow = Color.FromArgb(254, 222, 93);
         Color labelDisabledColor = Color.FromArgb(136, 134, 144);
@@ -98,6 +100,7 @@ namespace osu_trainer
             editor.StateChanged     += ToggleHpCsArOdDisplay;
             editor.StateChanged     += ToggleDifficultyDisplay;
             editor.StateChanged     += ToggleBpmUpDown;
+            editor.StateChanged     += ToggleBpmDisplay;
             editor.BeatmapSwitched  += UpdateSongDisplay;
             editor.BeatmapModified  += UpdateBpmDisplay;
             editor.BeatmapModified  += UpdateHpCsArOdDisplay;
@@ -218,15 +221,29 @@ namespace osu_trainer
             foreach (var label in dumbLabels)
                 label.ForeColor = labelColor;
         }
+        private void ToggleBpmDisplay(object sender, EventArgs e)
+        {
+            switch (editor.State)
+            {
+                case EditorState.NOT_READY:
+                    OriginalBpmRangeTextBox.Visible = false;
+                    NewBpmRangeTextBox.Visible = false;
+                    NewBpmTextBox.BackColor = labelDisabledColor;
+                    OriginalBpmTextBox.BackColor = labelDisabledColor;
+                    break;
+                case EditorState.READY:
+                case EditorState.GENERATING_BEATMAP:
+                    OriginalBpmTextBox.BackColor    = readOnlyTextBoxBg;
+                    NewBpmTextBox.BackColor         = textBoxBg;
+                    break;
+            }
+
+        }
         private void UpdateBpmDisplay(object sender, EventArgs e)
         {
             switch (editor.State)
             {
                 case EditorState.NOT_READY:
-                    OriginalBpmTextBox.BackColor = labelDisabledColor;
-                    OriginalBpmRangeTextBox.Visible = false;
-                    NewBpmTextBox.BackColor = labelDisabledColor;
-                    NewBpmRangeTextBox.Visible = false;
                     break;
                 case EditorState.READY:
                 case EditorState.GENERATING_BEATMAP:
@@ -234,8 +251,6 @@ namespace osu_trainer
                     (float newbpm, float newmin, float newmax) = editor.GetNewBpmData();
 
                     // bpm
-                    OriginalBpmTextBox.BackColor    = textBoxBg;
-                    NewBpmTextBox.BackColor         = textBoxBg;
                     OriginalBpmTextBox.Text         = Math.Round(oldbpm).ToString("0");
                     NewBpmTextBox.Text              = Math.Round(newbpm).ToString("0");
                     if (newbpm > oldbpm)
@@ -282,8 +297,8 @@ namespace osu_trainer
             foreach (var textbox in diffDisplays)
             {
                 textbox.Enabled = enabled ? true : false;
-                textbox.BackColor = enabled ? textBoxBg : SystemColors.ControlDark;
-                textbox.ForeColor = textBoxFg;
+                textbox.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+                textbox.ForeColor = readOnlyTextBoxFg;
                 textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
             foreach (var slider in diffSliders)
@@ -487,7 +502,7 @@ namespace osu_trainer
         {
             NewBpmTextBox_Submit();
         }
-        private void ResetButton_Click(object sender, EventArgs e)                => editor.ResetBeatmap();
+        private void ResetButton_Click(object sender, EventArgs e) => editor.ResetBeatmap();
         private void DeleteButton_Click(object sender, EventArgs e)
         {
             var mp3List = editor.GetUnusedMp3s();
@@ -503,7 +518,8 @@ namespace osu_trainer
                 editor.CleanUpManifestFile();
             }
         }
-        private void GenerateMapButton_Click(object sender, EventArgs e)          => editor.GenerateBeatmap();
+        private void GenerateMapButton_Click(object sender, EventArgs e) => editor.GenerateBeatmap();
+        private void Unfocus(object sender, EventArgs e) => ActiveControl = Panel3;
         #endregion
 
 
@@ -644,17 +660,10 @@ namespace osu_trainer
                 this.Left = Cursor.Position.X - MouseX;
             }
         }
-        private void PanelMove_MouseUp(object sender, MouseEventArgs e) { Drag = false; }
-        private void closeButton_Click(object sender, EventArgs e)
-        {
-            Close();
-        }
-
-        private void minimizeButton_Click(object sender, EventArgs e)
-        {
-            WindowState = FormWindowState.Minimized;
-            Show();
-        }
+        private void PanelMove_MouseUp(object sender, MouseEventArgs e) => Drag = false;
+        private void closeButton_Click(object sender, EventArgs e) => Close();
+        private void minimizeButton_Click(object sender, EventArgs e) => WindowState = FormWindowState.Minimized;
         #endregion
+
     }
 }
