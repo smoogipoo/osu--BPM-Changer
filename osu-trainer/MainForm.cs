@@ -162,6 +162,19 @@ namespace osu_trainer
                             if (editor.OriginalBeatmap.Mode == GameMode.CatchtheBeat) gamemode = "ctb";
                             DiffLabel.Text = $"{gamemode} diff selected";
                             break;
+                        case BadBeatmapReason.EMPTY_MAP:
+                            UpdateSongBg(editor.NewBeatmap);
+
+                            SongLabel.ForeColor = accentYellow;
+                            DiffLabel.ForeColor = accentRed;
+                            StaticGif.Visible = false;
+                            DiffLabel.Visible = true;
+
+                            artist = editor.OriginalBeatmap.Artist;
+                            title = editor.OriginalBeatmap.Title;
+                            SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
+                            DiffLabel.Text = $"empty map";
+                            break;
                         default:
                             break;
                     }
@@ -395,21 +408,21 @@ namespace osu_trainer
         {
             if (editor.State == EditorState.NOT_READY)
             {
-                StarLabel.ForeColor = labelDisabledColor;
-                StarLabel.Text = "☆";
-                AimLabel.ForeColor = labelDisabledColor;
-                AimLabel.Text = "";
-                SpeedLabel.ForeColor = labelDisabledColor;
-                SpeedLabel.Text = "";
-                AimSpeedBar.LeftColour = labelDisabledColor;
+                StarLabel.ForeColor     = labelDisabledColor;
+                StarLabel.Text          = "☆";
+                AimLabel.ForeColor      = labelDisabledColor;
+                AimLabel.Text           = "";
+                SpeedLabel.ForeColor    = labelDisabledColor;
+                SpeedLabel.Text         = "";
+                AimSpeedBar.LeftColour  = labelDisabledColor;
                 AimSpeedBar.RightColour = labelDisabledColor;
             }
             else if (editor.State == EditorState.READY)
             {
-                StarLabel.ForeColor = starsColor;
-                AimLabel.ForeColor = aimColor;
-                SpeedLabel.ForeColor = speedColor;
-                AimSpeedBar.LeftColour = aimColor;
+                StarLabel.ForeColor     = starsColor;
+                AimLabel.ForeColor      = aimColor;
+                SpeedLabel.ForeColor    = speedColor;
+                AimSpeedBar.LeftColour  = aimColor;
                 AimSpeedBar.RightColour = speedColor;
             }
         }
@@ -424,8 +437,24 @@ namespace osu_trainer
             StarLabel.Text = $"{editor.StarRating:0.00} ☆";
             AimLabel.Text = $"aim: {editor.AimRating:0.0}";
             SpeedLabel.Text = $"spd: {editor.SpeedRating:0.0}";
-            float aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
-            AimSpeedBar.LeftPercent = (int)aimPercent;
+            if (editor.StarRating == 0)
+            {
+                StarLabel.ForeColor     = labelDisabledColor;
+                AimLabel.ForeColor      = labelDisabledColor;
+                SpeedLabel.ForeColor    = labelDisabledColor;
+                AimSpeedBar.LeftColour  = labelDisabledColor;
+                AimSpeedBar.RightColour = labelDisabledColor;
+            }
+            else
+            {
+                float aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
+                AimSpeedBar.LeftPercent = (int)aimPercent;
+                StarLabel.ForeColor     = starsColor;
+                AimLabel.ForeColor      = aimColor;
+                SpeedLabel.ForeColor    = speedColor;
+                AimSpeedBar.LeftColour  = aimColor;
+                AimSpeedBar.RightColour = speedColor;
+            }
         }
         private void ToggleGenerateButton(object sender, EventArgs e)
         {

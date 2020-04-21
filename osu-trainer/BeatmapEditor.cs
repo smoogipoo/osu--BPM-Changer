@@ -24,7 +24,8 @@ namespace osu_trainer
     {
         NO_BEATMAP_LOADED,
         ERROR_LOADING_BEATMAP,
-        DIFF_NOT_OSUSTD
+        DIFF_NOT_OSUSTD,
+        EMPTY_MAP
     }
 
     // note: this code suffers from possible race conditions due to async functions modified shared resources (OriginalBeatmap, NewBeatmap)
@@ -259,7 +260,13 @@ namespace osu_trainer
             }
             else
             {
-                if (OriginalBeatmap.Mode != GameMode.osu)
+                if (OriginalBeatmap.HitObjects.Count == 0)
+                {
+                    SetState(EditorState.NOT_READY);
+                    NotReadyReason = BadBeatmapReason.EMPTY_MAP;
+                    BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+                }
+                else if (OriginalBeatmap.Mode != GameMode.osu)
                 {
                     SetState(EditorState.NOT_READY);
                     NotReadyReason = BadBeatmapReason.DIFF_NOT_OSUSTD;
@@ -633,11 +640,13 @@ namespace osu_trainer
         public (float, float, float) GetNewBpmData() => GetBpmData(NewBeatmap);
         private (float, float, float) GetBpmData(Beatmap map)
         {
+            if (map.HitObjects.Count == 0)
+                return (0.0f, 0.0f, 0.0f);
+
             var bpmList = GetBpmList(map).Select(bpm => (int)Math.Round(bpm)).ToList();
             if (bpmList.Count == 0)
-            {
-                Console.WriteLine("Very bad.");
-            }
+                return (0.0f, 0.0f, 0.0f);
+
             bpmList = bpmList.Distinct().ToList();
 
             if (bpmList.Count == 1)

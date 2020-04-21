@@ -103,13 +103,13 @@ namespace osu_trainer
             }
             catch (Exception e)
             {
-                return (-1, -1, -1);
+                return (0, 0, 0);
             }            string errstr     = oppaiData.GetValue("errstr").ToObject<string>();
             if (errstr != "no error")
             {
                 // TODO: An error occurs when opening a non-osu!standard map (mania, taiko, etc)
                 Console.WriteLine("Could not calculate difficulty");
-                return (-1, -1, -1);
+                return (0, 0, 0);
             }
             float stars      = oppaiData.GetValue("stars").ToObject<float>();
             float aimStars   = oppaiData.GetValue("aim_stars").ToObject<float>();
