@@ -30,7 +30,7 @@ namespace osu_trainer
         }
         private static float ApproachRateToMs(float approachRate)
         {
-            if (approachRate <= 50)
+            if (approachRate <= 5)
             {
                 return 1800.0f - approachRate * 120.0f;
             }
