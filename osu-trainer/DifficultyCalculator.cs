@@ -4,6 +4,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -91,6 +92,7 @@ namespace osu_trainer
             oppai.Start();
             string oppaiOutput = oppai.StandardOutput.ReadToEnd();
             oppai.WaitForExit();
+            File.Delete(tempBeatmapPath);
             diffCalcInProgress.Release();
 
             // json parsing
