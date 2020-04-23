@@ -53,7 +53,7 @@ namespace osu_trainer
             }
             return d[n, m];
         }
-        public static string FullPathFromSongsFolder(string path) => Properties.Settings.Default.SongsFolder + "\\" + path;
+        public static string FullPathFromSongsFolder(string path) => Path.Combine(Properties.Settings.Default.SongsFolder, path);
         public static string NormalizeText(string str)
         {
             return str.Replace("\"", "").Replace("*", "").Replace("\\", "").Replace("/", "").Replace("?", "").Replace("<", "").Replace(">", "").Replace("|", "");

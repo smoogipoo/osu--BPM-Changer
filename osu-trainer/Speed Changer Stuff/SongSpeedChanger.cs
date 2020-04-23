@@ -26,7 +26,7 @@ namespace osu_trainer
 
             // mp3 => wav
             Process lame1 = new Process();
-            lame1.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
+            lame1.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "lame.exe");
             lame1.StartInfo.Arguments = $"-q 9 --priority 4 --decode \"{temp1}\" \"{temp2}\"";
             lame1.StartInfo.UseShellExecute = false;
             lame1.StartInfo.CreateNoWindow = true;
@@ -37,7 +37,7 @@ namespace osu_trainer
             float cents = (float)(1200.0f * Math.Log(multiplier) / Math.Log(2));
             float semitones = cents / 100.0f;
             Process soundstretch = new Process();
-            soundstretch.StartInfo.FileName = "Speed Changer Stuff\\soundstretch.exe";
+            soundstretch.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "soundstretch.exe");
             if (changePitch)
                 soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100} -pitch={semitones}";
             else
@@ -49,7 +49,7 @@ namespace osu_trainer
 
             // wav => mp3
             Process lame2 = new Process();
-            lame2.StartInfo.FileName = "Speed Changer Stuff\\lame.exe";
+            lame2.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "lame.exe");
             lame2.StartInfo.Arguments = $"-q 9 --priority 4 \"{temp3}\" \"{temp4}\"";
             lame2.StartInfo.UseShellExecute = false;
             lame2.StartInfo.CreateNoWindow = true;

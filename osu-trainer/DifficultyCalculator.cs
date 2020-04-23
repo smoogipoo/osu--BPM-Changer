@@ -80,7 +80,7 @@ namespace osu_trainer
             {
                 StartInfo = new ProcessStartInfo
                 {
-                    FileName = "oppai\\oppai.exe",
+                    FileName = Path.Combine("oppai", "oppai.exe"),
                     Arguments = $"\"{tempBeatmapPath}\" -ojson",
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
