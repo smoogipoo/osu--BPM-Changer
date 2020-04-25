@@ -10,6 +10,7 @@ using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 
+
 namespace osu_trainer
 {
 
@@ -503,11 +504,13 @@ namespace osu_trainer
         {
             // test if the beatmap is valid before committing to using it
             Beatmap retMap;
+            FsBeatmap.Beatmap fsbeatmap;
             try
             {
                 retMap = new Beatmap(beatmapPath);
+                fsbeatmap = new FsBeatmap.Beatmap(beatmapPath);
             }
-            catch (FormatException e)
+            catch
             {
                 Console.WriteLine("Bad .osu file format");
                 OriginalBeatmap = null;
