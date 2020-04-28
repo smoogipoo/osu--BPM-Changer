@@ -54,4 +54,11 @@ let tryParseColourOption line : ColourSetting option =
         | _ -> parseError line
     | _ -> Some(Comment(line))
 
-let parseColourSection = parseSectionUsing tryParseColourOption
+let colourSettingToString cs =
+    match cs with
+    | Combo (num, col)        -> sprintf "Combo%d : %d,%d,%d" num col.r col.g col.b
+    | SliderTrackOverride col -> sprintf "SliderTrackOverride : %d,%d,%d" col.r col.g col.b
+    | SliderBorder col        -> sprintf "SliderBorder : %d,%d,%d" col.r col.g col.b
+    | Comment comment         -> comment
+
+let parseColourSection : string list -> ColourSetting list = parseSectionUsing tryParseColourOption

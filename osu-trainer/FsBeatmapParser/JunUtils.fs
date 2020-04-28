@@ -106,11 +106,15 @@ let parseError obj =
     None
 
 // parse an entire section
-let rec parseSectionUsing parserfn lines = 
-    match lines with
-    | head::tail ->
-        match parserfn head with
-        | Some(data) -> data :: parseSectionUsing parserfn tail
-        | None         -> parseSectionUsing parserfn tail
-    | [] -> []
+let parseSectionUsing parserfn lines = 
+    let rec parseSectionUsing' parserfn lines result = 
+        match lines with
+        | head::tail ->
+            match parserfn head with
+            | Some(data) -> parseSectionUsing' parserfn tail (result @ [data])
+            | None       -> parseSectionUsing' parserfn tail result
+        | [] -> result
+    parseSectionUsing' parserfn lines []
 
+let multiply (i:int) (d:decimal) = int ( (decimal i) * d )
+let divide (i:int) (d:decimal)   = int ( (decimal i) / d )

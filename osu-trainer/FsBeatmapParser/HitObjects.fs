@@ -32,6 +32,13 @@ type HitObject =
     | Hold      of ObjWithEndTime
     | Comment   of string
 
+let isNotHitObjectComment hobj =
+    match hobj with
+    | Comment _ -> false
+    | _ -> true
+
+let removeHitObjectComments (objs:list<HitObject>) = (List.filter isNotHitObjectComment objs)
+    
 
 let tryParseObjNoEndTime vals : ObjNoEndTime option =
     match vals with
@@ -99,4 +106,12 @@ let tryParseHitObject line : HitObject option =
         | _ -> Some(Comment(line))
     | _ -> Some(Comment(line))
 
-let parseHitObjectSection = parseSectionUsing tryParseHitObject
+let hitObjectToString obj = 
+    match obj with
+    | HitCircle c     -> sprintf "%d,%d,%d,%d,%d,%s"    c.x c.y c.time c.typeval c.hitSound c.remainder
+    | Slider s        -> sprintf "%d,%d,%d,%d,%d,%s"    s.x s.y s.time s.typeval s.hitSound s.remainder
+    | Spinner s       -> sprintf "%d,%d,%d,%d,%d,%d,%s" s.x s.y s.time s.typeval s.hitSound s.endTime s.remainder
+    | Hold h          -> sprintf "%d,%d,%d,%d,%d,%d,%s" h.x h.y h.time h.typeval h.hitSound h.endTime h.remainder
+    | Comment comment -> comment
+
+let parseHitObjectSection : string list -> HitObject list = parseSectionUsing tryParseHitObject

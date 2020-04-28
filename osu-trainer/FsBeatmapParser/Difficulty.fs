@@ -40,4 +40,15 @@ let tryParseDifficultyOption line : DifficultySetting option =
         | _ -> Some(Comment(line))
     | _ -> Some(Comment(line))
 
-let parseDifficultySection = parseSectionUsing tryParseDifficultyOption
+let difficultySettingToString ds = 
+    match ds with
+    | HPDrainRate hp       -> sprintf "HPDrainRate:%M" hp
+    | CircleSize cs        -> sprintf "CircleSize:%M" cs
+    | OverallDifficulty od -> sprintf "OverallDifficulty:%M" od
+    | ApproachRate ar      -> sprintf "ApproachRate:%M" ar
+    | SliderMultiplier sm  -> sprintf "SliderMultiplier:%M" sm
+    | SliderTickRate tick  -> sprintf "SliderTickRate:%M" tick
+    | Comment comment      -> comment
+
+
+let parseDifficultySection : string list -> DifficultySetting list = parseSectionUsing tryParseDifficultyOption

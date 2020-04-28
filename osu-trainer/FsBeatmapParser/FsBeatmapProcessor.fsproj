@@ -3,7 +3,12 @@
   <PropertyGroup>
     <OutputType>Library</OutputType>
     <TargetFramework>net46</TargetFramework>
-    <AssemblyName>FsBeatmapParser</AssemblyName>
+    <AssemblyName>FsBeatmapProcessor</AssemblyName>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <OutputPath>bin\Debug\</OutputPath>
   </PropertyGroup>
 
   <ItemGroup>

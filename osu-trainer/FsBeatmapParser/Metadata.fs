@@ -1,6 +1,7 @@
 ﻿module Metadata
 
 open JunUtils
+open System
 
 type MetadataInfo = 
     | Title         of string
@@ -56,4 +57,18 @@ let tryParseMetadataField line : MetadataInfo option =
         | _ -> Some(Comment(line))
     | _ -> Some(Comment(line))
 
-let parseMetadataSection = parseSectionUsing tryParseMetadataField
+let metadataToString m = 
+    match m with
+    | Title t         -> sprintf "Title:%s" t
+    | TitleUnicode t  -> sprintf "TitleUnicode:%s" t
+    | Artist a        -> sprintf "Artist:%s" a
+    | ArtistUnicode a -> sprintf "ArtistUnicode:%s" a
+    | Creator c       -> sprintf "Creator:%s" c
+    | Version v       -> sprintf "Version:%s" v
+    | Source s        -> sprintf "Source:%s" s
+    | SearchTerms s   -> sprintf "Tags:%s" (String.Join(" ", s))
+    | BeatmapID b     -> sprintf "BeatmapID:%d" b
+    | BeatmapSetID b  -> sprintf "BeatmapSetID:%d" b
+    | Comment c       -> c
+
+let parseMetadataSection : string list -> MetadataInfo list = parseSectionUsing tryParseMetadataField

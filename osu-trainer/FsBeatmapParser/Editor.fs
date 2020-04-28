@@ -1,5 +1,6 @@
 ﻿module Editor
 
+open System
 open JunUtils
 
 type EditorSetting = 
@@ -25,4 +26,13 @@ let tryParseEditorOption line : EditorSetting option =
         | _ -> Some(Comment(line))
     | _ -> Some(Comment(line))
 
-let parseEditorSection = parseSectionUsing tryParseEditorOption
+let editorSettingToString es = 
+    match es with
+    | Bookmarks bookmarks -> sprintf "Bookmarks: %s" (String.Join(",", List.map int bookmarks))
+    | DistanceSpacing ds  -> sprintf "DistanceSpacing: %M" ds
+    | BeatDivisor bd      -> sprintf "BeatDivisor: %M" bd
+    | GridSize gs         -> sprintf "GridSize: %d" gs
+    | TimelineZoom tz     -> sprintf "TimelineZoom: %M" tz
+    | Comment comment     -> comment
+
+let parseEditorSection : string list -> EditorSetting list = parseSectionUsing tryParseEditorOption
