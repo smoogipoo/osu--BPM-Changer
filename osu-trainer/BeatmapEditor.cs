@@ -506,11 +506,9 @@ namespace osu_trainer
         {
             // test if the beatmap is valid before committing to using it
             Beatmap retMap;
-            Beatmap fsbeatmap;
             try
             {
                 retMap = new Beatmap(beatmapPath);
-                fsbeatmap = new Beatmap(beatmapPath);
             }
             catch
             {
@@ -520,7 +518,7 @@ namespace osu_trainer
                 return null;
             }
             // Check if beatmap was loaded successfully
-            if (retMap.Filename == null && retMap.Title == null)
+            if (!retMap.Valid || retMap.Filename == null || retMap.Title == null)
             {
                 Console.WriteLine("Bad .osu file format");
                 return null;
@@ -562,14 +560,16 @@ namespace osu_trainer
         {
             if (multiplier == 1)
             {
-                string ARODCS = "";
-                if (NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate)
-                    ARODCS += $" AR{NewBeatmap.ApproachRate}";
-                if (NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty)
-                    ARODCS += $" OD{NewBeatmap.OverallDifficulty}";
+                string HPCSAROD = "";
+                if (NewBeatmap.HPDrainRate != OriginalBeatmap.HPDrainRate)
+                    HPCSAROD += $" HP{NewBeatmap.HPDrainRate}";
                 if (NewBeatmap.CircleSize != OriginalBeatmap.CircleSize)
-                    ARODCS += $" CS{NewBeatmap.CircleSize}";
-                map.Version += ARODCS;
+                    HPCSAROD += $" CS{NewBeatmap.CircleSize}";
+                if (NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate)
+                    HPCSAROD += $" AR{NewBeatmap.ApproachRate}";
+                if (NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty)
+                    HPCSAROD += $" OD{NewBeatmap.OverallDifficulty}";
+                map.Version += HPCSAROD;
             }
             else
             {
@@ -594,6 +594,8 @@ namespace osu_trainer
 
         public void ResetBeatmap()
         {
+            if (State != EditorState.READY)
+                return;
             NewBeatmap.HPDrainRate = OriginalBeatmap.HPDrainRate;
             NewBeatmap.CircleSize = OriginalBeatmap.CircleSize;
             NewBeatmap.ApproachRate = OriginalBeatmap.ApproachRate;

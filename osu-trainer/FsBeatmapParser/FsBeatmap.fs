@@ -139,7 +139,7 @@ type Beatmap(file, h, repr, cl) =
         let exportDifficulty   = applyDifficultyChanges (List.rev this.changelist.difficulty) this.originalFileRepresentation.difficulty
         let exportEvents       = if this.changelist.events = []       then this.originalFileRepresentation.events       else this.changelist.events
         let exportTimingPoints = if this.changelist.timingPoints = [] then this.originalFileRepresentation.timingPoints else this.changelist.timingPoints
-        let exportColours = if this.changelist.colours = [] then this.originalFileRepresentation.colours else this.changelist.colours
+        let exportColours      = this.originalFileRepresentation.colours
         let exportHitObjects   = if this.changelist.hitObjects = []   then this.originalFileRepresentation.hitObjects   else this.changelist.hitObjects
 
         let exportFileLines = [this.header;""] @ (List.map generalInfoToString exportGeneral) @ (List.map editorSettingToString exportEditor) @ (List.map metadataToString exportMetadata) @ (List.map difficultySettingToString exportDifficulty) @ (List.map eventToString exportEvents) @ (List.map timingPointToString exportTimingPoints) @ (List.map colourSettingToString exportColours) @ (List.map hitObjectToString exportHitObjects)
