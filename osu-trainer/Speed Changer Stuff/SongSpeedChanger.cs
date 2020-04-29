@@ -1,4 +1,4 @@
-﻿using BMAPI.v1;
+﻿using FsBeatmapProcessor;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -11,7 +11,7 @@ namespace osu_trainer
 {
     class SongSpeedChanger
     {
-        public static void GenerateAudioFile(string inFile, string outFile, double multiplier, bool changePitch=false)
+        public static void GenerateAudioFile(string inFile, string outFile, decimal multiplier, bool changePitch=false)
         {
             if (multiplier == 1)
                 throw new ArgumentException("Don't call this function if multiplier is 1.0x");
@@ -34,8 +34,8 @@ namespace osu_trainer
             lame1.WaitForExit();
 
             // stretch (or speed up) wav
-            float cents = (float)(1200.0f * Math.Log(multiplier) / Math.Log(2));
-            float semitones = cents / 100.0f;
+            decimal cents = (decimal)(1200.0 * Math.Log((double)multiplier) / Math.Log(2));
+            decimal semitones = cents / 100.0M;
             Process soundstretch = new Process();
             soundstretch.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "soundstretch.exe");
             if (changePitch)

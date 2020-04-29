@@ -1,4 +1,4 @@
-﻿using BMAPI.v1;
+﻿using FsBeatmapProcessor;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -22,50 +22,50 @@ namespace osu_trainer
         }
 
         // AR modifications: HR, DT, DTHR, BpmMultiplier
-        public static float CalculateMultipliedAR(Beatmap map, float BpmMultiplier)
+        public static decimal CalculateMultipliedAR(Beatmap map, decimal BpmMultiplier)
         {
-            float newbpmMs = ApproachRateToMs(map.ApproachRate) / BpmMultiplier;
-            float newbpmAR = MsToApproachRate(newbpmMs);
+            decimal newbpmMs = ApproachRateToMs(map.ApproachRate) / BpmMultiplier;
+            decimal newbpmAR = MsToApproachRate(newbpmMs);
             return (newbpmAR < 10) ? newbpmAR : 10;
         }
-        private static float ApproachRateToMs(float approachRate)
+        private static decimal ApproachRateToMs(decimal approachRate)
         {
             if (approachRate <= 5)
             {
-                return 1800.0f - approachRate * 120.0f;
+                return 1800.0M - approachRate * 120.0M;
             }
             else
             {
-                float remainder = approachRate - 5;
-                return 1200.0f - remainder * 150.0f;
+                decimal remainder = approachRate - 5;
+                return 1200.0M - remainder * 150.0M;
             }
         }
-        private static float MsToApproachRate(float ms)
+        private static decimal MsToApproachRate(decimal ms)
         {
             // bullshit
             // TODO: check edge cases
-            float smallestDiff = 100000.0f;
+            decimal smallestDiff = 100000.0M;
             for (int AR = 0; AR <= 110; AR++)
             {
-                var newDiff = Math.Abs(ApproachRateToMs(AR/10.0f) - ms);
+                var newDiff = Math.Abs(ApproachRateToMs(AR/10.0M) - ms);
                 if (newDiff < smallestDiff)
                     smallestDiff = newDiff;
                 else
-                    return (AR - 1) / 10.0f;
+                    return (AR - 1) / 10.0M;
             }
             return 300;
         }
-        public static float CalculateMultipliedOD(Beatmap map, float BpmMultiplier)
+        public static decimal CalculateMultipliedOD(Beatmap map, decimal BpmMultiplier)
         {
-            float newbpmMs = OverallDifficultyToMs(map.OverallDifficulty) / BpmMultiplier;
-            float newbpmOD = MsToOverallDifficulty(newbpmMs);
-            newbpmOD = (float)Math.Round(newbpmOD * 10.0f) / 10.0f;
+            decimal newbpmMs = OverallDifficultyToMs(map.OverallDifficulty) / BpmMultiplier;
+            decimal newbpmOD = MsToOverallDifficulty(newbpmMs);
+            newbpmOD = (decimal)Math.Round(newbpmOD * 10.0M) / 10.0M;
             newbpmOD = JunUtils.Clamp(newbpmOD, 0, 10);
             return newbpmOD;
         }
-        private static float OverallDifficultyToMs(float od) => -6.0f * od + 79.5f;
-        private static float MsToOverallDifficulty(float ms) => (79.5f - ms) / 6.0f;
-        public static (float, float, float) CalculateStarRating(Beatmap map)
+        private static decimal OverallDifficultyToMs(decimal od) => -6.0M * od + 79.5M;
+        private static decimal MsToOverallDifficulty(decimal ms) => (79.5M - ms) / 6.0M;
+        public static (decimal, decimal, decimal) CalculateStarRating(Beatmap map)
         {
             if (map == null)
                 throw new NullReferenceException();
@@ -101,7 +101,7 @@ namespace osu_trainer
             {
                 oppaiData = JObject.Parse(oppaiOutput);
             }
-            catch (Exception e)
+            catch
             {
                 return (0, 0, 0);
             }            string errstr     = oppaiData.GetValue("errstr").ToObject<string>();
@@ -111,9 +111,9 @@ namespace osu_trainer
                 Console.WriteLine("Could not calculate difficulty");
                 return (0, 0, 0);
             }
-            float stars      = oppaiData.GetValue("stars").ToObject<float>();
-            float aimStars   = oppaiData.GetValue("aim_stars").ToObject<float>();
-            float speedStars = oppaiData.GetValue("speed_stars").ToObject<float>();
+            decimal stars      = oppaiData.GetValue("stars").ToObject<decimal>();
+            decimal aimStars   = oppaiData.GetValue("aim_stars").ToObject<decimal>();
+            decimal speedStars = oppaiData.GetValue("speed_stars").ToObject<decimal>();
 
 
             return (stars, aimStars, speedStars);

@@ -1,6 +1,4 @@
-﻿using BMAPI.v1;
-using BMAPI.v1.Events;
-using BMAPI.v1.HitObjects;
+﻿using FsBeatmapProcessor;
 using OsuMemoryDataProvider;
 using System;
 using System.Collections.Generic;
@@ -145,23 +143,6 @@ namespace osu_trainer
                             StaticGif.Visible = true;
                             DiffLabel.Visible = false;
                             break;
-                        case BadBeatmapReason.DIFF_NOT_OSUSTD:
-                            UpdateSongBg(editor.NewBeatmap);
-
-                            SongLabel.ForeColor = accentYellow;
-                            DiffLabel.ForeColor = accentRed;
-                            StaticGif.Visible = false;
-                            DiffLabel.Visible = true;
-
-                            artist = editor.OriginalBeatmap.Artist;
-                            title = editor.OriginalBeatmap.Title;
-                            SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
-                            string gamemode = "???";
-                            if (editor.OriginalBeatmap.Mode == GameMode.Taiko)        gamemode = "taiko";
-                            if (editor.OriginalBeatmap.Mode == GameMode.Mania)        gamemode = "mania";
-                            if (editor.OriginalBeatmap.Mode == GameMode.CatchtheBeat) gamemode = "ctb";
-                            DiffLabel.Text = $"{gamemode} diff selected";
-                            break;
                         case BadBeatmapReason.EMPTY_MAP:
                             UpdateSongBg(editor.NewBeatmap);
 
@@ -198,15 +179,14 @@ namespace osu_trainer
         }
         private void UpdateSongBg(Beatmap map)
         {
-            var imageEvent = map.Events.OfType<ContentEvent>().FirstOrDefault(e => e.Type == ContentType.Image);
-            if (imageEvent == null)
+            if (map.Background == "")
             {
                 // no background for this map
                 BgPanel.BackgroundImage = CropAndPanToFit(nobg, BgPanel.Size.Width, BgPanel.Size.Height);
                 return;
             }
                 
-            string imageAbsolutePath = Path.Combine(Path.GetDirectoryName(map.Filename), imageEvent.Filename);
+            string imageAbsolutePath = Path.Combine(Path.GetDirectoryName(map.Filename), map.Background);
             if (!File.Exists(imageAbsolutePath))
             {
                 // no background for this map
@@ -260,8 +240,8 @@ namespace osu_trainer
                     break;
                 case EditorState.READY:
                 case EditorState.GENERATING_BEATMAP:
-                    (float oldbpm, float oldmin, float oldmax) = editor.GetOriginalBpmData();
-                    (float newbpm, float newmin, float newmax) = editor.GetNewBpmData();
+                    (decimal oldbpm, decimal oldmin, decimal oldmax) = editor.GetOriginalBpmData();
+                    (decimal newbpm, decimal newmin, decimal newmax) = editor.GetNewBpmData();
 
                     // bpm
                     OriginalBpmTextBox.Text         = Math.Round(oldbpm).ToString("0");
@@ -307,23 +287,38 @@ namespace osu_trainer
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
-            foreach (var textbox in diffDisplays)
-            {
-                textbox.Enabled = enabled ? true : false;
-                textbox.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
-                textbox.ForeColor = readOnlyTextBoxFg;
-                textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
-            }
-            foreach (var slider in diffSliders)
-            {
-                slider.Enabled = enabled;
-            }
+            HPSlider.Enabled = enabled;
+            HPDisplay.Enabled = enabled ? true : false;
+            HPDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            HPDisplay.ForeColor = readOnlyTextBoxFg;
+            HPDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
+            CSSlider.Enabled = enabled;
+            CSDisplay.Enabled = enabled ? true : false;
+            CSDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            CSDisplay.ForeColor = readOnlyTextBoxFg;
+            CSDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
+            ARSlider.Enabled = enabled;
+            ARDisplay.Enabled = enabled ? true : false;
+            ARDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            ARDisplay.ForeColor = readOnlyTextBoxFg;
+            ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY);
+            ODSlider.Enabled = enabled;
+            ODDisplay.Enabled = enabled ? true : false;
+            ODDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            ODDisplay.ForeColor = readOnlyTextBoxFg;
+            ODDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
         }
         private void UpdateHpCsArOdDisplay(object sender, EventArgs e)
         {
             // HP
-            float newHP      = editor.NewBeatmap.HPDrainRate;
-            float originalHP = editor.OriginalBeatmap.HPDrainRate;
+            decimal newHP      = editor.NewBeatmap.HPDrainRate;
+            decimal originalHP = editor.OriginalBeatmap.HPDrainRate;
             HPDisplay.Text = newHP.ToString();
             HPSlider.Value = (decimal)newHP;
             if (newHP > originalHP)
@@ -343,8 +338,8 @@ namespace osu_trainer
             }
 
             // CS
-            float newCS      = editor.NewBeatmap.CircleSize;
-            float originalCS = editor.OriginalBeatmap.CircleSize;
+            decimal newCS      = editor.NewBeatmap.CircleSize;
+            decimal originalCS = editor.OriginalBeatmap.CircleSize;
             CSDisplay.Text = newCS.ToString();
             CSSlider.Value = (decimal)newCS;
             if (newCS > originalCS)
@@ -364,7 +359,7 @@ namespace osu_trainer
             }
 
             // AR
-            float newAR    = editor.NewBeatmap.ApproachRate;
+            decimal newAR    = editor.NewBeatmap.ApproachRate;
             ARDisplay.Text = newAR.ToString();
             ARSlider.Value = (decimal)newAR;
             if (newAR > editor.GetScaledAR())
@@ -384,8 +379,8 @@ namespace osu_trainer
             }
             
             // OD
-            float newOD      = editor.NewBeatmap.OverallDifficulty;
-            float originalOD = editor.OriginalBeatmap.OverallDifficulty;
+            decimal newOD      = editor.NewBeatmap.OverallDifficulty;
+            decimal originalOD = editor.OriginalBeatmap.OverallDifficulty;
             ODDisplay.Text = newOD.ToString();
             ODSlider.Value = (decimal)newOD;
             if (newOD > editor.GetScaledOD())
@@ -447,7 +442,7 @@ namespace osu_trainer
             }
             else
             {
-                float aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
+                decimal aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
                 AimSpeedBar.LeftPercent = (int)aimPercent;
                 StarLabel.ForeColor     = starsColor;
                 AimLabel.ForeColor      = aimColor;
@@ -479,10 +474,10 @@ namespace osu_trainer
 
 
         #region User input event handlers
-        private void HpSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((float)HPSlider.Value);
-        private void CsSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((float)CSSlider.Value);
-        private void ArSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((float)ARSlider.Value);
-        private void OdSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((float)ODSlider.Value);
+        private void HpSlider_ValueChanged(object sender, EventArgs e)            => editor.SetHP((decimal)HPSlider.Value);
+        private void CsSlider_ValueChanged(object sender, EventArgs e)            => editor.SetCS((decimal)CSSlider.Value);
+        private void ArSlider_ValueChanged(object sender, EventArgs e)            => editor.SetAR((decimal)ARSlider.Value);
+        private void OdSlider_ValueChanged(object sender, EventArgs e)            => editor.SetOD((decimal)ODSlider.Value);
         private void HpLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetHPLock(HPLockCheck.Checked);
         private void CsLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetCSLock(CSLockCheck.Checked);
         private void ArLockCheck_CheckedChanged(object sender, EventArgs e)       => editor.SetARLock(ARLockCheck.Checked);
@@ -490,7 +485,7 @@ namespace osu_trainer
         private void ScaleARCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleAR(!editor.ScaleAR);
         private void ScaleODCheck_CheckedChanged(object sender, EventArgs e)      => editor.SetScaleOD(!editor.ScaleOD);
         private void ChangePitchButton_CheckedChanged(object sender, EventArgs e) => editor.ToggleChangePitchSetting();
-        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((float)BpmMultiplierUpDown.Value);
+        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e) => editor.SetBpmMultiplier((decimal)BpmMultiplierUpDown.Value);
         private void MainForm_KeyDown(object sender, KeyEventArgs e)
         {
             if (BpmMultiplierUpDown.Focused || NewBpmTextBox.Focused)
@@ -661,7 +656,7 @@ namespace osu_trainer
         private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
         {
             Bitmap bmpImage = new Bitmap(img);
-            float aspectRatio = destinationWidth / destinationHeight;
+            decimal aspectRatio = destinationWidth / destinationHeight;
             int cropHeight = (int)(bmpImage.Width / aspectRatio);
             // pan down to center image
             int panDown = (bmpImage.Height - cropHeight) / 3;

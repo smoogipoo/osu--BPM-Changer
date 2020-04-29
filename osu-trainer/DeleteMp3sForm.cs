@@ -27,7 +27,7 @@ namespace osu_trainer
             {
                 string[] sizes = { "B", "KB", "MB", "GB", "TB" };
                 int order = 0;
-                float value = (float)len;
+                decimal value = (decimal)len;
                 while (value >= 1024 && order < sizes.Length - 1)
                 {
                     order++;
