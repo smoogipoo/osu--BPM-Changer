@@ -22,8 +22,8 @@ namespace osu_trainer
     public partial class MainForm : Form
     {
         // File Resources
-        string matchConfirmWav = "resources\\match-confirm.wav";
-        string nobgpng = "resources\\nobg.png";
+        string matchConfirmWav = Path.Combine("resources", "match-confirm.wav");
+        string nobgpng = Path.Combine("resources", "nobg.png");
         static Image nobg;
 
         // Beatmap
@@ -186,7 +186,7 @@ namespace osu_trainer
                 return;
             }
                 
-            string imageAbsolutePath = Path.GetDirectoryName(map.Filename) + "\\" + map.Background;
+            string imageAbsolutePath = Path.Combine(Path.GetDirectoryName(map.Filename), map.Background);
             if (!File.Exists(imageAbsolutePath))
             {
                 // no background for this map
@@ -570,7 +570,7 @@ namespace osu_trainer
             previousBeatmapRead = beatmapFilename;
 
             // Try to locate the beatmap
-            string absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+            string absoluteFilename = Path.Combine(userSongsFolder, beatmapFolder, beatmapFilename);
             if (!File.Exists(absoluteFilename))
             {
                 if (++beatmapFindFailCounter == 10)
@@ -593,7 +593,7 @@ namespace osu_trainer
                         Properties.Settings.Default.SongsFolder = userSongsFolder;
                         Properties.Settings.Default.Save();
                         // try again
-                        absoluteFilename = userSongsFolder + "\\" + beatmapFolder + "\\" + beatmapFilename;
+                        absoluteFilename = Path.Combine(userSongsFolder, beatmapFolder, beatmapFilename);
                         if (!File.Exists(absoluteFilename))
                             return;
                     }
@@ -625,7 +625,7 @@ namespace osu_trainer
                 {
                     // Try to get osu songs folder
                     var osuExePath = processes[0].MainModule.FileName;
-                    userSongsFolder = Path.GetDirectoryName(osuExePath) + "\\Songs";
+                    userSongsFolder = Path.Combine(Path.GetDirectoryName(osuExePath), "Songs");
                     Properties.Settings.Default.SongsFolder = userSongsFolder;
                     Properties.Settings.Default.Save();
                 }
