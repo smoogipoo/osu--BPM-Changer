@@ -19,8 +19,8 @@ type ObjWithEndTime =
         y          : int;
         time       : int;
         typeval    : int;
-        endTime    : int;
         hitSound   : int;
+        endTime    : int;
         remainder  : string; // just don't bother trying to parse everything else
     }
 
@@ -56,7 +56,7 @@ let tryParseObjNoEndTime vals : ObjNoEndTime option =
     | _ -> None
     
 
-let tryParseObjWithEndTime vals : ObjWithEndTime option =
+let tryParseSpinner vals : ObjWithEndTime option =
     match vals with
     | x::y::ti::ty::hs::et::rest ->
         if (typesMatch [x;y;ti;ty;hs;et] ["int";"int";"int";"int";"int";"int"]) then
@@ -69,6 +69,26 @@ let tryParseObjWithEndTime vals : ObjWithEndTime option =
                 hitSound  = int hs;
                 remainder = String.Join(",", rest);
             })
+        else parseError vals
+    | _ -> None
+    
+
+let tryParseHold vals : ObjWithEndTime option =
+    match vals with
+    | x::y::ti::ty::hs::endtimeHitsample::rest ->
+        if (typesMatch [x;y;ti;ty;hs] ["int";"int";"int";"int";"int"]) then
+            match endtimeHitsample with
+            | Regex "^(\d+):(.+)" [endtime; remainder] -> 
+                Some({
+                    x         = int x;
+                    y         = int y;
+                    time      = int ti;
+                    typeval   = int ty;
+                    hitSound  = int hs;
+                    endTime   = int endtime;
+                    remainder = remainder + String.Join(",", rest);
+                })
+            | _ -> parseError vals
         else parseError vals
     | _ -> None
     
@@ -93,13 +113,13 @@ let tryParseHitObject line : HitObject option =
         
         // bit 3 high => Spinner
         | typebyte when (typebyte &&& 8) <> 0 ->
-            match tryParseObjWithEndTime vals with
+            match tryParseSpinner vals with
             | Some(obj) -> Some(Spinner(obj))
             | None -> Some(Comment(line))
 
         // bit 7 high => osu mania hold
         | typebyte when (typebyte &&& 128) <> 0 ->
-            match tryParseObjWithEndTime vals with
+            match tryParseHold vals with
             | Some(obj) -> Some(Hold(obj))
             | None -> Some(Comment(line))
 
@@ -111,7 +131,7 @@ let hitObjectToString obj =
     | HitCircle c     -> sprintf "%d,%d,%d,%d,%d,%s"    c.x c.y c.time c.typeval c.hitSound c.remainder
     | Slider s        -> sprintf "%d,%d,%d,%d,%d,%s"    s.x s.y s.time s.typeval s.hitSound s.remainder
     | Spinner s       -> sprintf "%d,%d,%d,%d,%d,%d,%s" s.x s.y s.time s.typeval s.hitSound s.endTime s.remainder
-    | Hold h          -> sprintf "%d,%d,%d,%d,%d,%d,%s" h.x h.y h.time h.typeval h.hitSound h.endTime h.remainder
+    | Hold h          -> sprintf "%d,%d,%d,%d,%d,%d:%s" h.x h.y h.time h.typeval h.hitSound h.endTime h.remainder
     | Comment comment -> comment
 
 let parseHitObjectSection : string list -> HitObject list = parseSectionUsing tryParseHitObject

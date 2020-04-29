@@ -11,24 +11,30 @@ let isTypeOf (tryParseFunc: string -> bool * _) = tryParseFunc >> function
     | true, v  -> true
     | false, _ -> false
 
-let parseInt    = tryParseWith System.Int32.TryParse
-let parseSingle = tryParseWith System.Single.TryParse
-let parseDouble = tryParseWith System.Double.TryParse
-let parseDecimal = tryParseWith System.Decimal.TryParse
-let parseBool   = tryParseWith System.Boolean.TryParse
+let tryParseInt     = tryParseWith System.Int32.TryParse
+let tryParseSingle  = tryParseWith System.Single.TryParse
+let tryParseDouble  = tryParseWith System.Double.TryParse
+let tryParseDecimal = tryParseWith System.Decimal.TryParse
+let tryParseBool input =
+    match input with
+    | "true" -> Some(true)
+    | "false" -> Some(false)
+    | "1" -> Some(true)
+    | "0" -> Some(false)
+    | _ -> None
 
 // active patterns for converting strings to other data types
-let (|Int|_|)    = parseInt
-let (|Single|_|) = parseSingle
-let (|Double|_|) = parseDouble
-let (|Bool|_|)   = parseBool
-let (|Decimal|_|)   = parseDecimal
+let (|Int|_|)       = tryParseInt
+let (|Single|_|)    = tryParseSingle
+let (|Double|_|)    = tryParseDouble
+let (|Bool|_|)      = tryParseBool
+let (|Decimal|_|)   = tryParseDecimal
 
-let isInt    = isTypeOf System.Int32.TryParse
-let isSingle = isTypeOf System.Single.TryParse
-let isDouble = isTypeOf System.Double.TryParse
+let isInt     = isTypeOf System.Int32.TryParse
+let isSingle  = isTypeOf System.Single.TryParse
+let isDouble  = isTypeOf System.Double.TryParse
 let isDecimal = isTypeOf System.Decimal.TryParse
-let isBool   = isTypeOf System.Boolean.TryParse
+let isBool    = isTypeOf System.Boolean.TryParse
 
 let toBool str =
     match str with
@@ -75,6 +81,7 @@ let tryParseCsvInt (str:string) : list<int> option =
 
 
 // check if a list of strings match the expected types when casted
+// actually don't need this... can just active pattern match on the list
 let rec typesMatch vals types : bool = 
     match types with
     | t::ts -> 

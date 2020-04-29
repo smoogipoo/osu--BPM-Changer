@@ -36,53 +36,46 @@ let getBackgroundFilename = function Background x -> x.filename    | _ -> ""
 
 // Background syntax: 0,0,filename,xOffset,yOffset
 let tryParseBackground vals : Background option =
-    if (typesMatch vals ["int"; "int"; "string"; "int"; "int";]) then 
-        match vals with
-        | ["0"; "0"; f; x; y;] when (isInt x) && (isInt y) ->
-            Some({
-                Background.startTime = 0;
-                filename             = f;
-                xOffset              = int x;
-                yOffset              = int y;
-            })
-        | _ -> parseError vals
-    else if (typesMatch vals ["int"; "int"; "string"]) then 
-        match vals with
-        | ["0"; "0"; f] ->
-            Some({
-                Background.startTime = 0;
-                filename             = f;
-                xOffset              = 0;
-                yOffset              = 0;
-            })
-        | _ -> parseError vals
-    else None
+    match vals with
+    | ["0"; _; f; Int x; Int y] ->
+        Some({
+            Background.startTime = 0;
+            filename             = f;
+            xOffset              = x;
+            yOffset              = y;
+        })
+    | ["0"; _; f;] -> 
+        Some({
+            Background.startTime = 0;
+            filename             = f;
+            xOffset              = 0;
+            yOffset              = 0;
+        })
+    | _ -> None
+
 
 // Video syntax: Video,startTime,filename,xOffset,yOffset
 let tryParseVideo vals : Video option =
-    if (typesMatch vals ["any"; "int"; "string"; "int"; "int";]) then 
-        match vals with
-        | (["1"; "0"; f; x; y;] | ["Video"; "0"; f; x; y;]) when (isInt x) && (isInt y) ->
-            Some({
-                Video.startTime = 0;
-                filename        = f;
-                xOffset         = int x;
-                yOffset         = int y;
-            })
-        | _ -> parseError vals
-    else None
+    match vals with
+    | ["1"; Int s; f; Int x; Int y] | ["Video"; Int s; f; Int x; Int y] ->
+        Some({
+            Video.startTime = s;
+            filename        = f;
+            xOffset         = x;
+            yOffset         = y;
+        })
+    | _ -> None
+
 
 // Break syntax: 2,startTime,endTime
 let tryParseBreak vals : Break option = 
-    if (typesMatch vals ["any"; "int"; "int"]) then
-        match vals with
-        | ["2"; s; e;] | ["Break"; s; e;] ->
-            Some({
-                startTime = int s;
-                endTime   = int e;
-            })
-        | _ -> parseError vals
-    else None
+    match vals with
+    | ["2"; Int s; Int e;] | ["Break"; Int s; Int e;] ->
+        Some({
+            startTime = s;
+            endTime   = e;
+        })
+    | _ -> None
 
 
 let tryParseEvent line : BeatmapEvent option =

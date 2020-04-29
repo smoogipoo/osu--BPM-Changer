@@ -29,26 +29,25 @@ let isNotTimingPointComment hobj =
     | _ -> true
 
 let removeTimingPointComments (objs:list<TimingPoint>) = (List.filter isNotTimingPointComment objs)
-    
+
 // timing point syntax:
 // time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 let tryParseTimingPoint line : TimingPoint option = 
     let values = parseCsv line
-    if (typesMatch values ["int"; "decimal"; "int"; "int"; "int"; "int"; "bool"; "int"]) then
-        match values with
-        | [t; bl; m; ss; si; v; ui; fx] ->
-            Some(TimingPoint({
-                time        = int t;
-                beatLength  = decimal bl;
-                meter       = int m;
-                sampleSet   = int ss;
-                sampleIndex = int si;
-                volume      = int v;
-                uninherited = toBool ui;
-                effects     = int fx;
-            }))
-        | _ -> Some(Comment(line))
-    else Some(Comment(line))
+    match values with
+    | [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v; Bool ui; Int fx] ->
+        Some(TimingPoint({
+            time        = int t; // some maps save this as decimal...
+            beatLength  = bl;
+            meter       = m;
+            sampleSet   = ss;
+            sampleIndex = si;
+            volume      = v;
+            uninherited = ui;
+            effects     = fx;
+        }))
+    | _ -> Some(Comment(line))
+    //else Some(Comment(line))
 
 let timingPointToString tp = 
     match tp with

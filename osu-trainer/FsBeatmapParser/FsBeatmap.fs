@@ -22,7 +22,7 @@ type GameMode =
     | Mania = 3
 
 [<Class; Sealed>]
-type Beatmap(file, h, repr, cl) =
+type Beatmap(file, repr, cl) =
 
     member internal this.generalTryGetOr isfn getfn noneval =
         match this.changelist.general |> List.tryFind isfn with
@@ -50,22 +50,20 @@ type Beatmap(file, h, repr, cl) =
 
     (* internal state/representation of beatmap *)
     member val public Filename = file with get, set
-    member public this.header:string = h
     member internal this.originalFileRepresentation = repr
     member val internal changelist = cl with get, set
     
     (* Public *)
-    member public this.Valid with get() = (this.header.StartsWith("osu file format v"))
+    member public this.Valid with get() = (this.originalFileRepresentation.general <> [])
 
     // main constructor
     new(file) = 
-        let header = (File.ReadAllLines file).[0]
         let changelist = {general=[]; editor=[]; metadata=[]; difficulty=[]; events=[]; timingPoints=[]; colours=[]; hitObjects=[]}
-        Beatmap(file, header, parseBeatmapFile file, changelist)
+        Beatmap(file, parseBeatmapFile file, changelist)
 
     // copy constructor
     new(other:Beatmap) =
-       Beatmap(other.Filename, other.header, other.originalFileRepresentation, other.changelist)
+       Beatmap(other.Filename, other.originalFileRepresentation, other.changelist)
 
     member public this.Save() = this.Save(this.Filename)
     member public this.Save(outputPath) =
@@ -142,7 +140,7 @@ type Beatmap(file, h, repr, cl) =
         let exportColours      = this.originalFileRepresentation.colours
         let exportHitObjects   = if this.changelist.hitObjects = []   then this.originalFileRepresentation.hitObjects   else this.changelist.hitObjects
 
-        let exportFileLines = [this.header;""] @ (List.map generalInfoToString exportGeneral) @ (List.map editorSettingToString exportEditor) @ (List.map metadataToString exportMetadata) @ (List.map difficultySettingToString exportDifficulty) @ (List.map eventToString exportEvents) @ (List.map timingPointToString exportTimingPoints) @ (List.map colourSettingToString exportColours) @ (List.map hitObjectToString exportHitObjects)
+        let exportFileLines = ["osu file format v14";""] @ (List.map generalInfoToString exportGeneral) @ (List.map editorSettingToString exportEditor) @ (List.map metadataToString exportMetadata) @ (List.map difficultySettingToString exportDifficulty) @ (List.map eventToString exportEvents) @ (List.map timingPointToString exportTimingPoints) @ (List.map colourSettingToString exportColours) @ (List.map hitObjectToString exportHitObjects)
         File.WriteAllLines(outputPath, exportFileLines, Text.Encoding.UTF8)
         ()
         

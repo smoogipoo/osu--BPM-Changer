@@ -143,23 +143,6 @@ namespace osu_trainer
                             StaticGif.Visible = true;
                             DiffLabel.Visible = false;
                             break;
-                        case BadBeatmapReason.DIFF_NOT_OSUSTD:
-                            UpdateSongBg(editor.NewBeatmap);
-
-                            SongLabel.ForeColor = accentYellow;
-                            DiffLabel.ForeColor = accentRed;
-                            StaticGif.Visible = false;
-                            DiffLabel.Visible = true;
-
-                            artist = editor.OriginalBeatmap.Artist;
-                            title = editor.OriginalBeatmap.Title;
-                            SongLabel.Text = TruncateLabelText($"{artist} - {title}", SongLabel);
-                            string gamemode = "???";
-                            if (editor.OriginalBeatmap.Mode == GameMode.Taiko)        gamemode = "taiko";
-                            if (editor.OriginalBeatmap.Mode == GameMode.Mania)        gamemode = "mania";
-                            if (editor.OriginalBeatmap.Mode == GameMode.CatchtheBeat) gamemode = "ctb";
-                            DiffLabel.Text = $"{gamemode} diff selected";
-                            break;
                         case BadBeatmapReason.EMPTY_MAP:
                             UpdateSongBg(editor.NewBeatmap);
 
@@ -304,17 +287,32 @@ namespace osu_trainer
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
-            foreach (var textbox in diffDisplays)
-            {
-                textbox.Enabled = enabled ? true : false;
-                textbox.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
-                textbox.ForeColor = readOnlyTextBoxFg;
-                textbox.Font = new Font(ARDisplay.Font, FontStyle.Regular);
-            }
-            foreach (var slider in diffSliders)
-            {
-                slider.Enabled = enabled;
-            }
+            HPSlider.Enabled = enabled;
+            HPDisplay.Enabled = enabled ? true : false;
+            HPDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            HPDisplay.ForeColor = readOnlyTextBoxFg;
+            HPDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
+            CSSlider.Enabled = enabled;
+            CSDisplay.Enabled = enabled ? true : false;
+            CSDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            CSDisplay.ForeColor = readOnlyTextBoxFg;
+            CSDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
+            ARSlider.Enabled = enabled;
+            ARDisplay.Enabled = enabled ? true : false;
+            ARDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            ARDisplay.ForeColor = readOnlyTextBoxFg;
+            ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
+
+            enabled = (editor.State != EditorState.NOT_READY);
+            ODSlider.Enabled = enabled;
+            ODDisplay.Enabled = enabled ? true : false;
+            ODDisplay.BackColor = enabled ? readOnlyTextBoxBg : SystemColors.ControlDark;
+            ODDisplay.ForeColor = readOnlyTextBoxFg;
+            ODDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
         }
         private void UpdateHpCsArOdDisplay(object sender, EventArgs e)
         {
