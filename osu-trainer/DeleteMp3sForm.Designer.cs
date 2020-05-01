@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem4 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
             "audio.mp3",
             "4/21/2020",
             "3MB"}, -1);
@@ -49,7 +49,7 @@
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(393, 246);
+            this.cancelButton.Location = new System.Drawing.Point(393, 250);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -60,7 +60,7 @@
             // 
             this.fileSizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fileSizeLabel.AutoSize = true;
-            this.fileSizeLabel.Location = new System.Drawing.Point(3, 243);
+            this.fileSizeLabel.Location = new System.Drawing.Point(3, 247);
             this.fileSizeLabel.Name = "fileSizeLabel";
             this.fileSizeLabel.Size = new System.Drawing.Size(124, 13);
             this.fileSizeLabel.TabIndex = 1;
@@ -70,7 +70,7 @@
             // 
             this.confirmButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.confirmButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.confirmButton.Location = new System.Drawing.Point(474, 246);
+            this.confirmButton.Location = new System.Drawing.Point(474, 250);
             this.confirmButton.Name = "confirmButton";
             this.confirmButton.Size = new System.Drawing.Size(75, 23);
             this.confirmButton.TabIndex = 0;
@@ -93,9 +93,10 @@
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(549, 16);
+            this.textBox1.Size = new System.Drawing.Size(549, 28);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Text = "The following mp3s will be deleted.";
+            this.textBox1.Text = "When you delete generated beatmaps, their mp3s will appear here.\r\nTip: Try search" +
+    "ing for \"osutrainer\" in game\r\n";
             // 
             // fileListView
             // 
@@ -108,10 +109,10 @@
             this.columnHeader3});
             this.fileListView.HideSelection = false;
             this.fileListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem4});
-            this.fileListView.Location = new System.Drawing.Point(0, 16);
+            listViewItem2});
+            this.fileListView.Location = new System.Drawing.Point(0, 31);
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(549, 224);
+            this.fileListView.Size = new System.Drawing.Size(549, 213);
             this.fileListView.TabIndex = 3;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
@@ -139,22 +140,22 @@
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.confirmButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(10, 10);
+            this.panel1.Location = new System.Drawing.Point(10, 6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(549, 269);
+            this.panel1.Size = new System.Drawing.Size(549, 273);
             this.panel1.TabIndex = 1;
             // 
             // DeleteMp3sForm
             // 
             this.AcceptButton = this.confirmButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6f, 13f);
+            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(569, 289);
             this.Controls.Add(this.panel1);
             this.MinimumSize = new System.Drawing.Size(350, 160);
             this.Name = "DeleteMp3sForm";
-            this.Padding = new System.Windows.Forms.Padding(10);
+            this.Padding = new System.Windows.Forms.Padding(10, 6, 10, 10);
             this.Text = "DeleteMp3sForm";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();

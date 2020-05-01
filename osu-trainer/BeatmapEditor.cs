@@ -2,12 +2,15 @@
 using FsBeatmapProcessor;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Windows.Forms;
 
 
 namespace osu_trainer
@@ -118,26 +121,58 @@ namespace osu_trainer
             ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch);
 
             var audioFilePath = Path.Combine(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap), exportBeatmap.AudioFilename);
+            var newMp3 = "";
             if (!File.Exists(audioFilePath))
             {
                 string inFile = Path.Combine(Path.GetDirectoryName(OriginalBeatmap.Filename), OriginalBeatmap.AudioFilename);
-                string outFile = Path.Combine(Path.GetDirectoryName(exportBeatmap.Filename), exportBeatmap.AudioFilename);
+                string outFile = Path.Combine(Path.GetTempPath(), exportBeatmap.AudioFilename);
                 await Task.Run(() => SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, ChangePitch));
+                newMp3 = outFile;
 
                 // take note of this mp3 in a text file, so we can clean it up later
                 string mp3ManifestFile = GetMp3ListFilePath();
-                using (var writer = File.AppendText(mp3ManifestFile))
-                {
-                    string beatmapFolder = Path.GetDirectoryName(exportBeatmap.Filename).Replace(Properties.Settings.Default.SongsFolder + "\\", "");
-                    string mp3RelativePath = Path.Combine(beatmapFolder, exportBeatmap.AudioFilename);
-                    writer.WriteLine(mp3RelativePath + " | " + exportBeatmap.Filename);
-                }
+                List<string> manifest = File.ReadAllLines(mp3ManifestFile).ToList();
+                string beatmapFolder = Path.GetDirectoryName(exportBeatmap.Filename).Replace(Properties.Settings.Default.SongsFolder + "\\", "");
+                string mp3RelativePath = Path.Combine(beatmapFolder, exportBeatmap.AudioFilename);
+                manifest.Add(mp3RelativePath + " | " + exportBeatmap.Filename);
+                File.WriteAllLines(mp3ManifestFile, manifest);
             }
+            // save file to temp location (do not directly put into any song folder)
+            exportBeatmap.Filename = Path.Combine(Path.GetTempPath(), Path.GetFileName(exportBeatmap.Filename));
             exportBeatmap.Save();
 
+            // create and execute osz
+            AddNewBeatmapToSongFolder(Path.GetDirectoryName(OriginalBeatmap.Filename), exportBeatmap.Filename, newMp3);
+
             // post
-            form.PlayDoneSound();
+            //form.PlayDoneSound();
             SetState(EditorState.READY);
+        }
+
+        private void AddNewBeatmapToSongFolder(string songFolder, string newBeatmapFile, string newMp3)
+        {
+            // 1. Create osz (just a regular zip file with file ext. renamed to .osz)
+            string outputOsz = Path.GetFileNameWithoutExtension(songFolder) + ".osz";
+            try
+            {
+                ZipFile.CreateFromDirectory(songFolder, outputOsz);
+            }
+            catch (Exception e)
+            {
+                MessageBox.Show($"Failed to create {outputOsz}... {Environment.NewLine}{e.Message}", "Error");
+            }
+            // 2. Add new files to zip/osz
+            using (ZipArchive archive = ZipFile.Open(outputOsz, ZipArchiveMode.Update))
+            {
+                archive.CreateEntryFromFile(newBeatmapFile, Path.GetFileName(newBeatmapFile));
+                if (newMp3 != "")
+                    archive.CreateEntryFromFile(newMp3, Path.GetFileName(newMp3));
+            }
+            // 3. Run the .osz
+            Process proc = new Process();
+            proc.StartInfo.FileName = outputOsz;
+            proc.StartInfo.UseShellExecute = true;
+            proc.Start();
         }
 
         private string MatchGroup(string text, string re, int group)
