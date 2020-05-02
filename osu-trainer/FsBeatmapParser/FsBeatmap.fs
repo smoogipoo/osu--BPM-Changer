@@ -149,7 +149,7 @@ type Beatmap(file, repr, cl) =
         let originalPreviewTime = match this.originalFileRepresentation.general |> List.tryFind isPreviewTime with
                                   | Some previewTime -> getPreviewTime previewTime
                                   | None -> 0
-        let newPreviewTime = int ((1M / rate) * decimal (this.generalTryGetOr isPreviewTime getPreviewTime 0))
+        let newPreviewTime = int ((1M / rate) * decimal (originalPreviewTime))
         let newGeneral = PreviewTime(newPreviewTime) :: this.changelist.general 
 
         let newEvents = this.originalFileRepresentation.events
