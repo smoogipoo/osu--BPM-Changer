@@ -75,8 +75,8 @@ namespace osu_trainer
             this.Title = new System.Windows.Forms.Label();
             this.SongLabel = new System.Windows.Forms.Label();
             this.DiffLabel = new System.Windows.Forms.Label();
-            this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
             this.titlePanel = new System.Windows.Forms.Panel();
+            this.OsuRunningTimer = new System.Windows.Forms.Timer(this.components);
             this.AimSpeedBar = new osu_trainer.funorControls.RatioBar();
             this.BpmMultiplierUpDown = new osu_trainer.NumericUpDownFix();
             this.ODSlider = new osu_trainer.OptionSlider();
@@ -679,7 +679,7 @@ namespace osu_trainer
             this.icon.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.icon.Image = ((System.Drawing.Image)(resources.GetObject("icon.Image")));
             this.icon.ImageLocation = "";
-            this.icon.Location = new System.Drawing.Point(11, 7);
+            this.icon.Location = new System.Drawing.Point(11, 9);
             this.icon.Name = "icon";
             this.icon.Size = new System.Drawing.Size(16, 16);
             this.icon.TabIndex = 4;
@@ -742,7 +742,7 @@ namespace osu_trainer
             this.Title.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
             this.Title.Font = new System.Drawing.Font("Microsoft YaHei UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.Title.ForeColor = System.Drawing.Color.White;
-            this.Title.Location = new System.Drawing.Point(29, 5);
+            this.Title.Location = new System.Drawing.Point(29, 7);
             this.Title.Name = "Title";
             this.Title.Size = new System.Drawing.Size(109, 22);
             this.Title.TabIndex = 2;
@@ -776,11 +776,6 @@ namespace osu_trainer
             this.DiffLabel.Text = "Extra";
             this.DiffLabel.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
             // 
-            // OsuRunningTimer
-            // 
-            this.OsuRunningTimer.Interval = 500;
-            this.OsuRunningTimer.Tick += new System.EventHandler(this.OsuRunningTimer_Tick);
-            // 
             // titlePanel
             // 
             this.titlePanel.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
@@ -791,6 +786,11 @@ namespace osu_trainer
             this.titlePanel.MouseDown += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseDown);
             this.titlePanel.MouseMove += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseMove);
             this.titlePanel.MouseUp += new System.Windows.Forms.MouseEventHandler(this.PanelMove_MouseUp);
+            // 
+            // OsuRunningTimer
+            // 
+            this.OsuRunningTimer.Interval = 500;
+            this.OsuRunningTimer.Tick += new System.EventHandler(this.OsuRunningTimer_Tick);
             // 
             // AimSpeedBar
             // 

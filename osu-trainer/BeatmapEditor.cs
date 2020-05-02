@@ -603,9 +603,9 @@ namespace osu_trainer
                 string bpm = map.Bpm.ToString("0");
                 map.Version += $" {bpm}bpm";
                 map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + bpm + "bpm.mp3";
-                if (changePitch)
+                if (!changePitch)
                     map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x.mp3";
-                if (changePitch)
+                else if (changePitch)
                     map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x (pitch {(multiplier < 1 ? "lowered" : "raised")}).mp3";
             }
 
