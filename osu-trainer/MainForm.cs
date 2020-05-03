@@ -602,11 +602,11 @@ namespace osu_trainer
             string absoluteFilename = Path.Combine(userSongsFolder, beatmapFolder, beatmapFilename);
             if (!File.Exists(absoluteFilename))
             {
-                if (++beatmapFindFailCounter == 10)
+                if (++beatmapFindFailCounter == 7)
                 {
-                    string msg = "Automatic beatmap detection failed 10 times in a row. ";
-                    msg += "Your songs folder is probably somewhere else. ";
-                    msg += "Please manually select your Songs folder in the next window.";
+                    string msg = "Automatic beatmap detection failed 7 times in a row. ";
+                    msg += "Your songs folder is probably not in your osu! install folder. ";
+                    msg += "Please manually locate your Songs folder in the following window.";
                     MessageBox.Show(msg, "Having trouble finding your beatmaps...", MessageBoxButtons.OK, MessageBoxIcon.Warning, MessageBoxDefaultButton.Button1, MessageBoxOptions.DefaultDesktopOnly);
                     using (var folderDialog = new OpenFileDialog())
                     {
@@ -643,7 +643,7 @@ namespace osu_trainer
                 gameLoaded = false;
             else
             {
-                if (gameLoaded == false)
+                if (gameLoaded == false) // @ posedge gameLoaded
                 {
                     await Task.Run(() => Thread.Sleep(5000));
                     gameLoaded = true;

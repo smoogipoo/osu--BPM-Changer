@@ -53,7 +53,7 @@ namespace osu_trainer
             this.cancelButton.BrightnessRange = 0.01F;
             this.cancelButton.Color = System.Drawing.Color.CornflowerBlue;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(393, 246);
+            this.cancelButton.Location = new System.Drawing.Point(393, 250);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
@@ -77,7 +77,7 @@ namespace osu_trainer
             this.confirmButton.BrightnessRange = 0.01F;
             this.confirmButton.Color = System.Drawing.Color.IndianRed;
             this.confirmButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.confirmButton.Location = new System.Drawing.Point(474, 246);
+            this.confirmButton.Location = new System.Drawing.Point(474, 250);
             this.confirmButton.Name = "confirmButton";
             this.confirmButton.Size = new System.Drawing.Size(75, 23);
             this.confirmButton.TabIndex = 0;
@@ -103,9 +103,10 @@ namespace osu_trainer
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(549, 16);
+            this.textBox1.Size = new System.Drawing.Size(549, 28);
             this.textBox1.TabIndex = 2;
-            this.textBox1.Text = "The following mp3s will be deleted.";
+            this.textBox1.Text = "When you delete generated beatmaps, their mp3s will appear here.\r\nTip: Try search" +
+    "ing for \"osutrainer\" in game\r\n";
             // 
             // fileListView
             // 
@@ -155,9 +156,9 @@ namespace osu_trainer
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.confirmButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(10, 10);
+            this.panel1.Location = new System.Drawing.Point(10, 6);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(549, 269);
+            this.panel1.Size = new System.Drawing.Size(549, 273);
             this.panel1.TabIndex = 1;
             // 
             // DeleteMp3sForm

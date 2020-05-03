@@ -146,6 +146,12 @@ type Beatmap(file, repr, cl) =
         
 
     member public this.SetRate (rate:decimal) =
+        let originalPreviewTime = match this.originalFileRepresentation.general |> List.tryFind isPreviewTime with
+                                  | Some previewTime -> getPreviewTime previewTime
+                                  | None -> 0
+        let newPreviewTime = int ((1M / rate) * decimal (this.generalTryGetOr isPreviewTime getPreviewTime 0))
+        let newGeneral = PreviewTime(newPreviewTime) :: this.changelist.general 
+
         let newEvents = this.originalFileRepresentation.events
                         |> List.map (function
                                      | Video b -> Video { b with startTime = (divide b.startTime rate)}
@@ -172,7 +178,8 @@ type Beatmap(file, repr, cl) =
                                                                               endTime = (divide h.endTime rate)}
                                          | comment      -> comment)
 
-        this.changelist <- {this.changelist with events       = newEvents;
+        this.changelist <- {this.changelist with general      = newGeneral;
+                                                 events       = newEvents;
                                                  timingPoints = newTimingPoints;
                                                  hitObjects   = newHitObjects; }
 
