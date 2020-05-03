@@ -8,19 +8,18 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
-
+using System.Windows.Forms;
 
 namespace osu_trainer
 {
-
-    enum EditorState
+    internal enum EditorState
     {
         NOT_READY,
         READY,
         GENERATING_BEATMAP
     }
 
-    enum BadBeatmapReason
+    internal enum BadBeatmapReason
     {
         NO_BEATMAP_LOADED,
         ERROR_LOADING_BEATMAP,
@@ -29,31 +28,31 @@ namespace osu_trainer
 
     // note: this code suffers from possible race conditions due to async functions modified shared resources (OriginalBeatmap, NewBeatmap)
     // however, enough mechanisms are put in place so that this doesn't really happen in during real usage
-    // possible race condition: 
+    // possible race condition:
     //
     //    user changes bpm:                              user selects another beatmap:
     //       NewBeatmap.TimingPoints are modified           NewBeatmap changes
-    //       
+    //
 
-    class BeatmapEditor
+    internal class BeatmapEditor
     {
-        MainForm form;
+        private MainForm form;
         public BadBeatmapReason NotReadyReason;
 
         public Beatmap OriginalBeatmap;
         public Beatmap NewBeatmap;
 
         public decimal StarRating { get; set; }
-        public decimal AimRating {get; set;}
-        public decimal SpeedRating {get; set;}
-        decimal lockedHP = 0M;
-        decimal lockedCS = 0M;
-        decimal lockedAR = 0M;
-        decimal lockedOD = 0M;
+        public decimal AimRating { get; set; }
+        public decimal SpeedRating { get; set; }
+        private decimal lockedHP = 0M;
+        private decimal lockedCS = 0M;
+        private decimal lockedAR = 0M;
+        private decimal lockedOD = 0M;
 
-        class ConcurrentRequest
+        private class ConcurrentRequest
         {
-            static int globalRequestCounter = -1;
+            private static int globalRequestCounter = -1;
             public int RequestNumber { get; set; }
 
             public ConcurrentRequest()
@@ -61,24 +60,28 @@ namespace osu_trainer
                 RequestNumber = ++globalRequestCounter;
             }
         }
-        class BeatmapRequest : ConcurrentRequest
+
+        private class BeatmapRequest : ConcurrentRequest
         {
             public string Name { get; set; }
+
             public BeatmapRequest(string name) : base()
             {
                 Name = name;
             }
         }
+
         private List<BeatmapRequest> mapChangeRequests = new List<BeatmapRequest>();
-        BeatmapRequest    completedBeatmapRequest      = null;
-        ConcurrentRequest completedDiffCalcRequest     = null;
-        bool serviceBeatmapRequestLocked               = false;  // mutex for serviceBeatmapChangeRequest()
-        bool serviceDiffCalcRequestLocked              = false;  // mutex for serviceDiffCalcRequest()
+        private BeatmapRequest completedBeatmapRequest = null;
+        private ConcurrentRequest completedDiffCalcRequest = null;
+        private bool serviceBeatmapRequestLocked = false;  // mutex for serviceBeatmapChangeRequest()
+        private bool serviceDiffCalcRequestLocked = false;  // mutex for serviceDiffCalcRequest()
         private List<ConcurrentRequest> diffCalcRequests = new List<ConcurrentRequest>();
 
         // public getters only
         // to set, call set methods
         public bool HpIsLocked { get; private set; } = false;
+
         public bool CsIsLocked { get; private set; } = false;
         public bool ArIsLocked { get; private set; } = false;
         public bool OdIsLocked { get; private set; } = false;
@@ -96,16 +99,22 @@ namespace osu_trainer
         }
 
         public event EventHandler StateChanged;
+
         public event EventHandler BeatmapSwitched;
+
         public event EventHandler BeatmapModified;
+
         public event EventHandler ControlsModified;
 
-        public void ForceEventStateChanged()     => StateChanged?.Invoke(this, EventArgs.Empty);
-        public void ForceEventBeatmapSwitched()  => BeatmapSwitched?.Invoke(this, EventArgs.Empty);
-        public void ForceEventBeatmapModified()  => BeatmapModified?.Invoke(this, EventArgs.Empty);
+        public void ForceEventStateChanged() => StateChanged?.Invoke(this, EventArgs.Empty);
+
+        public void ForceEventBeatmapSwitched() => BeatmapSwitched?.Invoke(this, EventArgs.Empty);
+
+        public void ForceEventBeatmapModified() => BeatmapModified?.Invoke(this, EventArgs.Empty);
+
         public void ForceEventControlsModified() => ControlsModified?.Invoke(this, EventArgs.Empty);
 
-        public async void GenerateBeatmap()
+        public void GenerateBeatmap()
         {
             if (State != EditorState.READY)
                 return;
@@ -122,7 +131,8 @@ namespace osu_trainer
             {
                 string inFile = Path.Combine(Path.GetDirectoryName(OriginalBeatmap.Filename), OriginalBeatmap.AudioFilename);
                 string outFile = Path.Combine(Path.GetDirectoryName(exportBeatmap.Filename), exportBeatmap.AudioFilename);
-                await Task.Run(() => SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, ChangePitch));
+
+                SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, form.BackgroundWorker, ChangePitch);
 
                 // take note of this mp3 in a text file, so we can clean it up later
                 string mp3ManifestFile = GetMp3ListFilePath();
@@ -136,7 +146,6 @@ namespace osu_trainer
             exportBeatmap.Save();
 
             // post
-            form.PlayDoneSound();
             SetState(EditorState.READY);
         }
 
@@ -146,9 +155,9 @@ namespace osu_trainer
                 return m.Groups[group].Value;
             return "";
         }
-        
+
         private string GetMp3ListFilePath() => Path.Combine(Properties.Settings.Default.SongsFolder, "modified_mp3_list.txt");
-         
+
         public List<string> GetUnusedMp3s()
         {
             // read manifest file
@@ -220,6 +229,7 @@ namespace osu_trainer
                 ServiceBeatmapChangeRequest();
             else return; // this method is already being run in another async "thread"
         }
+
         private async void ServiceBeatmapChangeRequest()
         {
             // acquire mutually exclusive entry into this method
@@ -234,15 +244,14 @@ namespace osu_trainer
                 if (candidateOriginalBeatmap != null)
                 {
                     candidateNewBeatmap = new Beatmap(candidateOriginalBeatmap);
-
                 }
 
                 // if a new request came in, invalidate candidate beatmap and service the new request
             }
-            
+
             // no new requests, we can commit to using this beatmap
             OriginalBeatmap = candidateOriginalBeatmap;
-            NewBeatmap      = candidateNewBeatmap;
+            NewBeatmap = candidateNewBeatmap;
             if (OriginalBeatmap == null)
             {
                 SetState(EditorState.NOT_READY);
@@ -263,13 +272,13 @@ namespace osu_trainer
                     NewBeatmap.SetRate(BpmMultiplier);
 
                     // Apply bpm scaled settings
-                    if (ScaleAR) NewBeatmap.ApproachRate      = DifficultyCalculator.CalculateMultipliedAR(candidateOriginalBeatmap, BpmMultiplier);
+                    if (ScaleAR) NewBeatmap.ApproachRate = DifficultyCalculator.CalculateMultipliedAR(candidateOriginalBeatmap, BpmMultiplier);
                     if (ScaleOD) NewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(candidateOriginalBeatmap, BpmMultiplier);
 
                     // Apply locked settings
-                    if (HpIsLocked) NewBeatmap.HPDrainRate       = lockedHP;
-                    if (CsIsLocked) NewBeatmap.CircleSize        = lockedCS;
-                    if (ArIsLocked) NewBeatmap.ApproachRate      = lockedAR;
+                    if (HpIsLocked) NewBeatmap.HPDrainRate = lockedHP;
+                    if (CsIsLocked) NewBeatmap.CircleSize = lockedCS;
+                    if (ArIsLocked) NewBeatmap.ApproachRate = lockedAR;
                     if (OdIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
 
                     SetState(EditorState.READY);
@@ -291,6 +300,7 @@ namespace osu_trainer
                 ServiceDiffCalcRequest();
             else return; // this method is already being run in another async "thread"
         }
+
         private async void ServiceDiffCalcRequest()
         {
             // acquire mutually exclusive entry into this method
@@ -312,8 +322,8 @@ namespace osu_trainer
                 // if a new request came in, invalidate the diffcalc result and service the new request
             }
             // we serviced the last request, so we can commit to the diffcalc result
-            StarRating  = stars;
-            AimRating   = aim;
+            StarRating = stars;
+            AimRating = aim;
             SpeedRating = speed;
             BeatmapModified?.Invoke(this, EventArgs.Empty);
 
@@ -321,14 +331,20 @@ namespace osu_trainer
         }
 
         public (decimal, decimal, decimal) GetOriginalBpmData() => GetBpmData(OriginalBeatmap);
+
         public (decimal, decimal, decimal) GetNewBpmData() => GetBpmData(NewBeatmap);
-        private (decimal, decimal, decimal) GetBpmData(Beatmap map) => (map.Bpm, map.MinBpm, map.MaxBpm);
-        
+
+        private (decimal, decimal, decimal) GetBpmData(Beatmap map) => (map?.Bpm ?? 0, map?.MinBpm ?? 0, map?.MaxBpm ?? 0);
 
         private void SetState(EditorState s)
         {
             State = s;
-            StateChanged?.Invoke(this, EventArgs.Empty);
+            Action action = () => StateChanged?.Invoke(this, EventArgs.Empty);
+
+            if (form.InvokeRequired)
+                form.Invoke(action);
+            else
+                action.Invoke();
         }
 
         public void SetHP(decimal value)
@@ -340,6 +356,7 @@ namespace osu_trainer
             lockedHP = value;
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetCS(decimal value)
         {
             if (State != EditorState.READY)
@@ -350,6 +367,7 @@ namespace osu_trainer
             RequestDiffCalc();
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetAR(decimal value)
         {
             if (State != EditorState.READY)
@@ -363,6 +381,7 @@ namespace osu_trainer
             BeatmapModified?.Invoke(this, EventArgs.Empty);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetARLock(bool locked)
         {
             ArIsLocked = locked;
@@ -372,6 +391,7 @@ namespace osu_trainer
                 SetScaleAR(true);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetScaleAR(bool value)
         {
             ScaleAR = value;
@@ -388,6 +408,7 @@ namespace osu_trainer
             ArIsLocked = false;
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetScaleOD(bool value)
         {
             ScaleOD = value;
@@ -403,6 +424,7 @@ namespace osu_trainer
             ArIsLocked = false;
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetOD(decimal value)
         {
             if (State != EditorState.READY)
@@ -416,6 +438,7 @@ namespace osu_trainer
             BeatmapModified?.Invoke(this, EventArgs.Empty);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetHPLock(bool locked)
         {
             HpIsLocked = locked;
@@ -426,6 +449,7 @@ namespace osu_trainer
             }
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetCSLock(bool locked)
         {
             CsIsLocked = locked;
@@ -436,6 +460,7 @@ namespace osu_trainer
             }
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetODLock(bool locked)
         {
             OdIsLocked = locked;
@@ -445,9 +470,13 @@ namespace osu_trainer
                 SetScaleOD(true);
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
+
         public void SetBpmMultiplier(decimal multiplier)
         {
-            BpmMultiplier = multiplier;
+            if (BpmMultiplier == multiplier)
+                return;
+            else
+                BpmMultiplier = multiplier;
 
             // make no changes
             if (State == EditorState.NOT_READY)
@@ -467,12 +496,19 @@ namespace osu_trainer
             RequestDiffCalc();
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
-        public void SetBpm(int bpm) {
+
+        public void SetBpm(int bpm)
+        {
             decimal originalBpm = GetOriginalBpmData().Item1;
+
+            if (originalBpm == 0)
+                return;
+
             decimal newMultiplier = bpm / originalBpm;
             newMultiplier = JunUtils.Clamp(newMultiplier, 0.1M, 5.0M);
             SetBpmMultiplier(newMultiplier);
         }
+
         public void ToggleChangePitchSetting()
         {
             ChangePitch = !ChangePitch;
@@ -484,8 +520,8 @@ namespace osu_trainer
             return OriginalBeatmap?.Mode;
         }
 
-
         public decimal GetScaledAR() => DifficultyCalculator.CalculateMultipliedAR(OriginalBeatmap, BpmMultiplier);
+
         public decimal GetScaledOD() => DifficultyCalculator.CalculateMultipliedOD(OriginalBeatmap, BpmMultiplier);
 
         public bool NewMapIsDifferent()
@@ -498,7 +534,6 @@ namespace osu_trainer
                 BpmMultiplier != 1.0M
             );
         }
-
 
         // return the new beatmap object if success
         // return null on failure
@@ -542,12 +577,11 @@ namespace osu_trainer
             return retMap;
         }
 
-
         // OUT: beatmap.Version
         // OUT: beatmap.Filename
         // OUT: beatmap.AudioFilename (if multiplier is not 1x)
         // OUT: beatmap.Tags
-        private void ModifyBeatmapMetadata(Beatmap map, decimal multiplier, bool changePitch=false)
+        private void ModifyBeatmapMetadata(Beatmap map, decimal multiplier, bool changePitch = false)
         {
             if (multiplier == 1)
             {

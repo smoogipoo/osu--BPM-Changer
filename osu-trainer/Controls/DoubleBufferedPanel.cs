@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-namespace osu_trainer.funorControls
+namespace osu_trainer.Controls
 {
-    class DoubleBufferedPanel : Panel
+    public class DoubleBufferedPanel : Panel
     {
         public DoubleBufferedPanel()
         {

@@ -11,8 +11,7 @@ namespace osu_trainer
     {
         protected override void OnMouseWheel(MouseEventArgs e)
         {
-            HandledMouseEventArgs hme = e as HandledMouseEventArgs;
-            if (hme != null)
+            if (e is HandledMouseEventArgs hme)
                 hme.Handled = true;
 
             if (e.Delta > 0)
