@@ -76,7 +76,7 @@
     <ApplicationManifest>Properties\app.manifest</ApplicationManifest>
   </PropertyGroup>
   <PropertyGroup>
-    <SignManifests>true</SignManifests>
+    <SignManifests>false</SignManifests>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=12.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
@@ -102,6 +102,34 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BeatmapEditor.cs" />
+    <Compile Include="Colors.cs" />
+    <Compile Include="Controls\AdvancedControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\AntiAliasedLabel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ExtendedRatioBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\IconButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\OsuButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\OsuCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\SongDisplay.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\StarsDisplay.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Controls\ToggleIconButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="DeleteMp3sForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -109,12 +137,13 @@
       <DependentUpon>DeleteMp3sForm.cs</DependentUpon>
     </Compile>
     <Compile Include="DifficultyCalculator.cs" />
-    <Compile Include="funorControls\DoubleBufferedPanel.cs">
+    <Compile Include="Controls\DoubleBufferedPanel.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="funorControls\RatioBar.cs">
+    <Compile Include="Controls\RatioBar.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Icons.cs" />
     <Compile Include="JunUtils.cs" />
     <Compile Include="MainForm.cs">
       <SubType>Form</SubType>
@@ -122,7 +151,7 @@
     <Compile Include="MainForm.Designer.cs">
       <DependentUpon>MainForm.cs</DependentUpon>
     </Compile>
-    <Compile Include="funorControls\NumericUpDownFix.cs">
+    <Compile Include="Controls\NumericUpDownFix.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\Resources.Designer.cs">
@@ -132,7 +161,7 @@
     </Compile>
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="funorControls\OptionSlider.cs">
+    <Compile Include="Controls\OptionSlider.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Properties\Settings.Designer.cs">
@@ -145,7 +174,6 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="osu-trainer_TemporaryKey.pfx" />
     <None Include="packages.config" />
     <None Include="Properties\app.manifest" />
     <None Include="Properties\DataSources\MainForm.datasource" />
@@ -158,15 +186,26 @@
     <Content Include="oppai\oppai.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="resources\Comfortaa-Bold.ttf" />
+    <None Include="resources\lock-solid.png" />
+    <None Include="resources\catch.png" />
+    <None Include="resources\mania.png" />
     <Content Include="resources\match-confirm.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="resources\match_confirm.wav" />
     <Content Include="resources\nobg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="resources\star-solid.png" />
+    <None Include="resources\standard.png" />
     <Content Include="resources\static.gif">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <None Include="resources\unlock-solid.png" />
+    <None Include="resources\taiko.png" />
+    <None Include="resources\trash-alt-solid.png" />
+    <None Include="resources\undo-alt-solid.png" />
     <Content Include="Speed Changer Stuff\lame.exe">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

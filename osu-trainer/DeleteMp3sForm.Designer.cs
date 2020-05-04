@@ -1,4 +1,6 @@
-﻿namespace osu_trainer
+﻿using osu_trainer.Controls;
+
+namespace osu_trainer
 {
     partial class DeleteMp3sForm
     {
@@ -28,13 +30,13 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem(new string[] {
+            System.Windows.Forms.ListViewItem listViewItem1 = new System.Windows.Forms.ListViewItem(new string[] {
             "audio.mp3",
             "4/21/2020",
             "3MB"}, -1);
-            this.cancelButton = new System.Windows.Forms.Button();
+            this.cancelButton = new osu_trainer.Controls.OsuButton();
             this.fileSizeLabel = new System.Windows.Forms.Label();
-            this.confirmButton = new System.Windows.Forms.Button();
+            this.confirmButton = new osu_trainer.Controls.OsuButton();
             this.label1 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.fileListView = new System.Windows.Forms.ListView();
@@ -48,33 +50,39 @@
             // cancelButton
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.cancelButton.BrightnessRange = 0.01F;
+            this.cancelButton.Color = System.Drawing.Color.CornflowerBlue;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
             this.cancelButton.Location = new System.Drawing.Point(393, 250);
             this.cancelButton.Name = "cancelButton";
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
             this.cancelButton.Text = "Cancel";
+            this.cancelButton.TriangleCount = 30;
             this.cancelButton.UseVisualStyleBackColor = true;
             // 
             // fileSizeLabel
             // 
             this.fileSizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fileSizeLabel.AutoSize = true;
-            this.fileSizeLabel.Location = new System.Drawing.Point(3, 247);
+            this.fileSizeLabel.Location = new System.Drawing.Point(3, 251);
             this.fileSizeLabel.Name = "fileSizeLabel";
-            this.fileSizeLabel.Size = new System.Drawing.Size(124, 13);
+            this.fileSizeLabel.Size = new System.Drawing.Size(134, 15);
             this.fileSizeLabel.TabIndex = 1;
             this.fileSizeLabel.Text = "Total: 3MB to be deleted";
             // 
             // confirmButton
             // 
             this.confirmButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+            this.confirmButton.BrightnessRange = 0.01F;
+            this.confirmButton.Color = System.Drawing.Color.IndianRed;
             this.confirmButton.DialogResult = System.Windows.Forms.DialogResult.OK;
             this.confirmButton.Location = new System.Drawing.Point(474, 250);
             this.confirmButton.Name = "confirmButton";
             this.confirmButton.Size = new System.Drawing.Size(75, 23);
             this.confirmButton.TabIndex = 0;
             this.confirmButton.Text = "Confirm";
+            this.confirmButton.TriangleCount = 30;
             this.confirmButton.UseVisualStyleBackColor = true;
             // 
             // label1
@@ -82,13 +90,15 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(3, 15);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(0, 13);
+            this.label1.Size = new System.Drawing.Size(0, 15);
             this.label1.TabIndex = 1;
             // 
             // textBox1
             // 
+            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Top;
+            this.textBox1.ForeColor = System.Drawing.Color.White;
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
@@ -103,16 +113,22 @@
             this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
+            this.fileListView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.fileListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fileListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
+            this.fileListView.ForeColor = System.Drawing.Color.White;
+            this.fileListView.FullRowSelect = true;
             this.fileListView.HideSelection = false;
             this.fileListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
-            this.fileListView.Location = new System.Drawing.Point(0, 31);
+            listViewItem1});
+            this.fileListView.Location = new System.Drawing.Point(0, 22);
+            this.fileListView.MultiSelect = false;
             this.fileListView.Name = "fileListView";
-            this.fileListView.Size = new System.Drawing.Size(549, 213);
+            this.fileListView.ShowGroups = false;
+            this.fileListView.Size = new System.Drawing.Size(549, 218);
             this.fileListView.TabIndex = 3;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
@@ -148,15 +164,20 @@
             // DeleteMp3sForm
             // 
             this.AcceptButton = this.confirmButton;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+            this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
+            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
+            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
             this.CancelButton = this.cancelButton;
             this.ClientSize = new System.Drawing.Size(569, 289);
             this.Controls.Add(this.panel1);
+            this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.ForeColor = System.Drawing.Color.White;
+            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MinimumSize = new System.Drawing.Size(350, 160);
             this.Name = "DeleteMp3sForm";
-            this.Padding = new System.Windows.Forms.Padding(10, 6, 10, 10);
-            this.Text = "DeleteMp3sForm";
+            this.Padding = new System.Windows.Forms.Padding(10);
+            this.ShowIcon = false;
+            this.Text = "Delete MP3s";
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.ResumeLayout(false);
@@ -165,9 +186,9 @@
 
         #endregion
 
-        private System.Windows.Forms.Button cancelButton;
+        private OsuButton cancelButton;
         private System.Windows.Forms.Label fileSizeLabel;
-        private System.Windows.Forms.Button confirmButton;
+        private OsuButton confirmButton;
         private System.Windows.Forms.Label label1;
         private System.Windows.Forms.TextBox textBox1;
         private System.Windows.Forms.ListView fileListView;
