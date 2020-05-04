@@ -319,7 +319,7 @@ namespace osu_trainer
             // HP
             decimal newHP      = editor.NewBeatmap.HPDrainRate;
             decimal originalHP = editor.OriginalBeatmap.HPDrainRate;
-            HPDisplay.Text = newHP.ToString();
+            HPDisplay.Text = newHP.ToString("0.#");
             HPSlider.Value = (decimal)newHP;
             if (newHP > originalHP)
             {
@@ -340,7 +340,7 @@ namespace osu_trainer
             // CS
             decimal newCS      = editor.NewBeatmap.CircleSize;
             decimal originalCS = editor.OriginalBeatmap.CircleSize;
-            CSDisplay.Text = newCS.ToString();
+            CSDisplay.Text = newCS.ToString("0.#");
             CSSlider.Value = (decimal)newCS;
             if (newCS > originalCS)
             {
@@ -360,7 +360,7 @@ namespace osu_trainer
 
             // AR
             decimal newAR    = editor.NewBeatmap.ApproachRate;
-            ARDisplay.Text = newAR.ToString();
+            ARDisplay.Text = newAR.ToString("0.#");
             ARSlider.Value = (decimal)newAR;
             if (newAR > editor.GetScaledAR())
             {
@@ -381,7 +381,7 @@ namespace osu_trainer
             // OD
             decimal newOD      = editor.NewBeatmap.OverallDifficulty;
             decimal originalOD = editor.OriginalBeatmap.OverallDifficulty;
-            ODDisplay.Text = newOD.ToString();
+            ODDisplay.Text = newOD.ToString("0.#");
             ODSlider.Value = (decimal)newOD;
             if (newOD > editor.GetScaledOD())
             {

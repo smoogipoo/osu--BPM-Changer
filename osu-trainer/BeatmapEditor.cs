@@ -584,36 +584,40 @@ namespace osu_trainer
         // OUT: beatmap.Tags
         private void ModifyBeatmapMetadata(Beatmap map, decimal multiplier, bool changePitch=false)
         {
-            if (multiplier == 1)
+            // Difficulty Name and AudioFilename - Rate Modifier
+            if (Math.Abs(multiplier - 1M) > 0.001M)
             {
-                string HPCSAROD = "";
-                if (NewBeatmap.HPDrainRate != OriginalBeatmap.HPDrainRate)
-                    HPCSAROD += $" HP{NewBeatmap.HPDrainRate}";
-                if (NewBeatmap.CircleSize != OriginalBeatmap.CircleSize)
-                    HPCSAROD += $" CS{NewBeatmap.CircleSize}";
-                if (NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate)
-                    HPCSAROD += $" AR{NewBeatmap.ApproachRate}";
-                if (NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty)
-                    HPCSAROD += $" OD{NewBeatmap.OverallDifficulty}";
-                map.Version += HPCSAROD;
-            }
-            else
-            {
-                // If song has changed, no ARODCS in diff name
                 string bpm = map.Bpm.ToString("0");
-                map.Version += $" {bpm}bpm";
-                map.AudioFilename = map.AudioFilename.Substring(0, map.AudioFilename.LastIndexOf(".", StringComparison.InvariantCulture)) + " " + bpm + "bpm.mp3";
+                map.Version += $" {multiplier:0.##}x ({bpm}bpm)";
                 if (!changePitch)
                     map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x.mp3";
                 else if (changePitch)
                     map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x (pitch {(multiplier < 1 ? "lowered" : "raised")}).mp3";
             }
 
-            map.Filename = map.Filename.Substring(0, map.Filename.LastIndexOf("\\", StringComparison.InvariantCulture) + 1) + JunUtils.NormalizeText(map.Artist) + " - " + JunUtils.NormalizeText(map.Title) + " (" + JunUtils.NormalizeText(map.Creator) + ")" + " [" + JunUtils.NormalizeText(map.Version) + "].osu";
+            // Difficulty Name - Difficulty Settings
+            string HPCSAROD = "";
+            if (NewBeatmap.HPDrainRate != OriginalBeatmap.HPDrainRate)
+                HPCSAROD += $" HP{NewBeatmap.HPDrainRate:0.#}";
+            if (NewBeatmap.CircleSize != OriginalBeatmap.CircleSize)
+                HPCSAROD += $" CS{NewBeatmap.CircleSize:0.#}";
+            if (NewBeatmap.ApproachRate != GetScaledAR())
+                HPCSAROD += $" AR{NewBeatmap.ApproachRate:0.#}";
+            if (NewBeatmap.OverallDifficulty != GetScaledOD())
+                HPCSAROD += $" OD{NewBeatmap.OverallDifficulty:0.#}";
+            map.Version += HPCSAROD;
+
+            // Beatmap File Name
+            string artist  = JunUtils.NormalizeText(map.Artist);
+            string title   = JunUtils.NormalizeText(map.Title);
+            string creator = JunUtils.NormalizeText(map.Creator);
+            string diff    = JunUtils.NormalizeText(map.Version);
+            map.Filename   = Path.GetDirectoryName(map.Filename) + $"\\{artist} - {title} ({creator}) [{diff}].osu";
+
             // make this map searchable in the in-game menus
             var TagsWithOsutrainer = map.Tags;
             TagsWithOsutrainer.Add("osutrainer");
-            map.Tags = TagsWithOsutrainer; // need to assignment like this because Tags is an immutable list
+            map.Tags = TagsWithOsutrainer; // need to assign like this because Tags is an immutable list
         }
 
         // dominant, min, max
