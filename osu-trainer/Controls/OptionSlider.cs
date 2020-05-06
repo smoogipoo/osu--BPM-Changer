@@ -250,7 +250,6 @@ namespace osu_trainer
         }
         #endregion
 
-
         private int nippleCurrentDiameter;
         private bool dragging = false;
         private bool expanded = false;
@@ -274,7 +273,6 @@ namespace osu_trainer
             bodyPen.EndCap = LineCap.Round;
             var nippleBrush = new SolidBrush(NippleColor);
             var nipplePen = new Pen(nippleBrush, NippleStrokeWidth);
-
             var nippleIdlePen = new Pen(NippleIdleColor, NippleStrokeWidth);
             var backBrush = new SolidBrush(BackColor);
 
@@ -355,6 +353,7 @@ namespace osu_trainer
         protected override void OnMouseLeave(EventArgs e)
         {
             expanded = false;
+            Invalidate();
         }
 
         protected override void OnMouseWheel(MouseEventArgs e)

@@ -144,6 +144,21 @@ type Beatmap(file, repr, cl) =
         File.WriteAllLines(outputPath, exportFileLines, Text.Encoding.UTF8)
         ()
         
+    member public this.RemoveSpinners() =
+        let objects =
+            if (this.changelist.hitObjects |> removeHitObjectComments) = [] then
+                this.originalFileRepresentation.hitObjects
+            else
+                this.changelist.hitObjects
+
+        let notSpinner = function
+                         | Spinner _ -> false
+                         | _         -> true
+                        
+
+        let newHitObjects = List.filter notSpinner objects
+
+        this.changelist <- {this.changelist with hitObjects = newHitObjects}
 
     member public this.SetRate (rate:decimal) =
         let originalPreviewTime = match this.originalFileRepresentation.general |> List.tryFind isPreviewTime with
@@ -185,8 +200,8 @@ type Beatmap(file, repr, cl) =
 
     // get song dominant bpm
     member public this.Bpm with get() =
-        if (this.originalFileRepresentation.hitObjects   |> removeHitObjectComments).Length = 0 then 0M else
-        if (this.originalFileRepresentation.timingPoints |> removeTimingPointComments).Length = 0 then 0M else
+        if (this.originalFileRepresentation.hitObjects   |> removeHitObjectComments   |> List.length) = 0 then 0M else
+        if (this.originalFileRepresentation.timingPoints |> removeTimingPointComments |> List.length) = 0 then 0M else
 
         let rec beatLengthDurations (timingPoints:list<Tp>) lastObject : list<decimal * int> = 
             match timingPoints with
@@ -211,8 +226,12 @@ type Beatmap(file, repr, cl) =
                 []
 
         // someone please teach me how to write f#
-        let lastObject      = this.originalFileRepresentation.hitObjects |> removeHitObjectComments |> List.rev |> List.head
-        let timingpoints = if this.changelist.timingPoints = [] then this.originalFileRepresentation.timingPoints else this.changelist.timingPoints
+        let lastObject =
+            if this.changelist.timingPoints = [] then
+                this.originalFileRepresentation.hitObjects |> removeHitObjectComments |> List.rev |> List.head
+            else
+                this.changelist.hitObjects |> removeHitObjectComments |> List.rev |> List.head
+        let timingpoints    = if this.changelist.timingPoints = [] then this.originalFileRepresentation.timingPoints else this.changelist.timingPoints
         let bpmTimingPoints =
             timingpoints
             |> List.filter isTimingPoint
@@ -329,5 +348,8 @@ type Beatmap(file, repr, cl) =
 
     (* Other *)
     member public this.HitObjectCount
-        with get() =
-            this.originalFileRepresentation.hitObjects.Length
+        with get() = this.originalFileRepresentation.hitObjects
+                     |> List.filter (function
+                                     | Comment _ -> false
+                                     | _         -> true)
+                     |> List.length

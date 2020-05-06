@@ -8,7 +8,7 @@ namespace osu_trainer.Controls
     {
         protected override void OnPaint(PaintEventArgs e)
         {
-            e.Graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
             using (var foregroundBrush = new SolidBrush(ForeColor))
             {

@@ -33,9 +33,9 @@ namespace osu_trainer
 
         // Common Control Lists
         private List<Label> dumbLabels;
-
         private List<TextBox> diffDisplays;
         private List<OptionSlider> diffSliders;
+        private List<OsuCheckBox> checkControls;
 
         // Single Object Instances
         private readonly SoundPlayer sound = new SoundPlayer();
@@ -51,10 +51,6 @@ namespace osu_trainer
         public MainForm()
         {
             InitializeComponent();
-            this.Font = new Font(Program.FontCollection.Families[0], this.Font.Size, FontStyle.Bold, this.Font.Unit);
-            DeleteButton.Color = Colors.AccentRed;
-            ResetButton.Color = Colors.AccentSalmon;
-            ThemeControls(this.Controls);
 
             nobg = Image.FromFile(nobgpng);
 
@@ -72,6 +68,12 @@ namespace osu_trainer
             {
                 HPSlider, CSSlider, ARSlider, ODSlider
             };
+            checkControls = new List<OsuCheckBox>
+            {
+                NoSpinnersCheck, ScaleARCheck, ScaleODCheck, ChangePitchCheck
+            };
+
+            ApplyFonts();
 
             // load user settings
             if (Directory.Exists(Properties.Settings.Default.SongsFolder))
@@ -83,20 +85,19 @@ namespace osu_trainer
 
             // Add event handlers (observers)
             editor.StateChanged += ToggleDumbLabels;
-            editor.StateChanged += ToggleGenerateButton;
+            editor.StateChanged += TogglePrettyButtons;
             editor.StateChanged += ToggleHpCsArOdDisplay;
             editor.StateChanged += ToggleDifficultyDisplay;
-            editor.StateChanged += ToggleBpmUpDown;
+            editor.StateChanged += ToggleBpmInputControls;
             editor.StateChanged += ToggleBpmDisplay;
             editor.BeatmapSwitched += UpdateSongDisplay;
             editor.BeatmapModified += UpdateBpmDisplay;
             editor.BeatmapModified += UpdateHpCsArOdDisplay;
             editor.BeatmapModified += UpdateDifficultyDisplay;
-            editor.BeatmapModified += ToggleGenerateButton;
-            editor.BeatmapModified += UpdateBpmUpDown;
+            editor.BeatmapModified += TogglePrettyButtons;
+            editor.BeatmapModified += UpdateRateInputControls;
             editor.ControlsModified += UpdateLockButtons;
             editor.ControlsModified += UpdateChecks;
-            editor.ControlsModified += UpdateChanGePitchButton;
 
             // need controls to show up as initially disabled
             editor.ForceEventStateChanged();
@@ -105,41 +106,60 @@ namespace osu_trainer
 
             BeatmapUpdateTimer.Start();
             OsuRunningTimer.Start();
+
+            this.Focus();
+        }
+
+        private void ApplyFonts()
+        {
+            var comforta = Program.FontCollection.Families[0];
+
+            foreach (var textbox in diffDisplays)
+                textbox.Font = new Font(comforta, 11, FontStyle.Regular);
+            foreach (var label in dumbLabels)
+                label.Font = new Font(comforta, 10, FontStyle.Regular);
+            foreach (var check in checkControls)
+                check.Font = new Font(comforta, 9, FontStyle.Regular);
+
+            StarsDisplay.Font = new Font(comforta, 12, FontStyle.Bold);
+            AimLabel.Font     = new Font(comforta, 9, FontStyle.Regular);
+            SpeedLabel.Font   = new Font(comforta, 9, FontStyle.Regular);
+
+            BpmMultiplierTextBox.Font = new Font(comforta, 11, FontStyle.Bold);
+            OriginalBpmTextBox.Font   = new Font(comforta, 10, FontStyle.Regular);
+            NewBpmTextBox.Font        = new Font(comforta, 10, FontStyle.Regular);
+
+            OriginalBpmRangeTextBox.Font   = new Font(comforta, 9, FontStyle.Regular);
+            NewBpmRangeTextBox.Font        = new Font(comforta, 9, FontStyle.Regular);
+
         }
 
         #region Callbacks for updating GUI controls
 
-        private void UpdateBpmUpDown(object sender, EventArgs e)
+        private void UpdateRateInputControls(object sender, EventArgs e)
         {
-            BpmMultiplierUpDown.Value = editor.BpmMultiplier;
+            BpmMultiplierTextBox.Text = editor.BpmMultiplier.ToString("0.00");
         }
 
         private void UpdateSongDisplay(object sender, EventArgs e)
         {
-            string artist, title, diff;
             switch (editor.State)
             {
                 case EditorState.NOT_READY:
                     switch (editor.NotReadyReason)
                     {
                         case BadBeatmapReason.NO_BEATMAP_LOADED:
-                            //SongLabel.Text = "no beatmap";
-                            //SongLabel.ForeColor = Colors.Disabled;
-                            //StaticGif.Visible = true;
-                            //DiffLabel.Visible = false;
                             break;
 
                         case BadBeatmapReason.ERROR_LOADING_BEATMAP:
-                            //SongLabel.Text = "Unable to read .osu file";
-                            //SongLabel.ForeColor = Colors.Disabled;
-                            //StaticGif.Visible = true;
-                            //DiffLabel.Visible = false;
+                            SongDisplay.Artist = "failed to load beatmap";
+                            SongDisplay.Title = "";
+                            SongDisplay.Difficulty = "";
+                            SongDisplay.Cover = null;
                             break;
 
                         case BadBeatmapReason.EMPTY_MAP:
                             UpdateSongBg(editor.NewBeatmap);
-
-                            //StaticGif.Visible = false;
 
                             SongDisplay.Artist = editor.OriginalBeatmap.Artist;
                             SongDisplay.Title = editor.OriginalBeatmap.Title;
@@ -155,8 +175,6 @@ namespace osu_trainer
                 case EditorState.GENERATING_BEATMAP:
                     UpdateSongBg(editor.NewBeatmap);
 
-                    //StaticGif.Visible = false;
-
                     SongDisplay.Artist = editor.OriginalBeatmap.Artist;
                     SongDisplay.Title = editor.OriginalBeatmap.Title;
                     SongDisplay.Difficulty = editor.OriginalBeatmap.Version;
@@ -166,8 +184,6 @@ namespace osu_trainer
 
         private void UpdateSongBg(Beatmap map)
         {
-            // crop height to aspect ratio
-            //Image bg =
             SongDisplay.Cover = GetSongBackground(map);
         }
 
@@ -185,7 +201,7 @@ namespace osu_trainer
 
         private void ToggleDumbLabels(object sender, EventArgs e)
         {
-            Color labelColor = Colors.AccentSalmon;
+            Color labelColor = Colors.PaleBlue;
             switch (editor.State)
             {
                 case EditorState.NOT_READY:
@@ -194,19 +210,9 @@ namespace osu_trainer
 
                 case EditorState.READY:
                 case EditorState.GENERATING_BEATMAP:
-                    labelColor = Colors.AccentSalmon;
+                    labelColor = Colors.PaleBlue;
                     break;
             }
-
-            if (editor.State == EditorState.NOT_READY && editor.NotReadyReason == BadBeatmapReason.EMPTY_MAP)
-            {
-                SongDisplay.ErrorMessage = "No beatmap loaded";
-            }
-            else
-            {
-                SongDisplay.ErrorMessage = null;
-            }
-            SongDisplay.Invalidate(false);
 
             foreach (var label in dumbLabels)
                 label.ForeColor = labelColor;
@@ -218,15 +224,19 @@ namespace osu_trainer
             {
                 case EditorState.NOT_READY:
                     OriginalBpmRangeTextBox.Visible = false;
-                    NewBpmRangeTextBox.Visible = false;
-                    NewBpmTextBox.BackColor = Colors.Disabled;
-                    OriginalBpmTextBox.BackColor = Colors.Disabled;
+                    NewBpmRangeTextBox.Visible      = false;
+                    NewBpmTextBox.Enabled           = false;
+                    NewBpmTextBox.BackColor         = Colors.Disabled;
+                    OriginalBpmTextBox.Enabled      = false;
+                    OriginalBpmTextBox.BackColor    = Colors.Disabled;
                     break;
 
                 case EditorState.READY:
                 case EditorState.GENERATING_BEATMAP:
+                    OriginalBpmTextBox.Enabled   = true;
                     OriginalBpmTextBox.BackColor = Colors.ReadOnlyBg;
-                    NewBpmTextBox.BackColor = Colors.TextBoxBg;
+                    NewBpmTextBox.Enabled        = true;
+                    NewBpmTextBox.BackColor      = Colors.TextBoxBg;
                     break;
             }
         }
@@ -246,9 +256,9 @@ namespace osu_trainer
                     // bpm
                     OriginalBpmTextBox.Text = Math.Round(oldbpm).ToString("0");
                     NewBpmTextBox.Text = Math.Round(newbpm).ToString("0");
-                    if (newbpm > oldbpm)
+                    if (newbpm > oldbpm + 0.001M)
                         NewBpmTextBox.ForeColor = Colors.AccentRed;
-                    else if (newbpm < oldbpm)
+                    else if (newbpm < oldbpm - 0.001M)
                         NewBpmTextBox.ForeColor = Colors.Easier;
                     else
                         NewBpmTextBox.ForeColor = Colors.TextBoxFg;
@@ -264,32 +274,48 @@ namespace osu_trainer
 
         private void UpdateLockButtons(object sender, EventArgs e)
         {
-            HPLockCheck.ForeColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? Colors.AccentBlue : Color.Gray;
-            HPLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.HpIsLocked ? Colors.AccentBlue : Color.Gray;
+            // change checked state without raising any events
+            HPLockCheck.CheckedChanged -= HpLockCheck_CheckedChanged;
+            CSLockCheck.CheckedChanged -= CsLockCheck_CheckedChanged;
+            ARLockCheck.CheckedChanged -= ArLockCheck_CheckedChanged;
+            ODLockCheck.CheckedChanged -= OdLockCheck_CheckedChanged;
 
-            CSLockCheck.ForeColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.CsIsLocked ? Colors.AccentBlue : Color.Gray;
-            CSLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.CsIsLocked ? Colors.AccentBlue : Color.Gray;
+            HPLockCheck.Checked = editor.HpIsLocked;
+            CSLockCheck.Checked = editor.CsIsLocked;
+            ARLockCheck.Checked = editor.ArIsLocked;
+            ODLockCheck.Checked = editor.OdIsLocked;
 
-            ARLockCheck.ForeColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ArIsLocked ? Colors.AccentBlue : Color.Gray;
-            ARLockCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ArIsLocked ? Colors.AccentBlue : Color.Gray;
-
-            var odLock = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.OdIsLocked ? Colors.AccentBlue : Color.Gray;
-            ODLockCheck.ForeColor = odLock;
-            ODLockCheck.FlatAppearance.BorderColor = odLock;
+            HPLockCheck.CheckedChanged += HpLockCheck_CheckedChanged;
+            CSLockCheck.CheckedChanged += CsLockCheck_CheckedChanged;
+            ARLockCheck.CheckedChanged += ArLockCheck_CheckedChanged;
+            ODLockCheck.CheckedChanged += OdLockCheck_CheckedChanged;
         }
 
         private void UpdateChecks(object sender, EventArgs e)
         {
             var enabled = editor.State != EditorState.NOT_READY;
-            ChangePitchCheck.Enabled = enabled;
-            ScaleODCheck.Enabled = enabled;
-            ScaleARCheck.Enabled = enabled;
-        }
+            NoSpinnersCheck.Enabled    = enabled;
+            ChangePitchCheck.Enabled   = enabled;
+            ScaleODCheck.Enabled       = enabled;
+            ScaleARCheck.Enabled       = enabled;
+            NoSpinnersCheck.ForeColor  = enabled ? Colors.PaleBlue : Colors.Disabled;
+            ChangePitchCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
+            ScaleODCheck.ForeColor     = enabled ? Colors.PaleBlue : Colors.Disabled;
+            ScaleARCheck.ForeColor     = enabled ? Colors.PaleBlue : Colors.Disabled;
 
-        private void UpdateChanGePitchButton(object sender, EventArgs e)
-        {
-            ChangePitchCheck.ForeColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ChangePitch ? Colors.AccentBlue : Color.Gray;
-            ChangePitchCheck.FlatAppearance.BorderColor = (editor.State == EditorState.NOT_READY) ? Color.Gray : editor.ChangePitch ? Colors.AccentBlue : Color.Gray;
+            // change checked state without raising any events
+            NoSpinnersCheck.CheckedChanged  -= NoSpinnerCheckBox_CheckedChanged;
+            ChangePitchCheck.CheckedChanged -= ChangePitchButton_CheckedChanged;
+            ScaleODCheck.CheckedChanged     -= ScaleODCheck_CheckedChanged;
+            ScaleARCheck.CheckedChanged     -= ScaleARCheck_CheckedChanged;
+            NoSpinnersCheck.Checked          = editor.NoSpinners;
+            ChangePitchCheck.Checked         = editor.ChangePitch;
+            ScaleODCheck.Checked             = editor.ScaleOD;
+            ScaleARCheck.Checked             = editor.ScaleAR;
+            NoSpinnersCheck.CheckedChanged  += NoSpinnerCheckBox_CheckedChanged;
+            ChangePitchCheck.CheckedChanged += ChangePitchButton_CheckedChanged;
+            ScaleODCheck.CheckedChanged     += ScaleODCheck_CheckedChanged;
+            ScaleARCheck.CheckedChanged     += ScaleARCheck_CheckedChanged;
         }
 
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
@@ -299,28 +325,28 @@ namespace osu_trainer
             HPDisplay.Enabled = enabled ? true : false;
             HPDisplay.BackColor = enabled ? Colors.ReadOnlyBg : SystemColors.ControlDark;
             HPDisplay.ForeColor = Colors.ReadOnlyFg;
-            HPDisplay.Font = new Font(this.Font, FontStyle.Regular);
+            HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Regular);
 
             enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
             CSSlider.Enabled = enabled;
             CSDisplay.Enabled = enabled ? true : false;
             CSDisplay.BackColor = enabled ? Colors.ReadOnlyBg : SystemColors.ControlDark;
             CSDisplay.ForeColor = Colors.ReadOnlyFg;
-            CSDisplay.Font = new Font(this.Font, FontStyle.Regular);
+            CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Regular);
 
             enabled = (editor.State != EditorState.NOT_READY) && (editor.GetMode() == GameMode.osu || editor.GetMode() == GameMode.CatchtheBeat);
             ARSlider.Enabled = enabled;
             ARDisplay.Enabled = enabled ? true : false;
             ARDisplay.BackColor = enabled ? Colors.ReadOnlyBg : SystemColors.ControlDark;
             ARDisplay.ForeColor = Colors.ReadOnlyFg;
-            ARDisplay.Font = new Font(this.Font, FontStyle.Regular);
+            ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
 
             enabled = (editor.State != EditorState.NOT_READY);
             ODSlider.Enabled = enabled;
             ODDisplay.Enabled = enabled ? true : false;
             ODDisplay.BackColor = enabled ? Colors.ReadOnlyBg : SystemColors.ControlDark;
             ODDisplay.ForeColor = Colors.ReadOnlyFg;
-            ODDisplay.Font = new Font(this.Font, FontStyle.Regular);
+            ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
         }
 
         private void UpdateHpCsArOdDisplay(object sender, EventArgs e)
@@ -333,17 +359,17 @@ namespace osu_trainer
             if (newHP > originalHP)
             {
                 HPDisplay.ForeColor = Colors.AccentRed;
-                HPDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
             }
             else if (newHP < originalHP)
             {
                 HPDisplay.ForeColor = Colors.Easier;
-                HPDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Bold);
             }
             else
             {
                 HPDisplay.ForeColor = Colors.TextBoxFg;
-                HPDisplay.Font = new Font(this.Font, FontStyle.Regular);
+                HPDisplay.Font = new Font(HPDisplay.Font, FontStyle.Regular);
             }
 
             // CS
@@ -354,17 +380,17 @@ namespace osu_trainer
             if (newCS > originalCS)
             {
                 CSDisplay.ForeColor = Colors.AccentRed;
-                CSDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
             }
             else if (newCS < originalCS)
             {
                 CSDisplay.ForeColor = Colors.Easier;
-                CSDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Bold);
             }
             else
             {
                 CSDisplay.ForeColor = Colors.TextBoxFg;
-                CSDisplay.Font = new Font(this.Font, FontStyle.Regular);
+                CSDisplay.Font = new Font(CSDisplay.Font, FontStyle.Regular);
             }
 
             // AR
@@ -374,17 +400,17 @@ namespace osu_trainer
             if (newAR > editor.GetScaledAR())
             {
                 ARDisplay.ForeColor = Colors.AccentRed;
-                ARDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else if (newAR < editor.GetScaledAR())
             {
                 ARDisplay.ForeColor = Colors.Easier;
-                ARDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
             else
             {
                 ARDisplay.ForeColor = Colors.TextBoxFg;
-                ARDisplay.Font = new Font(this.Font, FontStyle.Regular);
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
 
             // OD
@@ -395,17 +421,17 @@ namespace osu_trainer
             if (newOD > editor.GetScaledOD())
             {
                 ODDisplay.ForeColor = Colors.AccentRed;
-                ODDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
             }
             else if (newOD < editor.GetScaledOD())
             {
                 ODDisplay.ForeColor = Colors.Easier;
-                ODDisplay.Font = new Font(this.Font, FontStyle.Bold);
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Bold);
             }
             else
             {
                 ODDisplay.ForeColor = Colors.TextBoxFg;
-                ODDisplay.Font = new Font(this.Font, FontStyle.Regular);
+                ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
             }
         }
 
@@ -413,21 +439,24 @@ namespace osu_trainer
         {
             if (editor.State == EditorState.NOT_READY)
             {
-                AimSpeedBar.LeftColor = Colors.Disabled;
-                AimSpeedBar.RightColor = Colors.Disabled;
+                StarsDisplay.Enabled = false;
+                AimLabel.ForeColor   = Colors.Disabled;
+                SpeedLabel.ForeColor = Colors.Disabled;
             }
             else if (editor.State == EditorState.READY)
             {
-                AimSpeedBar.RightColor = Colors.Aim;
-                AimSpeedBar.RightColor = Colors.Speed;
+                StarsDisplay.Enabled = true;
+                AimLabel.ForeColor   = Colors.PaleBlue;
+                SpeedLabel.ForeColor = Colors.PaleBlue;
             }
         }
 
-        private void ToggleBpmUpDown(object sender, EventArgs e)
+        private void ToggleBpmInputControls(object sender, EventArgs e)
         {
             bool enabled = (editor.State != EditorState.NOT_READY);
-            BpmMultiplierUpDown.Enabled = enabled ? true : false;
-            BpmMultiplierUpDown.BackColor = enabled ? Colors.TextBoxBg : SystemColors.ControlDark;
+            BpmSlider.Enabled              = enabled ? true : false;
+            BpmMultiplierTextBox.Enabled   = enabled ? true : false;
+            BpmMultiplierTextBox.BackColor = enabled ? Colors.TextBoxBg : SystemColors.ControlDark;
         }
 
         private void UpdateDifficultyDisplay(object sender, EventArgs e)
@@ -438,23 +467,11 @@ namespace osu_trainer
             if (mode.HasValue)
                 StarsDisplay.GameMode = mode.Value;
 
-            AimSpeedBar.LeftText = $"aim: {editor.AimRating:0.0}";
-            AimSpeedBar.RightText = $"spd: {editor.SpeedRating:0.0}";
-
-            bool enableSpeed = editor.StarRating != 0;
-            bool enableAim = (editor.AimRating != 0) && enableSpeed;
-
-            AimSpeedBar.LeftColor = enableAim ? Colors.Aim : Colors.Disabled;
-            AimSpeedBar.RightColor = enableSpeed ? Colors.Speed : Colors.Disabled;
-
-            if (enableSpeed)
-            {
-                decimal aimPercent = 100 * editor.AimRating / (editor.AimRating + editor.SpeedRating);
-                AimSpeedBar.LeftPercent = (int)aimPercent;
-            }
+            AimLabel.Text   = $"aim {editor.AimRating:0.0}";
+            SpeedLabel.Text = $"speed {editor.SpeedRating:0.0}";
         }
 
-        private void ToggleGenerateButton(object sender, EventArgs e)
+        private void TogglePrettyButtons(object sender, EventArgs e)
         {
             bool enabled = false;
             switch (editor.State)
@@ -462,16 +479,19 @@ namespace osu_trainer
                 case EditorState.READY:
                     enabled = editor.NewMapIsDifferent() ? true : false;
                     break;
-
                 case EditorState.NOT_READY:
                 case EditorState.GENERATING_BEATMAP:
                     enabled = false;
                     break;
             }
-            GenerateMapButton.Enabled = enabled;
-            GenerateMapButton.ForeColor = enabled ? Color.White : Color.DimGray;
-            GenerateMapButton.Color = GenerateMapButton.Enabled ? Colors.AccentPink : Colors.TextBoxBg;
-            GenerateMapButton.Text = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "Create Map";
+            GenerateMapButton.Enabled   = enabled;
+            GenerateMapButton.ForeColor = enabled ? Color.White : Colors.Disabled;
+            GenerateMapButton.Color     = enabled ? Colors.AccentPink2 : Colors.TextBoxBg;
+            GenerateMapButton.Text      = editor.State == EditorState.GENERATING_BEATMAP ? "Working..." : "Create Map";
+
+            ResetButton.Enabled   = enabled;
+            ResetButton.ForeColor = enabled ? Color.White : Colors.Disabled;
+            ResetButton.Color     = enabled ? Color.SteelBlue : Colors.TextBoxBg;
         }
 
         #endregion Callbacks for updating GUI controls
@@ -494,40 +514,22 @@ namespace osu_trainer
 
         private void OdLockCheck_CheckedChanged(object sender, EventArgs e) => editor.SetODLock(ODLockCheck.Checked);
 
-        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e) => editor.SetScaleAR(!editor.ScaleAR);
-
         private void ScaleODCheck_CheckedChanged(object sender, EventArgs e) => editor.SetScaleOD(!editor.ScaleOD);
+        private void ScaleARCheck_CheckedChanged(object sender, EventArgs e) => editor.SetScaleAR(!editor.ScaleAR);
 
         private void ChangePitchButton_CheckedChanged(object sender, EventArgs e) => editor.ToggleChangePitchSetting();
 
-        private void BpmMultiplierUpDown_ValueChanged(object sender, EventArgs e)
+        private void BpmMultiplierTextBox_Submit(object sender, EventArgs e)
         {
-            if (BpmMultiplierUpDown.Value != editor.BpmMultiplier)
-                editor.SetBpmMultiplier(BpmMultiplierUpDown.Value);
+            decimal mult;
+            if (Decimal.TryParse(BpmMultiplierTextBox.Text, out mult))
+                editor.SetBpmMultiplier(mult);
+            else
+                BpmMultiplierTextBox.Text = editor.BpmMultiplier.ToString("0.00");
+
         }
 
-        private void MainForm_KeyDown(object sender, KeyEventArgs e)
-        {
-            if (BpmMultiplierUpDown.Focused || NewBpmTextBox.Focused)
-                return;
-            if (e.KeyCode == Keys.D1)
-            {
-                ResetButton_Click(null, null);
-                ResetButton.Focus();
-            }
-            if (e.KeyCode == Keys.D2)
-            {
-                DeleteButton_Click(null, null);
-                DeleteButton.Focus();
-            }
-            if (e.KeyCode == Keys.D3 && GenerateMapButton.Enabled)
-            {
-                GenerateMapButton_Click(null, null);
-                GenerateMapButton.Focus();
-            }
-        }
-
-        private void NewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
+        private void ewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
                 e.Handled = true;
@@ -555,6 +557,11 @@ namespace osu_trainer
 
         private void DeleteButton_Click(object sender, EventArgs e)
         {
+            if (gameLoaded == true)
+            {
+                MessageBox.Show("Please close osu! first then try again.", "osu! is running");
+                return;
+            }
             var mp3List = editor.GetUnusedMp3s();
             if (new DeleteMp3sForm(mp3List).ShowDialog() == DialogResult.OK)
             {
@@ -664,40 +671,6 @@ namespace osu_trainer
 
         #endregion Timer events
 
-        #region Misc
-
-        public void PlayDoneSound()
-        {
-            sound.Stream = Properties.Resources.match_confirm;
-            sound.Play();
-        }
-
-        private string TruncateLabelText(string txt, Label label)
-        {
-            if (TextRenderer.MeasureText(txt, label.Font).Width > label.Width)
-            {
-                string truncated = txt;
-                while (TextRenderer.MeasureText(truncated, label.Font).Width > label.Width - 10)
-                    truncated = truncated.Substring(0, truncated.Length - 1);
-                truncated += "...";
-                return truncated;
-            }
-            return txt;
-        }
-
-        private Bitmap CropAndPanToFit(Image img, int destinationWidth, int destinationHeight)
-        {
-            Bitmap bmpImage = new Bitmap(img);
-            decimal aspectRatio = destinationWidth / destinationHeight;
-            int cropHeight = (int)(bmpImage.Width / aspectRatio);
-            // pan down to center image
-            int panDown = (bmpImage.Height - cropHeight) / 3;
-            // crop and pan via cloning
-            return bmpImage.Clone(new Rectangle(0, panDown, bmpImage.Width, cropHeight), bmpImage.PixelFormat);
-        }
-
-        #endregion Misc
-
         #region borderless window title bar
 
         private bool Drag;
@@ -732,7 +705,7 @@ namespace osu_trainer
 
         private void BackgroundWorker_ProgressChanged(object sender, ProgressChangedEventArgs e)
         {
-            GenerateMapButton.Progress = e.ProgressPercentage / 100f;
+            //GenerateMapButton.Progress = e.ProgressPercentage / 100f;
         }
 
         private void BackgroundWorker_DoWork(object sender, DoWorkEventArgs e)
@@ -748,39 +721,43 @@ namespace osu_trainer
             }
             else
             {
-                GenerateMapButton.Progress = 0f;
-                PlayDoneSound();
+                //GenerateMapButton.Progress = 0f;
             }
         }
 
         #endregion Background Worker
 
-        private void ThemeControls(Control.ControlCollection controls)
+        private void titlePanel_Paint(object sender, PaintEventArgs e)
         {
-            foreach (Control control in controls)
+            e.Graphics.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
+
+            Icon smallIcon = new Icon(this.Icon, 16, 16);
+            e.Graphics.DrawIcon(smallIcon, 10, 10);
+            e.Graphics.DrawString(Text, new Font(Font, FontStyle.Regular), Brushes.White, 10 + 16 + 4, 10);
+        }
+
+        private void NoSpinnerCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+            editor.ToggleNoSpinners();
+        }
+
+        private void BpmMultiplierTextBox_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
             {
-                if (control == closeButton || control == minimizeButton)
-                    continue;
-
-                ThemeControls(control.Controls);
-
-                if (control == StarsDisplay)
-                {
-                    control.Font = new Font(this.Font.FontFamily, 12, FontStyle.Bold, GraphicsUnit.Point);
-                }
-                else
-                {
-                    control.Font = this.Font;
-                }
+                BpmMultiplierTextBox_Submit(sender, e);
+                e.Handled = e.SuppressKeyPress = true; // silence annoying windows bell
             }
         }
 
-        private void titlePanel_Paint(object sender, PaintEventArgs e)
+        private void BpmSlider_ValueChanged(object sender, EventArgs e)
         {
-            e.Graphics.TextRenderingHint = TextRenderingHint.AntiAliasGridFit;
+            editor.SetBpmMultiplier(BpmSlider.Value);
+        }
 
-            e.Graphics.DrawIcon(Icon, new Rectangle(10, 8, 16, 16));
-            e.Graphics.DrawString(Text, Font, Brushes.White, 10 + 16 + 4, 10);
+        private void noSpinnerCheckBox_CheckedChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }

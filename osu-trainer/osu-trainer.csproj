@@ -190,6 +190,7 @@
     <None Include="resources\lock-solid.png" />
     <None Include="resources\catch.png" />
     <None Include="resources\mania.png" />
+    <Content Include="resources\glow.png" />
     <Content Include="resources\match-confirm.wav">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>

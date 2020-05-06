@@ -59,7 +59,7 @@ namespace osu_trainer.Controls
 			if (color != Color.Transparent)
 			{
 				var brush = new SolidBrush(color);
-				e.Graphics.FillEllipse(brush, 0, 0, SquareSize, SquareSize);
+				e.Graphics.FillEllipse(brush, 0, 0, SquareSize-1, SquareSize-1);
 			}
 
 			var image = Checked ? CheckedImage : UncheckedImage;

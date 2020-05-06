@@ -1,6 +1,10 @@
+using System;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Drawing.Text;
+using System.IO;
+using System.Reflection;
+using System.Resources;
 using System.Timers;
 using System.Windows.Forms;
 using FsBeatmapProcessor;
@@ -31,14 +35,15 @@ namespace osu_trainer.Controls
             get => gameMode;
             set
             {
-                updateIcon(gameMode = value, Colors.GetDifficultyColor(_stars));
+                updateIcon(gameMode = value, Enabled ? Colors.GetDifficultyColor(_stars) : Colors.Disabled);
                 Invalidate(false);
             }
         }
 
         private Image _icon;
+        private Image glow;
 
-        private const float AnimationSpeed = .125f;
+        private const float AnimationSpeed = .4f;
         private Timer _timer;
 
         private Color _lastColor = Color.Transparent;
@@ -48,14 +53,15 @@ namespace osu_trainer.Controls
         {
             DoubleBuffered = true;
 
+            glow = Properties.Resources.glow;
+
             _timer = new Timer()
             {
                 Interval = 33,
-                Enabled = true
             };
             _timer.Elapsed += TimerOnElapsed;
 
-            updateIcon(GameMode.osu, Colors.GetDifficultyColor(0));
+            updateIcon(GameMode.osu, Enabled ? Colors.GetDifficultyColor(0) : Colors.Disabled);
         }
 
         private void TimerOnElapsed(object sender, ElapsedEventArgs e)
@@ -68,7 +74,7 @@ namespace osu_trainer.Controls
             else if (_targetStars < _stars)
                 _stars -= (_stars - _targetStars) * AnimationSpeed;
 
-            updateIcon(gameMode, Colors.GetDifficultyColor(_stars));
+            updateIcon(gameMode, Enabled ? Colors.GetDifficultyColor(_stars) : Colors.Disabled);
 
             Invalidate(false);
         }
@@ -82,6 +88,12 @@ namespace osu_trainer.Controls
 
             e.Graphics.Clear(Parent.BackColor);
 
+            // draw glow for hardest difficulties
+            if (Stars >= 6.5)
+            {
+                e.Graphics.DrawImage(glow, Width - 19, 5);
+            }
+
             var x = Width;
 
             if (_icon != null)
@@ -94,15 +106,17 @@ namespace osu_trainer.Controls
             }
 
             var difficultyColor = Colors.GetDifficultyColor(Stars);
+            if (Stars >= 6.5)
+                difficultyColor = Color.White;
 
-            using (var textBrush = new SolidBrush(difficultyColor))
+            using (var textBrush = new SolidBrush(Enabled ? difficultyColor : Colors.Disabled))
             {
                 var text = $"{Stars:0.00}";
                 var rectangle = new RectangleF(4, 3, x - 4, Height - 3);
                 var format = new StringFormat
                 {
                     LineAlignment = StringAlignment.Center,
-                    Alignment = StringAlignment.Center,
+                    Alignment = StringAlignment.Far,
                 };
 
                 e.Graphics.DrawString(text, Font, textBrush, rectangle, format);
@@ -125,6 +139,7 @@ namespace osu_trainer.Controls
                     _icon = Icons.GenerateIcon(mode, color);
                 }
             }
+            Invalidate(false);
         }
     }
 }

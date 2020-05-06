@@ -38,7 +38,7 @@ namespace osu_trainer
 
     internal class BeatmapEditor
     {
-        private MainForm form;
+        private MainForm mainform;
         public BadBeatmapReason NotReadyReason;
 
         public Beatmap OriginalBeatmap;
@@ -91,11 +91,17 @@ namespace osu_trainer
         public bool ScaleOD { get; private set; } = true;
         internal EditorState State { get; private set; }
         public decimal BpmMultiplier { get; set; } = 1.0M;
-        public bool ChangePitch { get; private set; } = false;
+        public bool NoSpinners { get; private set; }
+        public bool ChangePitch { get; private set; }
 
         public BeatmapEditor(MainForm f)
         {
-            form = f;
+            mainform = f;
+
+            // Load previously saved settings
+            NoSpinners = Properties.Settings.Default.NoSpinners;
+            ChangePitch = Properties.Settings.Default.ChangePitch;
+
             SetState(EditorState.NOT_READY);
             NotReadyReason = BadBeatmapReason.NO_BEATMAP_LOADED;
         }
@@ -127,6 +133,8 @@ namespace osu_trainer
             // main phase
             Beatmap exportBeatmap = new Beatmap(NewBeatmap);
             ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch);
+            if (NoSpinners)
+                exportBeatmap.RemoveSpinners();
 
             var audioFilePath = Path.Combine(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap), exportBeatmap.AudioFilename);
             var newMp3 = "";
@@ -135,7 +143,7 @@ namespace osu_trainer
                 string inFile = Path.Combine(Path.GetDirectoryName(OriginalBeatmap.Filename), OriginalBeatmap.AudioFilename);
                 string outFile = Path.Combine(Path.GetDirectoryName(exportBeatmap.Filename), exportBeatmap.AudioFilename);
 
-                SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, form.BackgroundWorker, ChangePitch);
+                SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, mainform.BackgroundWorker, ChangePitch);
                 newMp3 = outFile;
 
                 // take note of this mp3 in a text file, so we can clean it up later
@@ -375,8 +383,8 @@ namespace osu_trainer
             State = s;
             Action action = () => StateChanged?.Invoke(this, EventArgs.Empty);
 
-            if (form.InvokeRequired)
-                form.Invoke(action);
+            if (mainform.InvokeRequired)
+                mainform.Invoke(action);
             else
                 action.Invoke();
         }
@@ -455,7 +463,7 @@ namespace osu_trainer
                 NewBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(OriginalBeatmap, BpmMultiplier);
                 BeatmapModified?.Invoke(this, EventArgs.Empty);
             }
-            ArIsLocked = false;
+            OdIsLocked = false;
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
@@ -509,6 +517,8 @@ namespace osu_trainer
         {
             if (BpmMultiplier == multiplier)
                 return;
+            else if (multiplier < 0.1M)
+                BeatmapModified?.Invoke(this, EventArgs.Empty); // reject this value and revert view
             else
                 BpmMultiplier = multiplier;
 
@@ -546,6 +556,16 @@ namespace osu_trainer
         public void ToggleChangePitchSetting()
         {
             ChangePitch = !ChangePitch;
+            Properties.Settings.Default.ChangePitch = ChangePitch;
+            Properties.Settings.Default.Save();
+            ControlsModified?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ToggleNoSpinners()
+        {
+            NoSpinners = !NoSpinners;
+            Properties.Settings.Default.NoSpinners = NoSpinners;
+            Properties.Settings.Default.Save();
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
@@ -565,7 +585,7 @@ namespace osu_trainer
                 NewBeatmap.CircleSize != OriginalBeatmap.CircleSize ||
                 NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate ||
                 NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty ||
-                BpmMultiplier != 1.0M
+                Math.Abs(BpmMultiplier - 1.0M) > 0.001M
             );
         }
 
@@ -639,6 +659,9 @@ namespace osu_trainer
             if (NewBeatmap.OverallDifficulty != GetScaledOD())
                 HPCSAROD += $" OD{NewBeatmap.OverallDifficulty:0.#}";
             map.Version += HPCSAROD;
+
+            if (NoSpinners)
+                map.Version += " nospin";
 
             // Beatmap File Name
             string artist  = JunUtils.NormalizeText(map.Artist);

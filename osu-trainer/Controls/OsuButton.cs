@@ -48,7 +48,7 @@ namespace osu_trainer.Controls
         private Color _color = Color.Transparent;
 
         [RefreshProperties(RefreshProperties.Repaint)]
-        public new Color Color
+        public Color Color
         {
             get => _color;
             set => _brushes = GenerateColors(_color = value);
@@ -57,7 +57,7 @@ namespace osu_trainer.Controls
         private Color _progressColor = Color.Transparent;
 
         [RefreshProperties(RefreshProperties.Repaint)]
-        public new Color ProgressColor
+        public Color ProgressColor
         {
             get => _progressColor;
             set => _progressBrushes = GenerateColors(_progressColor = value);
@@ -112,9 +112,9 @@ namespace osu_trainer.Controls
 
             // Animate hover effect opacity
             if (_isHover && _opacity < _hoverOpacity)
-                _opacity += 4;
+                _opacity += 16;
             else if (!_isHover && 0 < _opacity)
-                _opacity -= 2;
+                _opacity -= 5;
 
             // Process triangles
             foreach (var item in _triangles)
@@ -251,7 +251,7 @@ namespace osu_trainer.Controls
                 g.InterpolationMode = InterpolationMode.HighQualityBicubic;
                 g.PixelOffsetMode = PixelOffsetMode.HighQuality;
                 g.SmoothingMode = SmoothingMode.HighQuality;
-                g.TextRenderingHint = TextRenderingHint.AntiAlias;
+                g.TextRenderingHint = TextRenderingHint.ClearTypeGridFit;
 
                 g.SetClip(path);
                 g.Clear(Color);
@@ -281,7 +281,7 @@ namespace osu_trainer.Controls
                 else if (!string.IsNullOrWhiteSpace(Text))
                 {
                     g.DrawString(Text, Font, _shadowBrush, new Rectangle(0, 1, this.Width, this.Height), _format);
-                    g.DrawString(Text, Font, Brushes.White, rectangle, _format);
+                    g.DrawString(Text, Font, new SolidBrush(Enabled ? ForeColor : Colors.Disabled), rectangle, _format);
                 }
             }
             return frame;
@@ -295,8 +295,8 @@ namespace osu_trainer.Controls
             {
                 var points = triangle.ToPointF(Width, Height);
 
-                if (maxX <= points[0].X)
-                    continue;
+                //if (maxX <= points[0].X)
+                //    continue;
 
                 graphics.FillPolygon(brushes[triangle.Shade], points);
             }

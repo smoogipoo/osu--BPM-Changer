@@ -104,7 +104,7 @@ namespace osu_trainer.Controls
 
         private void DrawErrorMessage(Graphics graphics)
         {
-            using (var textBrush = new SolidBrush(Colors.AccentSalmon))
+            using (var textBrush = new SolidBrush(Colors.Salmon))
             {
                 var rectangle = new RectangleF(0, 0, Width, Height);
                 var format = new StringFormat()
@@ -135,10 +135,10 @@ namespace osu_trainer.Controls
                 LineAlignment = StringAlignment.Center
             };
 
-            rectangle.Y++;
+            rectangle.Y += 3;
             graphics.DrawString(Difficulty, _difficultyFont, shadowBrush, rectangle, difficultyFormat);
 
-            rectangle.Y--;
+            rectangle.Y -= 1;
             graphics.DrawString(Difficulty, _difficultyFont, Brushes.White, rectangle, difficultyFormat);
         }
 

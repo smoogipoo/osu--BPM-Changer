@@ -20,7 +20,7 @@ type TimingPoint =
     | Comment of string
 
 let isTimingPoint            = function TimingPoint _ -> true          | _ -> false
-let getTimingPoint           = function TimingPoint x -> x
+let getTimingPoint           = function TimingPoint x -> x             | _ -> { time = 0; beatLength = 0M; meter = 0; sampleSet = 0; sampleIndex = 0; volume = 0; uninherited = false; effects = 0; }
 let getTimingPointBeatLength = function TimingPoint x -> x.beatLength  | _ -> 0M
 
 let isNotTimingPointComment hobj =
@@ -47,7 +47,6 @@ let tryParseTimingPoint line : TimingPoint option =
             effects     = fx;
         }))
     | _ -> Some(Comment(line))
-    //else Some(Comment(line))
 
 let timingPointToString tp = 
     match tp with

@@ -59,9 +59,6 @@ namespace osu_trainer
 
             confirmButton.Focus();
 
-            // style
-
-            this.BackColor = Colors.FormBg;
         }
     }
 }

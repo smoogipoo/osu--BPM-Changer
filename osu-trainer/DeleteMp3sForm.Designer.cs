@@ -51,10 +51,12 @@ namespace osu_trainer
             // 
             this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.cancelButton.BrightnessRange = 0.01F;
-            this.cancelButton.Color = System.Drawing.Color.CornflowerBlue;
+            this.cancelButton.Color = System.Drawing.Color.DarkGray;
             this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.cancelButton.Location = new System.Drawing.Point(393, 250);
+            this.cancelButton.Location = new System.Drawing.Point(393, 276);
             this.cancelButton.Name = "cancelButton";
+            this.cancelButton.Progress = 0F;
+            this.cancelButton.ProgressColor = System.Drawing.Color.Transparent;
             this.cancelButton.Size = new System.Drawing.Size(75, 23);
             this.cancelButton.TabIndex = 0;
             this.cancelButton.Text = "Cancel";
@@ -65,7 +67,8 @@ namespace osu_trainer
             // 
             this.fileSizeLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
             this.fileSizeLabel.AutoSize = true;
-            this.fileSizeLabel.Location = new System.Drawing.Point(3, 251);
+            this.fileSizeLabel.ForeColor = System.Drawing.Color.Black;
+            this.fileSizeLabel.Location = new System.Drawing.Point(3, 277);
             this.fileSizeLabel.Name = "fileSizeLabel";
             this.fileSizeLabel.Size = new System.Drawing.Size(134, 15);
             this.fileSizeLabel.TabIndex = 1;
@@ -75,13 +78,15 @@ namespace osu_trainer
             // 
             this.confirmButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.confirmButton.BrightnessRange = 0.01F;
-            this.confirmButton.Color = System.Drawing.Color.IndianRed;
+            this.confirmButton.Color = System.Drawing.Color.Firebrick;
             this.confirmButton.DialogResult = System.Windows.Forms.DialogResult.OK;
-            this.confirmButton.Location = new System.Drawing.Point(474, 250);
+            this.confirmButton.Location = new System.Drawing.Point(474, 276);
             this.confirmButton.Name = "confirmButton";
+            this.confirmButton.Progress = 0F;
+            this.confirmButton.ProgressColor = System.Drawing.Color.Transparent;
             this.confirmButton.Size = new System.Drawing.Size(75, 23);
             this.confirmButton.TabIndex = 0;
-            this.confirmButton.Text = "Confirm";
+            this.confirmButton.Text = "Delete";
             this.confirmButton.TriangleCount = 30;
             this.confirmButton.UseVisualStyleBackColor = true;
             // 
@@ -95,15 +100,15 @@ namespace osu_trainer
             // 
             // textBox1
             // 
-            this.textBox1.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.textBox1.BackColor = System.Drawing.Color.WhiteSmoke;
             this.textBox1.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.textBox1.Dock = System.Windows.Forms.DockStyle.Top;
-            this.textBox1.ForeColor = System.Drawing.Color.White;
+            this.textBox1.ForeColor = System.Drawing.Color.Black;
             this.textBox1.Location = new System.Drawing.Point(0, 0);
             this.textBox1.Multiline = true;
             this.textBox1.Name = "textBox1";
             this.textBox1.ReadOnly = true;
-            this.textBox1.Size = new System.Drawing.Size(549, 28);
+            this.textBox1.Size = new System.Drawing.Size(549, 32);
             this.textBox1.TabIndex = 2;
             this.textBox1.Text = "When you delete generated beatmaps, their mp3s will appear here.\r\nTip: Try search" +
     "ing for \"osutrainer\" in game\r\n";
@@ -113,22 +118,22 @@ namespace osu_trainer
             this.fileListView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
             | System.Windows.Forms.AnchorStyles.Left) 
             | System.Windows.Forms.AnchorStyles.Right)));
-            this.fileListView.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(36)))), ((int)(((byte)(27)))), ((int)(((byte)(47)))));
+            this.fileListView.BackColor = System.Drawing.Color.WhiteSmoke;
             this.fileListView.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.fileListView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
             this.columnHeader1,
             this.columnHeader2,
             this.columnHeader3});
-            this.fileListView.ForeColor = System.Drawing.Color.White;
+            this.fileListView.ForeColor = System.Drawing.Color.Black;
             this.fileListView.FullRowSelect = true;
             this.fileListView.HideSelection = false;
             this.fileListView.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
             listViewItem1});
-            this.fileListView.Location = new System.Drawing.Point(0, 22);
+            this.fileListView.Location = new System.Drawing.Point(0, 38);
             this.fileListView.MultiSelect = false;
             this.fileListView.Name = "fileListView";
             this.fileListView.ShowGroups = false;
-            this.fileListView.Size = new System.Drawing.Size(549, 218);
+            this.fileListView.Size = new System.Drawing.Size(549, 228);
             this.fileListView.TabIndex = 3;
             this.fileListView.UseCompatibleStateImageBehavior = false;
             this.fileListView.View = System.Windows.Forms.View.Details;
@@ -156,9 +161,9 @@ namespace osu_trainer
             this.panel1.Controls.Add(this.label1);
             this.panel1.Controls.Add(this.confirmButton);
             this.panel1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.panel1.Location = new System.Drawing.Point(10, 6);
+            this.panel1.Location = new System.Drawing.Point(10, 10);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(549, 273);
+            this.panel1.Size = new System.Drawing.Size(549, 299);
             this.panel1.TabIndex = 1;
             // 
             // DeleteMp3sForm
@@ -166,13 +171,12 @@ namespace osu_trainer
             this.AcceptButton = this.confirmButton;
             this.AutoScaleDimensions = new System.Drawing.SizeF(96F, 96F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Dpi;
-            this.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(38)))), ((int)(((byte)(35)))), ((int)(((byte)(53)))));
+            this.BackColor = System.Drawing.Color.WhiteSmoke;
             this.CancelButton = this.cancelButton;
-            this.ClientSize = new System.Drawing.Size(569, 289);
+            this.ClientSize = new System.Drawing.Size(569, 319);
             this.Controls.Add(this.panel1);
             this.Font = new System.Drawing.Font("Segoe UI", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.ForeColor = System.Drawing.Color.White;
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
             this.MinimumSize = new System.Drawing.Size(350, 160);
             this.Name = "DeleteMp3sForm";
             this.Padding = new System.Windows.Forms.Padding(10);

@@ -34,5 +34,29 @@ namespace osu_trainer.Properties {
                 this["SongsFolder"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool NoSpinners {
+            get {
+                return ((bool)(this["NoSpinners"]));
+            }
+            set {
+                this["NoSpinners"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ChangePitch {
+            get {
+                return ((bool)(this["ChangePitch"]));
+            }
+            set {
+                this["ChangePitch"] = value;
+            }
+        }
     }
 }
