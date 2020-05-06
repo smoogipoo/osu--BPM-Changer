@@ -60,6 +60,8 @@ namespace osu_trainer
 
             worker.ReportProgress(67);
 
+            if (File.Exists(outFile))
+                File.Delete(outFile);
             File.Copy(temp4, outFile);
             worker.ReportProgress(83);
 

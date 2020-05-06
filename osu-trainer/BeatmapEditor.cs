@@ -51,6 +51,7 @@ namespace osu_trainer
         private decimal lockedCS = 0M;
         private decimal lockedAR = 0M;
         private decimal lockedOD = 0M;
+        private int lockedBpm = 200;
 
         private class ConcurrentRequest
         {
@@ -87,6 +88,7 @@ namespace osu_trainer
         public bool CsIsLocked { get; private set; } = false;
         public bool ArIsLocked { get; private set; } = false;
         public bool OdIsLocked { get; private set; } = false;
+        public bool BpmIsLocked { get; private set; } = false;
         public bool ScaleAR { get; private set; } = true;
         public bool ScaleOD { get; private set; } = true;
         internal EditorState State { get; private set; }
@@ -141,7 +143,7 @@ namespace osu_trainer
             if (!File.Exists(audioFilePath))
             {
                 string inFile = Path.Combine(Path.GetDirectoryName(OriginalBeatmap.Filename), OriginalBeatmap.AudioFilename);
-                string outFile = Path.Combine(Path.GetDirectoryName(exportBeatmap.Filename), exportBeatmap.AudioFilename);
+                string outFile = Path.Combine(Path.GetTempPath(), exportBeatmap.AudioFilename);
 
                 SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, mainform.BackgroundWorker, ChangePitch);
                 newMp3 = outFile;
@@ -322,6 +324,7 @@ namespace osu_trainer
                     if (CsIsLocked) NewBeatmap.CircleSize = lockedCS;
                     if (ArIsLocked) NewBeatmap.ApproachRate = lockedAR;
                     if (OdIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
+                    if (BpmIsLocked) SetBpm(lockedBpm);
 
                     SetState(EditorState.READY);
                     RequestDiffCalc();
@@ -424,9 +427,9 @@ namespace osu_trainer
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetARLock(bool locked)
+        public void ToggleArLock()
         {
-            ArIsLocked = locked;
+            ArIsLocked = !ArIsLocked;
             if (ArIsLocked)
                 ScaleAR = false;
             else
@@ -481,10 +484,10 @@ namespace osu_trainer
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetHPLock(bool locked)
+        public void ToggleHpLock()
         {
-            HpIsLocked = locked;
-            if (!locked)
+            HpIsLocked = !HpIsLocked;
+            if (!HpIsLocked)
             {
                 NewBeatmap.HPDrainRate = OriginalBeatmap.HPDrainRate;
                 BeatmapModified?.Invoke(this, EventArgs.Empty);
@@ -492,10 +495,10 @@ namespace osu_trainer
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetCSLock(bool locked)
+        public void ToggleCsLock()
         {
-            CsIsLocked = locked;
-            if (!locked)
+            CsIsLocked = !CsIsLocked;
+            if (!CsIsLocked)
             {
                 NewBeatmap.CircleSize = OriginalBeatmap.CircleSize;
                 BeatmapModified?.Invoke(this, EventArgs.Empty);
@@ -503,9 +506,20 @@ namespace osu_trainer
             ControlsModified?.Invoke(this, EventArgs.Empty);
         }
 
-        public void SetODLock(bool locked)
+        public void ToggleBpmLock()
         {
-            OdIsLocked = locked;
+            BpmIsLocked = !BpmIsLocked;
+            if (BpmIsLocked && NewBeatmap != null)
+            {
+                lockedBpm = (int)NewBeatmap.Bpm;
+                BeatmapModified?.Invoke(this, EventArgs.Empty);
+            }
+            ControlsModified?.Invoke(this, EventArgs.Empty);
+        }
+
+        public void ToggleOdLock()
+        {
+            OdIsLocked = !OdIsLocked;
             if (OdIsLocked)
                 ScaleOD = false;
             else
@@ -515,12 +529,31 @@ namespace osu_trainer
 
         public void SetBpmMultiplier(decimal multiplier)
         {
+            ApplyBpmMultiplier(multiplier);
+        }
+
+        public void SetBpm(int bpm)
+        {
+            if (BpmIsLocked)
+                lockedBpm = bpm;
+
+            decimal originalBpm = GetOriginalBpmData().Item1;
+            if (originalBpm == 0)
+                return;
+
+            decimal newMultiplier = bpm / originalBpm;
+            newMultiplier = JunUtils.Clamp(newMultiplier, 0.1M, 5.0M);
+            ApplyBpmMultiplier(newMultiplier);
+        }
+
+        private void ApplyBpmMultiplier(decimal multiplier)
+        {
             if (BpmMultiplier == multiplier)
                 return;
-            else if (multiplier < 0.1M)
+            if (multiplier < 0.1M)
                 BeatmapModified?.Invoke(this, EventArgs.Empty); // reject this value and revert view
-            else
-                BpmMultiplier = multiplier;
+
+            BpmMultiplier = multiplier;
 
             // make no changes
             if (State == EditorState.NOT_READY)
@@ -539,18 +572,6 @@ namespace osu_trainer
 
             RequestDiffCalc();
             BeatmapModified?.Invoke(this, EventArgs.Empty);
-        }
-
-        public void SetBpm(int bpm)
-        {
-            decimal originalBpm = GetOriginalBpmData().Item1;
-
-            if (originalBpm == 0)
-                return;
-
-            decimal newMultiplier = bpm / originalBpm;
-            newMultiplier = JunUtils.Clamp(newMultiplier, 0.1M, 5.0M);
-            SetBpmMultiplier(newMultiplier);
         }
 
         public void ToggleChangePitchSetting()

@@ -34,7 +34,7 @@ namespace osu_trainer
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
             this.BeatmapUpdateTimer = new System.Windows.Forms.Timer(this.components);
             this.Panel3 = new System.Windows.Forms.Panel();
-            this.toggleIconButton2 = new osu_trainer.Controls.ToggleIconButton();
+            this.BpmLockCheck = new osu_trainer.Controls.ToggleIconButton();
             this.BpmSlider = new osu_trainer.OptionSlider();
             this.ChangePitchCheck = new osu_trainer.Controls.OsuCheckBox();
             this.ScaleODCheck = new osu_trainer.Controls.OsuCheckBox();
@@ -97,7 +97,7 @@ namespace osu_trainer
             // 
             // Panel3
             // 
-            this.Panel3.Controls.Add(this.toggleIconButton2);
+            this.Panel3.Controls.Add(this.BpmLockCheck);
             this.Panel3.Controls.Add(this.BpmSlider);
             this.Panel3.Controls.Add(this.ChangePitchCheck);
             this.Panel3.Controls.Add(this.ScaleODCheck);
@@ -118,16 +118,16 @@ namespace osu_trainer
             this.Panel3.TabIndex = 7;
             this.Panel3.Click += new System.EventHandler(this.Unfocus);
             // 
-            // toggleIconButton2
+            // BpmLockCheck
             // 
-            this.toggleIconButton2.CheckedImage = global::osu_trainer.Properties.Resources.lock_solid;
-            this.toggleIconButton2.Location = new System.Drawing.Point(136, 54);
-            this.toggleIconButton2.Name = "toggleIconButton2";
-            this.toggleIconButton2.Size = new System.Drawing.Size(21, 21);
-            this.toggleIconButton2.TabIndex = 15;
-            this.toggleIconButton2.UncheckedImage = global::osu_trainer.Properties.Resources.unlock_solid;
-            this.toggleIconButton2.UseVisualStyleBackColor = true;
-            this.toggleIconButton2.CheckedChanged += new System.EventHandler(this.OdLockCheck_CheckedChanged);
+            this.BpmLockCheck.CheckedImage = global::osu_trainer.Properties.Resources.lock_solid;
+            this.BpmLockCheck.Location = new System.Drawing.Point(136, 54);
+            this.BpmLockCheck.Name = "BpmLockCheck";
+            this.BpmLockCheck.Size = new System.Drawing.Size(21, 21);
+            this.BpmLockCheck.TabIndex = 15;
+            this.BpmLockCheck.UncheckedImage = global::osu_trainer.Properties.Resources.unlock_solid;
+            this.BpmLockCheck.UseVisualStyleBackColor = true;
+            this.BpmLockCheck.CheckedChanged += new System.EventHandler(this.BpmLockCheck_CheckedChanged);
             // 
             // BpmSlider
             // 
@@ -988,6 +988,6 @@ namespace osu_trainer
         private OptionSlider BpmSlider;
         private System.Windows.Forms.Label AimLabel;
         private System.Windows.Forms.Label SpeedLabel;
-        private ToggleIconButton toggleIconButton2;
+        private ToggleIconButton BpmLockCheck;
     }
 }
