@@ -1,17 +1,13 @@
-﻿using FsBeatmapProcessor;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace osu_trainer
 {
-    class SongSpeedChanger
+    internal class SongSpeedChanger
     {
-        public static void GenerateAudioFile(string inFile, string outFile, decimal multiplier, bool changePitch=false)
+        public static void GenerateAudioFile(string inFile, string outFile, decimal multiplier, BackgroundWorker worker, bool changePitch = false)
         {
             if (multiplier == 1)
                 throw new ArgumentException("Don't call this function if multiplier is 1.0x");
@@ -22,7 +18,9 @@ namespace osu_trainer
             string temp4 = JunUtils.GetTempFilename("mp3"); // encoded mp3
 
             // TODO: try catch
-            CopyFile(inFile, temp1);
+            File.Copy(inFile, temp1);
+
+            worker.ReportProgress(17);
 
             // mp3 => wav
             Process lame1 = new Process();
@@ -32,6 +30,8 @@ namespace osu_trainer
             lame1.StartInfo.CreateNoWindow = true;
             lame1.Start();
             lame1.WaitForExit();
+
+            worker.ReportProgress(33);
 
             // stretch (or speed up) wav
             decimal cents = (decimal)(1200.0 * Math.Log((double)multiplier) / Math.Log(2));
@@ -47,6 +47,8 @@ namespace osu_trainer
             soundstretch.Start();
             soundstretch.WaitForExit();
 
+            worker.ReportProgress(50);
+
             // wav => mp3
             Process lame2 = new Process();
             lame2.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "lame.exe");
@@ -56,22 +58,17 @@ namespace osu_trainer
             lame2.Start();
             lame2.WaitForExit();
 
-            CopyFile(temp4, outFile);
+            worker.ReportProgress(67);
+
+            File.Copy(temp4, outFile);
+            worker.ReportProgress(83);
 
             // Clean up
             File.Delete(temp1);
             File.Delete(temp2);
             File.Delete(temp3);
             File.Delete(temp4);
-        }
-
-        public static void CopyFile(string src, string dst)
-        {
-            using (FileStream srcStream = new FileStream(src, FileMode.Open, FileAccess.Read, FileShare.ReadWrite))
-            using (FileStream dstStream = new FileStream(dst, FileMode.Create))
-            {
-                srcStream.CopyTo(dstStream);
-            }
+            worker.ReportProgress(100);
         }
     }
 }

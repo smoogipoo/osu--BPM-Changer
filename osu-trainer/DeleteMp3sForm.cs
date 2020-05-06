@@ -35,7 +35,8 @@ namespace osu_trainer
                 }
                 return String.Format("{0:0.##} {1}", value, sizes[order]);
             }
-            ListViewItem fileToListViewItem(string file) {
+            ListViewItem fileToListViewItem(string file)
+            {
                 string[] subitems = new string[3];
                 FileInfo fi = new FileInfo(JunUtils.FullPathFromSongsFolder(file));
 
@@ -57,7 +58,10 @@ namespace osu_trainer
             fileSizeLabel.Text = $"Total: {formatFileSize(totalSize)} to be deleted";
 
             confirmButton.Focus();
-        }
 
+            // style
+
+            this.BackColor = Colors.FormBg;
+        }
     }
 }
