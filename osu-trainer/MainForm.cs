@@ -467,8 +467,8 @@ namespace osu_trainer
             if (mode.HasValue)
                 StarsDisplay.GameMode = mode.Value;
 
-            AimLabel.Text   = $"aim {editor.AimRating:0.0}";
-            SpeedLabel.Text = $"speed {editor.SpeedRating:0.0}";
+            AimLabel.Text   = $"{editor.AimRating:0.0} aim";
+            SpeedLabel.Text = $"{editor.SpeedRating:0.0} speed";
         }
 
         private void TogglePrettyButtons(object sender, EventArgs e)

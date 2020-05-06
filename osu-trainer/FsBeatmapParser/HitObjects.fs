@@ -126,11 +126,16 @@ let tryParseHitObject line : HitObject option =
         | _ -> Some(Comment(line))
     | _ -> Some(Comment(line))
 
+let commaString r =
+    if r = ""
+    then ""
+    else "," + r
+
 let hitObjectToString obj = 
     match obj with
-    | HitCircle c     -> sprintf "%d,%d,%d,%d,%d,%s"    c.x c.y c.time c.typeval c.hitSound c.remainder
-    | Slider s        -> sprintf "%d,%d,%d,%d,%d,%s"    s.x s.y s.time s.typeval s.hitSound s.remainder
-    | Spinner s       -> sprintf "%d,%d,%d,%d,%d,%d,%s" s.x s.y s.time s.typeval s.hitSound s.endTime s.remainder
+    | HitCircle c     -> sprintf "%d,%d,%d,%d,%d%s"    c.x c.y c.time c.typeval c.hitSound (commaString c.remainder)
+    | Slider s        -> sprintf "%d,%d,%d,%d,%d%s"    s.x s.y s.time s.typeval s.hitSound (commaString s.remainder)
+    | Spinner s       -> sprintf "%d,%d,%d,%d,%d,%d%s" s.x s.y s.time s.typeval s.hitSound s.endTime (commaString s.remainder)
     | Hold h          -> sprintf "%d,%d,%d,%d,%d,%d:%s" h.x h.y h.time h.typeval h.hitSound h.endTime h.remainder
     | Comment comment -> comment
 
