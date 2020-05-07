@@ -46,6 +46,17 @@ let tryParseTimingPoint line : TimingPoint option =
             uninherited = ui;
             effects     = fx;
         }))
+    | [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v] -> // v5 doesn't have inherited timing points or effects
+        Some(TimingPoint({
+            time        = int t; // some maps save this as decimal...
+            beatLength  = bl;
+            meter       = m;
+            sampleSet   = ss;
+            sampleIndex = si;
+            volume      = v;
+            uninherited = true;
+            effects     = 0;
+        }))
     | _ -> Some(Comment(line))
 
 let timingPointToString tp = 
