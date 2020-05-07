@@ -16,11 +16,12 @@ namespace osu_trainer
         public DeleteMp3sForm(List<string> filesToDelete)
         {
             InitializeComponent();
+            List<string> uniqueFilesToDelete = filesToDelete.Distinct().ToList();
 
             // filter out files that don't exist
             Dictionary<string, string> pathMapping = new Dictionary<string, string>();
-            filesToDelete.ForEach(file => pathMapping.Add(file, JunUtils.FullPathFromSongsFolder(file)));
-            List<string> relativeFileList = filesToDelete.Where(file => File.Exists(JunUtils.FullPathFromSongsFolder(file))).ToList();
+            uniqueFilesToDelete.ForEach(file => pathMapping.Add(file, JunUtils.FullPathFromSongsFolder(file)));
+            List<string> relativeFileList = uniqueFilesToDelete.Where(file => File.Exists(JunUtils.FullPathFromSongsFolder(file))).ToList();
 
             // populate listview
             string formatFileSize(long len)

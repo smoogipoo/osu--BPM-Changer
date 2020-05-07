@@ -124,6 +124,13 @@ namespace osu_trainer
 
         public void ForceEventControlsModified() => ControlsModified?.Invoke(this, EventArgs.Empty);
 
+        private Beatmap BeatmapConstructorWrapper(string beatmapFilename)
+        {
+            Beatmap newBeatmap = new Beatmap(beatmapFilename);
+            if (newBeatmap.ApproachRate == -1M)
+                newBeatmap.ApproachRate = newBeatmap.OverallDifficulty;　// i can't believe this is how old maps used to work...
+            return newBeatmap;
+        }
         public void GenerateBeatmap()
         {
             if (State != EditorState.READY)
@@ -240,6 +247,8 @@ namespace osu_trainer
             // create dictionary keys
             lines
                 .Select(line => parseMp3(line)).ToList()
+                .Distinct()
+                .ToList()
                 .ForEach(mp3 => mp3Dict.Add(mp3, new List<string>()));
 
             // populate dictionary values
@@ -633,7 +642,7 @@ namespace osu_trainer
             Beatmap retMap;
             try
             {
-                retMap = new Beatmap(beatmapPath);
+                retMap = BeatmapConstructorWrapper(beatmapPath);
             }
             catch
             {
@@ -655,7 +664,7 @@ namespace osu_trainer
                 // Try to find original unmodified version
                 foreach (string diff in Directory.GetFiles(Path.GetDirectoryName(retMap.Filename), "*.osu"))
                 {
-                    Beatmap map = new Beatmap(diff);
+                    Beatmap map = BeatmapConstructorWrapper(diff);
                     if (!map.Tags.Contains("osutrainer") && map.BeatmapID == retMap.BeatmapID)
                     {
                         retMap = map;

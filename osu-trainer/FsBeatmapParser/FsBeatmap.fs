@@ -319,23 +319,23 @@ type Beatmap(file, repr, cl) =
 
     (* Difficulty Settings *)
     member public this.HPDrainRate
-        with get()             = this.difficultyTryGetOr isHPDrainRate getHPDrainRate 0M
+        with get()             = this.difficultyTryGetOr isHPDrainRate getHPDrainRate -1M
         and  set(x:decimal)    = this.changelist <- {this.changelist with difficulty=(HPDrainRate(x)::this.changelist.difficulty)}
 
     member public this.CircleSize
-        with get()             = this.difficultyTryGetOr isCircleSize getCircleSize 0M
+        with get()             = this.difficultyTryGetOr isCircleSize getCircleSize -1M
         and  set(x:decimal)    = this.changelist <- {this.changelist with difficulty=(CircleSize(x)::this.changelist.difficulty)}
             
     member public this.OverallDifficulty
-        with get()             = this.difficultyTryGetOr isOverallDifficulty getOverallDifficulty 0M
+        with get()             = this.difficultyTryGetOr isOverallDifficulty getOverallDifficulty -1M
         and  set(x:decimal)    = this.changelist <- {this.changelist with difficulty=(OverallDifficulty(x)::this.changelist.difficulty)}
             
     member public this.ApproachRate
-        with get()             = this.difficultyTryGetOr isApproachRate getApproachRate 0M
+        with get()             = this.difficultyTryGetOr isApproachRate getApproachRate -1M
         and  set(x:decimal)    = this.changelist <- {this.changelist with difficulty=(ApproachRate(x)::this.changelist.difficulty)}
             
     member public this.SliderTickRate
-        with get()             = this.difficultyTryGetOr isSliderTickRate getSliderTickRate 0M
+        with get()             = this.difficultyTryGetOr isSliderTickRate getSliderTickRate -1M
         and  set(x:decimal)    = this.changelist <- {this.changelist with difficulty=(SliderTickRate(x)::this.changelist.difficulty)}
 
 
