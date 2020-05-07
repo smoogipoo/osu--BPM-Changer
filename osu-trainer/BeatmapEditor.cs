@@ -184,7 +184,10 @@ namespace osu_trainer
             {
                 archive.CreateEntryFromFile(newBeatmapFile, Path.GetFileName(newBeatmapFile));
                 if (newMp3 != "")
+                {
                     archive.CreateEntryFromFile(newMp3, Path.GetFileName(newMp3));
+                    File.Delete(newMp3);
+                }
             }
             // 3. Run the .osz
             Process proc = new Process();
@@ -588,6 +591,7 @@ namespace osu_trainer
             Properties.Settings.Default.NoSpinners = NoSpinners;
             Properties.Settings.Default.Save();
             ControlsModified?.Invoke(this, EventArgs.Empty);
+            BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
 
         public GameMode? GetMode()
@@ -606,7 +610,8 @@ namespace osu_trainer
                 NewBeatmap.CircleSize != OriginalBeatmap.CircleSize ||
                 NewBeatmap.ApproachRate != OriginalBeatmap.ApproachRate ||
                 NewBeatmap.OverallDifficulty != OriginalBeatmap.OverallDifficulty ||
-                Math.Abs(BpmMultiplier - 1.0M) > 0.001M
+                Math.Abs(BpmMultiplier - 1.0M) > 0.001M ||
+                NoSpinners
             );
         }
 

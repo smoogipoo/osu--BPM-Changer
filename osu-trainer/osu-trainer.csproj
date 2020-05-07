@@ -191,10 +191,7 @@
     <None Include="resources\catch.png" />
     <None Include="resources\mania.png" />
     <Content Include="resources\glow.png" />
-    <Content Include="resources\match-confirm.wav">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <None Include="resources\match_confirm.wav" />
+    <None Include="resources\hotkey.wav" />
     <Content Include="resources\nobg.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -233,6 +230,10 @@
     <ProjectReference Include="FsBeatmapParser\FsBeatmapProcessor.fsproj">
       <Project>{85dd50fb-a4e8-4124-8379-c2b95333d007}</Project>
       <Name>FsBeatmapProcessor</Name>
+    </ProjectReference>
+    <ProjectReference Include="globalKeyboardHook\key preview.csproj">
+      <Project>{8340f8a9-185e-48d4-b544-3809c10cbd62}</Project>
+      <Name>key preview</Name>
     </ProjectReference>
     <ProjectReference Include="OsuMemoryDataProvider\OsuMemoryDataProvider.csproj">
       <Project>{d117800f-072d-4ae4-9679-3e2a129a1a3c}</Project>

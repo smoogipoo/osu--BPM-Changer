@@ -34,6 +34,11 @@ namespace osu_trainer.Controls
             Alignment = StringAlignment.Center,
             LineAlignment = StringAlignment.Center
         };
+        private static readonly StringFormat _formatSubtext = new StringFormat()
+        {
+            Alignment = StringAlignment.Center,
+            LineAlignment = StringAlignment.Near
+        };
 
         private static readonly Brush _shadowBrush = new SolidBrush(Color.FromArgb(64, 0, 0, 0));
 
@@ -45,6 +50,9 @@ namespace osu_trainer.Controls
         [RefreshProperties(RefreshProperties.Repaint)]
         public int TriangleCount { get; set; } = 30;
 
+        [RefreshProperties(RefreshProperties.Repaint)]
+        public string Subtext { get; set; } = "";
+
         private Color _color = Color.Transparent;
 
         [RefreshProperties(RefreshProperties.Repaint)]
@@ -53,6 +61,15 @@ namespace osu_trainer.Controls
             get => _color;
             set => _brushes = GenerateColors(_color = value);
         }
+
+        [
+            RefreshProperties(RefreshProperties.Repaint),
+            Description("Adjusts the vertical position of the text")
+        ]
+        public int TextYOffset { get; set; } = 0;
+
+        [RefreshProperties(RefreshProperties.Repaint)]
+        public Color SubtextColor { get; set; }
 
         private Color _progressColor = Color.Transparent;
 
@@ -280,9 +297,41 @@ namespace osu_trainer.Controls
                 }
                 else if (!string.IsNullOrWhiteSpace(Text))
                 {
-                    g.DrawString(Text, Font, _shadowBrush, new Rectangle(0, 1, this.Width, this.Height), _format);
-                    g.DrawString(Text, Font, new SolidBrush(Enabled ? ForeColor : Colors.Disabled), rectangle, _format);
+                    g.DrawString(
+                        Text,
+                        Font,
+                        _shadowBrush,
+                        new Rectangle(0, TextYOffset + 1, this.Width, this.Height),
+                        _format
+                    );
+                    g.DrawString(
+                        Text,
+                        Font,
+                        new SolidBrush(Enabled ? ForeColor : Colors.Disabled),
+                        new Rectangle(0, TextYOffset, this.Width, this.Height),
+                        _format
+                    );
+
+                    if (!string.IsNullOrWhiteSpace(Subtext))
+                    {
+                        int offsetY = 37;
+                        g.DrawString(
+                            Subtext,
+                            new Font(this.Font.FontFamily, 7f),
+                            _shadowBrush,
+                            new Rectangle(0, TextYOffset + offsetY + 1, this.Width, this.Height),
+                            _formatSubtext
+                        );
+                        g.DrawString(
+                            Subtext,
+                            new Font(this.Font.FontFamily, 7f),
+                            new SolidBrush(Enabled ? SubtextColor : Colors.Disabled),
+                            new Rectangle(0, TextYOffset + offsetY + 1, this.Width, this.Height),
+                            _formatSubtext
+                        );
+                    }
                 }
+
             }
             return frame;
         }

@@ -91,6 +91,15 @@ namespace osu_trainer.Properties {
         }
         
         /// <summary>
+        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
+        /// </summary>
+        internal static System.IO.UnmanagedMemoryStream hotkey {
+            get {
+                return ResourceManager.GetStream("hotkey", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
         internal static System.Drawing.Bitmap lock_solid {
@@ -107,15 +116,6 @@ namespace osu_trainer.Properties {
             get {
                 object obj = ResourceManager.GetObject("mania", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
-            }
-        }
-        
-        /// <summary>
-        ///   Looks up a localized resource of type System.IO.UnmanagedMemoryStream similar to System.IO.MemoryStream.
-        /// </summary>
-        internal static System.IO.UnmanagedMemoryStream match_confirm {
-            get {
-                return ResourceManager.GetStream("match_confirm", resourceCulture);
             }
         }
         

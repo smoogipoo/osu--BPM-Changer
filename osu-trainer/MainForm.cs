@@ -16,6 +16,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Utilities;
 
 namespace osu_trainer
 {
@@ -39,8 +40,8 @@ namespace osu_trainer
 
         // Single Object Instances
         private readonly SoundPlayer sound = new SoundPlayer();
-
         private readonly BeatmapEditor editor;
+        private readonly globalKeyboardHook kbhook = new globalKeyboardHook();
 
         // other
         private string previousBeatmapRead;
@@ -104,6 +105,11 @@ namespace osu_trainer
             editor.ForceEventStateChanged();
             editor.ForceEventBeatmapSwitched();
             editor.ForceEventControlsModified();
+
+            // Install keyboard hooks
+            // (note! this is only for the create map hotkey!!)
+            kbhook.HookedKeys.Add(Keys.C);
+            kbhook.KeyDown += new KeyEventHandler(CreateMapHotkeyHandler);
 
             BeatmapUpdateTimer.Start();
             OsuRunningTimer.Start();
@@ -598,6 +604,20 @@ namespace osu_trainer
         private void GenerateMapButton_Click(object sender, EventArgs e) => BackgroundWorker.RunWorkerAsync();
 
         private void Unfocus(object sender, EventArgs e) => ActiveControl = Panel3;
+
+        private void CreateMapHotkeyHandler(object sender, EventArgs e)
+        {
+            var k = (KeyEventArgs)e;
+            if (k.Control && k.Alt && k.Shift)
+            {
+                if (GenerateMapButton.Enabled)
+                {
+                    sound.Stream = Properties.Resources.hotkey;
+                    sound.Play();
+                    GenerateMapButton_Click(sender, EventArgs.Empty);
+                }
+            }
+        }
 
         #endregion User input event handlers
 
