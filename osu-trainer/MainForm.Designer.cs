@@ -418,6 +418,7 @@ namespace osu_trainer
             this.minimizeButton.TabIndex = 3;
             this.minimizeButton.Text = "🗕";
             this.minimizeButton.UseVisualStyleBackColor = false;
+            this.minimizeButton.Click += new System.EventHandler(this.minimizeButton_Click);
             // 
             // titlePanel
             // 
@@ -891,7 +892,7 @@ namespace osu_trainer
             this.GenerateMapButton.Progress = 0F;
             this.GenerateMapButton.ProgressColor = System.Drawing.Color.SpringGreen;
             this.GenerateMapButton.Size = new System.Drawing.Size(271, 62);
-            this.GenerateMapButton.Subtext = "Ctrl+Alt+Shift+C";
+            this.GenerateMapButton.Subtext = "Ctrl+Alt+Shift+X";
             this.GenerateMapButton.SubtextColor = System.Drawing.Color.Plum;
             this.GenerateMapButton.TabIndex = 0;
             this.GenerateMapButton.Text = "Create Map";

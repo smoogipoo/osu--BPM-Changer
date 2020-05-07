@@ -108,7 +108,7 @@ namespace osu_trainer
 
             // Install keyboard hooks
             // (note! this is only for the create map hotkey!!)
-            kbhook.HookedKeys.Add(Keys.C);
+            kbhook.HookedKeys.Add(Keys.X);
             kbhook.KeyDown += new KeyEventHandler(CreateMapHotkeyHandler);
 
             BeatmapUpdateTimer.Start();
@@ -554,12 +554,6 @@ namespace osu_trainer
 
         }
 
-        private void ewBpmTextBox_KeyPress(object sender, KeyPressEventArgs e)
-        {
-            if (!char.IsControl(e.KeyChar) && !char.IsDigit(e.KeyChar))
-                e.Handled = true;
-        }
-
         private void NewBpmTextBox_Submit()
         {
             int bpm;
@@ -625,7 +619,7 @@ namespace osu_trainer
 
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (gameLoaded == false || gameLoaded == null)
+            if (gameLoaded == false || gameLoaded == null || editor.State == EditorState.GENERATING_BEATMAP)
                 return;
 
             // this can be cleaned up...

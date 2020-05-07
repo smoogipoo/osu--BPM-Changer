@@ -203,7 +203,17 @@ namespace osu_trainer
             return "";
         }
 
-        private string GetMp3ListFilePath() => Path.Combine(Properties.Settings.Default.SongsFolder, "modified_mp3_list.txt");
+        private string GetMp3ListFilePath()
+        {
+            string manifest = Path.Combine(Properties.Settings.Default.SongsFolder, "modified_mp3_list.txt");
+            if (!File.Exists(manifest))
+            {
+                FileStream fs = File.Open(manifest, FileMode.OpenOrCreate, FileAccess.ReadWrite, FileShare.ReadWrite);
+                fs.Close();
+                fs.Dispose();
+            }
+            return manifest;
+        }
 
         public List<string> GetUnusedMp3s()
         {
