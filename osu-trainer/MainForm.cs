@@ -49,6 +49,17 @@ namespace osu_trainer
         private int beatmapFindFailCounter = 0;
         private bool? gameLoaded = null;
 
+        #region DEBUG
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            //AllocConsole();
+        }
+
+        //[DllImport("kernel32.dll", SetLastError = true)]
+        //[return: MarshalAs(UnmanagedType.Bool)]
+        //static extern bool AllocConsole();
+        #endregion
+
         public MainForm()
         {
             InitializeComponent();
@@ -258,7 +269,11 @@ namespace osu_trainer
                 case EditorState.READY:
                 case EditorState.GENERATING_BEATMAP:
                     (decimal oldbpm, decimal oldmin, decimal oldmax) = editor.GetOriginalBpmData();
-                    (decimal newbpm, decimal newmin, decimal newmax) = editor.GetNewBpmData();
+                    decimal newbpm, newmin, newmax;
+                    if (Math.Abs(editor.BpmMultiplier - 1.0M) > 0.001M)
+                        (newbpm, newmin, newmax) = editor.GetNewBpmData();
+                    else
+                        (newbpm, newmin, newmax) = (oldbpm, oldmin, oldmax);
 
                     // bpm textboxes
                     OriginalBpmTextBox.Text = Math.Round(oldbpm).ToString("0");

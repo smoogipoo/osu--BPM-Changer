@@ -935,6 +935,7 @@ namespace osu_trainer
             this.MaximizeBox = false;
             this.Name = "MainForm";
             this.Text = "osu trainer v1.2";
+            this.Load += new System.EventHandler(this.Form1_Load);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
             this.Middle1Panel.ResumeLayout(false);

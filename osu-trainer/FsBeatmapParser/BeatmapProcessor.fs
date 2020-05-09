@@ -97,8 +97,7 @@ let parseSections (sections: list<list<string>> ) =
             sections |> List.filter (headerIs "Colours")      |> List.concat;
             sections |> List.filter (headerIs "HitObjects")   |> List.concat;
         ]
-
-    {
+    let ret = {
         general      = parseGeneralSection     consolidatedSections.[0];
         editor       = parseEditorSection      consolidatedSections.[1];
         metadata     = parseMetadataSection    consolidatedSections.[2];
@@ -109,8 +108,34 @@ let parseSections (sections: list<list<string>> ) =
         hitObjects   = parseHitObjectSection   consolidatedSections.[7];
     }
 
+    let tps = ret.timingPoints |> List.filter isTimingPoint
+    let comments = ret.timingPoints |> List.filter (fun x -> not (isTimingPoint x))
+
+    //printfn "################################################"
+    //printfn "Parsed Timing Points:"
+    //printfn "TimingPoints: %d" (List.length tps)
+    //List.iter (fun tp -> printfn "%s" (timingPointToString tp)) tps
+    //printfn "\n"
+    //printfn "Comments: %d" (List.length comments)
+    //List.iter (fun comment -> printfn "'%s'" (timingPointToString comment)) comments
+    //printfn "################################################"
+    //printfn ""
+    ret
+
+
         
 let parseBeatmapFile filename =
+    //printfn "################################################"
+    //printfn "################################################"
+    //printfn "################################################"
+    //printfn ""
+    //printfn "Parsing file:"
+    //printfn "%s" filename
+    //printfn ""
+    //printfn "################################################"
+    //printfn "################################################"
+    //printfn "################################################"
+
     File.ReadAllLines filename
     |> Array.toList
     |> splitSections

@@ -200,8 +200,14 @@ type Beatmap(file, repr, cl) =
 
     // get song dominant bpm
     member public this.Bpm with get() =
-        if (this.originalFileRepresentation.hitObjects   |> removeHitObjectComments   |> List.length) = 0 then 0M else
-        if (this.originalFileRepresentation.timingPoints |> removeTimingPointComments |> List.length) = 0 then 0M else
+        //printfn "@@@ bpm func:"
+        if (this.originalFileRepresentation.hitObjects |> removeHitObjectComments   |> List.length) = 0 then
+            //printfn "@@@ this.originalFileRepresentation.hitObjects length = 0, return 0"
+            0M
+        else if (this.originalFileRepresentation.timingPoints |> removeTimingPointComments |> List.length) = 0 then
+            //printfn "@@@ this.originalFileRepresentation.timingPoints length = 0, return 0"
+            0M
+        else
 
         let rec beatLengthDurations (timingPoints:list<Tp>) lastObject : list<decimal * int> = 
             match timingPoints with
@@ -231,21 +237,34 @@ type Beatmap(file, repr, cl) =
                 this.originalFileRepresentation.hitObjects |> removeHitObjectComments |> List.rev |> List.head
             else
                 this.changelist.hitObjects |> removeHitObjectComments |> List.rev |> List.head
+
+        // printfn "@@@ last object: %s" (hitObjectToString lastObject)
         let timingpoints    = if this.changelist.timingPoints = [] then this.originalFileRepresentation.timingPoints else this.changelist.timingPoints
+        //printfn "@@@ timing points: %A" timingpoints
         let bpmTimingPoints =
             timingpoints
             |> List.filter isTimingPoint
             |> List.map getTimingPoint
             |> List.filter (fun tp -> tp.uninherited)
+        // printfn "@@@ bpmTimingPoints: %A" bpmTimingPoints
 
-        if bpmTimingPoints = [] then 0M else
+        if bpmTimingPoints = [] then
+            // printfn "@@@ bpmTimingPoints is empty, return 0"
+            0M
+        else
         
         let durations       = beatLengthDurations bpmTimingPoints lastObject
+        //printf "@@@ durations: %A" durations
         let grouped1        = List.groupBy (fun (beatlength, _) -> beatlength) durations
+        //printfn "@@@ grouped1: %A" grouped1
         let grouped2        = grouped1 |> List.map (fun (bl', tupleList) -> (bl', List.map (fun (_, duration) -> duration) tupleList))
+        // printfn "@@@ grouped2: %A" grouped2
         let groupedSums     = grouped2 |> List.map (fun (beatLength, durations) -> (beatLength, List.sum durations))
+        // printfn "@@@ groupedSums: %A" groupedSums
 
         let (maxBeatLength, _) = List.maxBy (fun (beatLength, durationSum) -> durationSum) groupedSums
+        // printfn "@@@ maxBeatLength: %A" maxBeatLength
+        // printfn "return %A" (60000M / maxBeatLength)
         60000M / maxBeatLength
         
     member public this.MinBpm with get() =

@@ -33,9 +33,13 @@ let removeTimingPointComments (objs:list<TimingPoint>) = (List.filter isNotTimin
 // timing point syntax:
 // time,beatLength,meter,sampleSet,sampleIndex,volume,uninherited,effects
 let tryParseTimingPoint line : TimingPoint option = 
+
     let values = parseCsv line
     match values with
     | [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v; Bool ui; Int fx] ->
+        //printfn "%s" line
+        //printfn "matches: [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v; Bool ui; Int fx]"
+        //printfn ""
         Some(TimingPoint({
             time        = int t; // some maps save this as decimal...
             beatLength  = bl;
@@ -47,6 +51,9 @@ let tryParseTimingPoint line : TimingPoint option =
             effects     = fx;
         }))
     | [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v] -> // v5 doesn't have inherited timing points or effects
+        //printfn "%s" line
+        //printfn "matches: [Decimal t; Decimal bl; Int m; Int ss; Int si; Int v]"
+        //printfn ""
         Some(TimingPoint({
             time        = int t; // some maps save this as decimal...
             beatLength  = bl;
@@ -57,7 +64,11 @@ let tryParseTimingPoint line : TimingPoint option =
             uninherited = true;
             effects     = 0;
         }))
-    | _ -> Some(Comment(line))
+    | _ ->
+        //printfn "'%s'" line
+        //printfn "(no match)"
+        //printfn ""
+        Some(Comment(line))
 
 let timingPointToString tp = 
     match tp with
