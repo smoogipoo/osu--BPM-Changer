@@ -551,6 +551,11 @@ namespace osu_trainer
 
         public void SetBpmMultiplier(decimal multiplier)
         {
+            if (BpmIsLocked)
+            {
+                int bpm = (int)(OriginalBeatmap.Bpm * multiplier);
+                lockedBpm = bpm;
+            }
             ApplyBpmMultiplier(multiplier);
         }
 
