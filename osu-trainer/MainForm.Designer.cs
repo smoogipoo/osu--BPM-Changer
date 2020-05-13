@@ -754,7 +754,7 @@ namespace osu_trainer
             this.GenerateMapButton.Progress = 0F;
             this.GenerateMapButton.ProgressColor = System.Drawing.Color.SpringGreen;
             this.GenerateMapButton.Size = new System.Drawing.Size(271, 62);
-            this.GenerateMapButton.Subtext = "Ctrl+Alt+Shift+X";
+            this.GenerateMapButton.Subtext = "Ctrl+Shift+X";
             this.GenerateMapButton.SubtextColor = System.Drawing.Color.Plum;
             this.GenerateMapButton.TabIndex = 0;
             this.GenerateMapButton.Text = "Create Map";

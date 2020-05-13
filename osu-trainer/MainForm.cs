@@ -617,7 +617,7 @@ namespace osu_trainer
         private void CreateMapHotkeyHandler(object sender, EventArgs e)
         {
             var k = (KeyEventArgs)e;
-            if (k.Control && k.Alt && k.Shift)
+            if (k.Control && k.Shift)
             {
                 if (GenerateMapButton.Enabled)
                 {
