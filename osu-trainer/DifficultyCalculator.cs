@@ -26,7 +26,7 @@ namespace osu_trainer
         {
             decimal newbpmMs = ApproachRateToMs(map.ApproachRate) / BpmMultiplier;
             decimal newbpmAR = MsToApproachRate(newbpmMs);
-            return (newbpmAR < 10) ? newbpmAR : 10;
+            return JunUtils.Clamp(newbpmAR, 0, 11);
         }
         private static decimal ApproachRateToMs(decimal approachRate)
         {
@@ -60,7 +60,7 @@ namespace osu_trainer
             decimal newbpmMs = OverallDifficultyToMs(map.OverallDifficulty) / BpmMultiplier;
             decimal newbpmOD = MsToOverallDifficulty(newbpmMs);
             newbpmOD = (decimal)Math.Round(newbpmOD * 10.0M) / 10.0M;
-            newbpmOD = JunUtils.Clamp(newbpmOD, 0, 10);
+            newbpmOD = JunUtils.Clamp(newbpmOD, 0, 11);
             return newbpmOD;
         }
         private static decimal OverallDifficultyToMs(decimal od) => -6.0M * od + 79.5M;

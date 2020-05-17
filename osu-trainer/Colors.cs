@@ -5,9 +5,9 @@ namespace osu_trainer
 	public static class Colors
 	{
 		public static Color FormBg     = Color.FromArgb(38, 35, 53);
-		public static Color TextBoxBg  = Color.FromArgb(23, 16, 25);
+		public static Color TextBoxBg  = Color.FromArgb(36, 24, 38);
 		public static Color TextBoxFg  = Color.FromArgb(224, 224, 224);
-		public static Color ReadOnlyBg = Color.FromArgb(36, 24, 38);
+		public static Color ReadOnlyBg = Color.FromArgb(38, 35, 53);
 		public static Color ReadOnlyFg = Color.Silver;
 		public static Color Disabled   = Color.FromArgb(136, 134, 144);
 		

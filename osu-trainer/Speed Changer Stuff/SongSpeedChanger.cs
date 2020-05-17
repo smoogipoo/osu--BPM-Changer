@@ -7,10 +7,9 @@ namespace osu_trainer
 {
     internal class SongSpeedChanger
     {
-        public static void GenerateAudioFile(string inFile, string outFile, decimal multiplier, BackgroundWorker worker, bool changePitch = false)
+        public static void GenerateAudioFile(string inFile, string outFile, decimal multiplier, BackgroundWorker worker, bool changePitch = false, bool preDT = false)
         {
-            if (multiplier == 1)
-                throw new ArgumentException("Don't call this function if multiplier is 1.0x");
+            decimal compensatedMultiplier = multiplier / 1.5M;
 
             string temp1 = JunUtils.GetTempFilename("mp3"); // audio copy
             string temp2 = JunUtils.GetTempFilename("wav"); // decoded wav
@@ -39,9 +38,10 @@ namespace osu_trainer
             Process soundstretch = new Process();
             soundstretch.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "soundstretch.exe");
             if (changePitch)
-                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100} -pitch={semitones}";
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100} -pitch={semitones}";
             else
-                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={(multiplier - 1) * 100}";
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100}";
+            Console.WriteLine( $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100} -pitch={semitones}");
             soundstretch.StartInfo.UseShellExecute = false;
             soundstretch.StartInfo.CreateNoWindow = true;
             soundstretch.Start();

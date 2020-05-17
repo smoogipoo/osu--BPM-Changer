@@ -450,6 +450,11 @@ namespace osu_trainer
                 ARDisplay.ForeColor = Colors.TextBoxFg;
                 ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Regular);
             }
+            if (newAR > 10)
+            {
+                ARDisplay.ForeColor = Color.Magenta;
+                ARDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
+            }
 
             // OD
             decimal newOD = editor.NewBeatmap.OverallDifficulty;
@@ -470,6 +475,11 @@ namespace osu_trainer
             {
                 ODDisplay.ForeColor = Colors.TextBoxFg;
                 ODDisplay.Font = new Font(ODDisplay.Font, FontStyle.Regular);
+            }
+            if (newOD > 10)
+            {
+                ODDisplay.ForeColor = Color.Magenta;
+                ODDisplay.Font = new Font(ARDisplay.Font, FontStyle.Bold);
             }
         }
 
@@ -610,7 +620,16 @@ namespace osu_trainer
             }
         }
 
-        private void GenerateMapButton_Click(object sender, EventArgs e) => BackgroundWorker.RunWorkerAsync();
+        private void GenerateMapButton_Click(object sender, EventArgs e)
+        {
+            if ( !Properties.Settings.Default.HighARODMessageShown && (editor.NewBeatmap.ApproachRate > 10M || editor.NewBeatmap.ApproachRate > 10M) )
+            {
+                MessageBox.Show("You have chosen an AR or OD greater than 10. After this map gets created, make sure to play it with Doubletime.", "Note");
+                Properties.Settings.Default.HighARODMessageShown = true;
+                Properties.Settings.Default.Save();
+            }
+            BackgroundWorker.RunWorkerAsync();
+        }
 
         private void Unfocus(object sender, EventArgs e) => ActiveControl = Panel3;
 

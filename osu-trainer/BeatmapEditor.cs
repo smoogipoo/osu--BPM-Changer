@@ -136,15 +136,26 @@ namespace osu_trainer
             if (State != EditorState.READY)
                 return;
 
-            // pre
             SetState(EditorState.GENERATING_BEATMAP);
 
-            // main phase
+            bool compensateForDT = (NewBeatmap.ApproachRate > 10 || NewBeatmap.OverallDifficulty > 10);
+
+            // Set metadata
             Beatmap exportBeatmap = new Beatmap(NewBeatmap);
-            ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch);
+            ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch, compensateForDT);
             if (NoSpinners)
                 exportBeatmap.RemoveSpinners();
 
+            // Slow down map by 1.5x
+            if (compensateForDT)
+            {
+                exportBeatmap.ApproachRate      = DifficultyCalculator.CalculateMultipliedAR(exportBeatmap, BpmMultiplier / 1.5M);
+                exportBeatmap.OverallDifficulty = DifficultyCalculator.CalculateMultipliedOD(exportBeatmap, BpmMultiplier / 1.5M);
+                decimal compensatedRate = (NewBeatmap.Bpm / OriginalBeatmap.Bpm) / 1.5M;
+                exportBeatmap.SetRate(compensatedRate);
+            }
+
+            // Generate new mp3
             var audioFilePath = Path.Combine(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap), exportBeatmap.AudioFilename);
             var newMp3 = "";
             if (!File.Exists(audioFilePath))
@@ -152,7 +163,7 @@ namespace osu_trainer
                 string inFile = Path.Combine(Path.GetDirectoryName(OriginalBeatmap.Filename), OriginalBeatmap.AudioFilename);
                 string outFile = Path.Combine(Path.GetTempPath(), exportBeatmap.AudioFilename);
 
-                SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, mainform.BackgroundWorker, ChangePitch);
+                SongSpeedChanger.GenerateAudioFile(inFile, outFile, BpmMultiplier, mainform.BackgroundWorker, ChangePitch, compensateForDT);
                 newMp3 = outFile;
 
                 // take note of this mp3 in a text file, so we can clean it up later
@@ -683,31 +694,44 @@ namespace osu_trainer
 
         // OUT: beatmap.Version
         // OUT: beatmap.Filename
-        // OUT: beatmap.AudioFilename (if multiplier is not 1x)
+        // OUT: beatmap.AudioFilename
         // OUT: beatmap.Tags
-        private void ModifyBeatmapMetadata(Beatmap map, decimal multiplier, bool changePitch = false)
+        private void ModifyBeatmapMetadata(Beatmap map, decimal multiplier, bool changePitch = false, bool preDT = false)
         {
-            // Difficulty Name and AudioFilename - Rate Modifier
-            if (Math.Abs(multiplier - 1M) > 0.001M)
+            // Difficulty Name and AudioFilename
+            if (preDT)
             {
                 string bpm = map.Bpm.ToString("0");
                 map.Version += $" {multiplier:0.##}x ({bpm}bpm)";
-                if (!changePitch)
-                    map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x.mp3";
-                else if (changePitch)
-                    map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x (pitch {(multiplier < 1 ? "lowered" : "raised")}).mp3";
+                map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x withDT";
+                if (changePitch && Math.Abs(multiplier - 1M) > 0.001M)
+                    map.AudioFilename = $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
+                map.AudioFilename += ".mp3";
+            }
+            else if (Math.Abs(multiplier - 1M) > 0.001M)
+            {
+                string bpm = map.Bpm.ToString("0");
+                map.Version += $" {multiplier:0.##}x ({bpm}bpm)";
+                map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x";
+                if (changePitch)
+                    map.AudioFilename = $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
+                map.AudioFilename += ".mp3";
             }
 
             // Difficulty Name - Difficulty Settings
             string HPCSAROD = "";
             if (NewBeatmap.HPDrainRate != OriginalBeatmap.HPDrainRate)
                 HPCSAROD += $" HP{NewBeatmap.HPDrainRate:0.#}";
+
             if (NewBeatmap.CircleSize != OriginalBeatmap.CircleSize)
                 HPCSAROD += $" CS{NewBeatmap.CircleSize:0.#}";
-            if (NewBeatmap.ApproachRate != GetScaledAR())
+
+            if (NewBeatmap.ApproachRate != GetScaledAR() || NewBeatmap.ApproachRate > 10M)
                 HPCSAROD += $" AR{NewBeatmap.ApproachRate:0.#}";
-            if (NewBeatmap.OverallDifficulty != GetScaledOD())
+
+            if (NewBeatmap.OverallDifficulty != GetScaledOD() || NewBeatmap.OverallDifficulty > 10M)
                 HPCSAROD += $" OD{NewBeatmap.OverallDifficulty:0.#}";
+
             map.Version += HPCSAROD;
 
             if (NoSpinners)

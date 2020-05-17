@@ -507,7 +507,7 @@ namespace osu_trainer
             65536});
             this.ARSlider.Location = new System.Drawing.Point(82, 59);
             this.ARSlider.MaxValue = new decimal(new int[] {
-            10,
+            11,
             0,
             0,
             0});
@@ -575,6 +575,7 @@ namespace osu_trainer
             0,
             65536});
             this.CSSlider.Location = new System.Drawing.Point(82, 31);
+            this.CSSlider.Margin = new System.Windows.Forms.Padding(3, 3, 30, 3);
             this.CSSlider.MaxValue = new decimal(new int[] {
             10,
             0,
@@ -591,7 +592,7 @@ namespace osu_trainer
             this.CSSlider.NippleExpandedDiameter = 18;
             this.CSSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.CSSlider.NippleStrokeWidth = 0;
-            this.CSSlider.Size = new System.Drawing.Size(291, 22);
+            this.CSSlider.Size = new System.Drawing.Size(264, 22);
             this.CSSlider.TabIndex = 5;
             this.CSSlider.Text = "HPSlider";
             this.CSSlider.Thickness = 4;
@@ -645,6 +646,7 @@ namespace osu_trainer
             0,
             65536});
             this.HPSlider.Location = new System.Drawing.Point(82, 3);
+            this.HPSlider.Margin = new System.Windows.Forms.Padding(3, 3, 30, 3);
             this.HPSlider.MaxValue = new decimal(new int[] {
             10,
             0,
@@ -661,7 +663,7 @@ namespace osu_trainer
             this.HPSlider.NippleExpandedDiameter = 18;
             this.HPSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
             this.HPSlider.NippleStrokeWidth = 0;
-            this.HPSlider.Size = new System.Drawing.Size(291, 22);
+            this.HPSlider.Size = new System.Drawing.Size(264, 22);
             this.HPSlider.TabIndex = 2;
             this.HPSlider.Text = "HPSlider";
             this.HPSlider.Thickness = 4;
