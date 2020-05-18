@@ -1,4 +1,13 @@
 # osu-trainer
+The main feature is the bpm controls, but you can also change other stuff too.
+![](osu-trainer/images/gui.png)
+
+### Additional Notes
++ Search "osutrainer" in osu! to find all your generated maps
++ If you use this application a lot, you can end up using a lot of disk space. (333 maps * 3MB/mp3 = 1GB). To free up this space, delete the generated maps in osu, then click the Clean Up button in osu trainer.
++ The lock buttons are intended to be used alongside the create map shortcut in order to easily create multiple similar maps. Eg. Lock bpm to 220 bpm, then in osu! press the hotkey to quickly create a 220 bpm version of the beatmap without ever alt-tabbing.
+
+Special thanks to [Craftplacer](https://github.com/Craftplacer) for making the UI really nice and pretty
 
 ## Licenses
 This project uses the following projects:
