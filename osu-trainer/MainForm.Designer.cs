@@ -58,6 +58,8 @@ namespace osu_trainer
             this.BpmLockCheck = new osu_trainer.Controls.ToggleIconButton();
             this.BpmSlider = new osu_trainer.OptionSlider();
             this.ChangePitchCheck = new osu_trainer.Controls.OsuCheckBox();
+            this.NoSpinnersCheck = new osu_trainer.Controls.OsuCheckBox();
+            this.HRCheck = new osu_trainer.Controls.OsuCheckBox();
             this.ScaleODCheck = new osu_trainer.Controls.OsuCheckBox();
             this.ScaleARCheck = new osu_trainer.Controls.OsuCheckBox();
             this.OriginalBpmLabel = new osu_trainer.Controls.AntiAliasedLabel();
@@ -76,8 +78,6 @@ namespace osu_trainer
             this.HPSlider = new osu_trainer.OptionSlider();
             this.HPLockCheck = new osu_trainer.Controls.ToggleIconButton();
             this.StarsDisplay = new osu_trainer.Controls.StarsDisplay();
-            this.HRCheck = new osu_trainer.Controls.OsuCheckBox();
-            this.NoSpinnersCheck = new osu_trainer.Controls.OsuCheckBox();
             this.DeleteButton = new osu_trainer.Controls.OsuButton();
             this.ResetButton = new osu_trainer.Controls.OsuButton();
             this.GenerateMapButton = new osu_trainer.Controls.OsuButton();
@@ -142,7 +142,7 @@ namespace osu_trainer
             this.NewBpmTextBox.BackColor = System.Drawing.Color.FromArgb(((int)(((byte)(23)))), ((int)(((byte)(16)))), ((int)(((byte)(25)))));
             this.NewBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.NewBpmTextBox.Location = new System.Drawing.Point(89, 65);
+            this.NewBpmTextBox.Location = new System.Drawing.Point(89, 64);
             this.NewBpmTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.NewBpmTextBox.Name = "NewBpmTextBox";
             this.NewBpmTextBox.Size = new System.Drawing.Size(42, 17);
@@ -158,7 +158,7 @@ namespace osu_trainer
             this.NewBpmRangeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.NewBpmRangeTextBox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NewBpmRangeTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.NewBpmRangeTextBox.Location = new System.Drawing.Point(163, 65);
+            this.NewBpmRangeTextBox.Location = new System.Drawing.Point(163, 64);
             this.NewBpmRangeTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.NewBpmRangeTextBox.Name = "NewBpmRangeTextBox";
             this.NewBpmRangeTextBox.ReadOnly = true;
@@ -172,7 +172,7 @@ namespace osu_trainer
             this.OriginalBpmRangeTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OriginalBpmRangeTextBox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.OriginalBpmRangeTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(90)))), ((int)(((byte)(90)))), ((int)(((byte)(134)))));
-            this.OriginalBpmRangeTextBox.Location = new System.Drawing.Point(163, 36);
+            this.OriginalBpmRangeTextBox.Location = new System.Drawing.Point(163, 35);
             this.OriginalBpmRangeTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.OriginalBpmRangeTextBox.Name = "OriginalBpmRangeTextBox";
             this.OriginalBpmRangeTextBox.ReadOnly = true;
@@ -186,7 +186,7 @@ namespace osu_trainer
             this.OriginalBpmTextBox.BorderStyle = System.Windows.Forms.BorderStyle.None;
             this.OriginalBpmTextBox.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.OriginalBpmTextBox.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(224)))), ((int)(((byte)(224)))), ((int)(((byte)(224)))));
-            this.OriginalBpmTextBox.Location = new System.Drawing.Point(89, 36);
+            this.OriginalBpmTextBox.Location = new System.Drawing.Point(89, 35);
             this.OriginalBpmTextBox.Margin = new System.Windows.Forms.Padding(3, 5, 3, 3);
             this.OriginalBpmTextBox.Name = "OriginalBpmTextBox";
             this.OriginalBpmTextBox.ReadOnly = true;
@@ -359,10 +359,10 @@ namespace osu_trainer
             this.AimLabel.AutoSize = true;
             this.AimLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.AimLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.AimLabel.Location = new System.Drawing.Point(270, 14);
-            this.AimLabel.MinimumSize = new System.Drawing.Size(64, 0);
+            this.AimLabel.Location = new System.Drawing.Point(266, 14);
+            this.AimLabel.MinimumSize = new System.Drawing.Size(40, 0);
             this.AimLabel.Name = "AimLabel";
-            this.AimLabel.Size = new System.Drawing.Size(64, 16);
+            this.AimLabel.Size = new System.Drawing.Size(50, 16);
             this.AimLabel.TabIndex = 23;
             this.AimLabel.Text = "1.0 aim";
             this.AimLabel.TextAlign = System.Drawing.ContentAlignment.MiddleLeft;
@@ -373,7 +373,7 @@ namespace osu_trainer
             this.SpeedLabel.AutoSize = true;
             this.SpeedLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.SpeedLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.SpeedLabel.Location = new System.Drawing.Point(198, 14);
+            this.SpeedLabel.Location = new System.Drawing.Point(194, 14);
             this.SpeedLabel.MinimumSize = new System.Drawing.Size(64, 0);
             this.SpeedLabel.Name = "SpeedLabel";
             this.SpeedLabel.Size = new System.Drawing.Size(65, 16);
@@ -440,7 +440,7 @@ namespace osu_trainer
             // BpmLockCheck
             // 
             this.BpmLockCheck.CheckedImage = global::osu_trainer.Properties.Resources.lock_solid;
-            this.BpmLockCheck.Location = new System.Drawing.Point(136, 63);
+            this.BpmLockCheck.Location = new System.Drawing.Point(136, 62);
             this.BpmLockCheck.Name = "BpmLockCheck";
             this.BpmLockCheck.Size = new System.Drawing.Size(21, 21);
             this.BpmLockCheck.TabIndex = 15;
@@ -498,6 +498,31 @@ namespace osu_trainer
             this.ChangePitchCheck.UseVisualStyleBackColor = true;
             this.ChangePitchCheck.CheckedChanged += new System.EventHandler(this.ChangePitchButton_CheckedChanged);
             // 
+            // NoSpinnersCheck
+            // 
+            this.NoSpinnersCheck.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
+            this.NoSpinnersCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
+            this.NoSpinnersCheck.Location = new System.Drawing.Point(293, 99);
+            this.NoSpinnersCheck.Name = "NoSpinnersCheck";
+            this.NoSpinnersCheck.Size = new System.Drawing.Size(124, 24);
+            this.NoSpinnersCheck.TabIndex = 20;
+            this.NoSpinnersCheck.Text = "No Spinners";
+            this.NoSpinnersCheck.UseVisualStyleBackColor = true;
+            this.NoSpinnersCheck.CheckedChanged += new System.EventHandler(this.NoSpinnerCheckBox_CheckedChanged);
+            // 
+            // HRCheck
+            // 
+            this.HRCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
+            this.HRCheck.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
+            this.HRCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
+            this.HRCheck.Location = new System.Drawing.Point(295, 0);
+            this.HRCheck.Name = "HRCheck";
+            this.HRCheck.Size = new System.Drawing.Size(122, 24);
+            this.HRCheck.TabIndex = 20;
+            this.HRCheck.Text = "Emulate HR";
+            this.HRCheck.UseVisualStyleBackColor = true;
+            this.HRCheck.CheckedChanged += new System.EventHandler(this.HRCheck_CheckedChanged);
+            // 
             // ScaleODCheck
             // 
             this.ScaleODCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
@@ -529,7 +554,7 @@ namespace osu_trainer
             this.OriginalBpmLabel.AutoSize = true;
             this.OriginalBpmLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.OriginalBpmLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.OriginalBpmLabel.Location = new System.Drawing.Point(18, 37);
+            this.OriginalBpmLabel.Location = new System.Drawing.Point(18, 36);
             this.OriginalBpmLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.OriginalBpmLabel.Name = "OriginalBpmLabel";
             this.OriginalBpmLabel.Size = new System.Drawing.Size(62, 16);
@@ -542,7 +567,7 @@ namespace osu_trainer
             this.NewBpmLabel.AutoSize = true;
             this.NewBpmLabel.Font = new System.Drawing.Font("Microsoft Tai Le", 9.75F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.NewBpmLabel.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.NewBpmLabel.Location = new System.Drawing.Point(15, 66);
+            this.NewBpmLabel.Location = new System.Drawing.Point(15, 65);
             this.NewBpmLabel.Margin = new System.Windows.Forms.Padding(5, 0, 5, 0);
             this.NewBpmLabel.Name = "NewBpmLabel";
             this.NewBpmLabel.Size = new System.Drawing.Size(67, 16);
@@ -631,7 +656,7 @@ namespace osu_trainer
             0,
             0});
             this.ODSlider.Name = "ODSlider";
-            this.ODSlider.NippleColor = System.Drawing.Color.White;
+            this.ODSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(255)))));
             this.ODSlider.NippleDiameter = 15;
             this.ODSlider.NippleExpandedDiameter = 18;
             this.ODSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
@@ -683,7 +708,7 @@ namespace osu_trainer
             0,
             0});
             this.ARSlider.Name = "ARSlider";
-            this.ARSlider.NippleColor = System.Drawing.Color.White;
+            this.ARSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(255)))));
             this.ARSlider.NippleDiameter = 15;
             this.ARSlider.NippleExpandedDiameter = 18;
             this.ARSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
@@ -736,7 +761,7 @@ namespace osu_trainer
             0,
             0});
             this.CSSlider.Name = "CSSlider";
-            this.CSSlider.NippleColor = System.Drawing.Color.White;
+            this.CSSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(255)))));
             this.CSSlider.NippleDiameter = 15;
             this.CSSlider.NippleExpandedDiameter = 18;
             this.CSSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
@@ -789,7 +814,7 @@ namespace osu_trainer
             0,
             0});
             this.HPSlider.Name = "HPSlider";
-            this.HPSlider.NippleColor = System.Drawing.Color.White;
+            this.HPSlider.NippleColor = System.Drawing.Color.FromArgb(((int)(((byte)(240)))), ((int)(((byte)(240)))), ((int)(((byte)(255)))));
             this.HPSlider.NippleDiameter = 15;
             this.HPSlider.NippleExpandedDiameter = 18;
             this.HPSlider.NippleIdleColor = System.Drawing.Color.FromArgb(((int)(((byte)(128)))), ((int)(((byte)(128)))), ((int)(((byte)(255)))));
@@ -822,37 +847,12 @@ namespace osu_trainer
             this.StarsDisplay.Enabled = false;
             this.StarsDisplay.Font = new System.Drawing.Font("Microsoft Tai Le", 16F, System.Drawing.FontStyle.Bold);
             this.StarsDisplay.GameMode = FsBeatmapProcessor.GameMode.osu;
-            this.StarsDisplay.Location = new System.Drawing.Point(307, 1);
+            this.StarsDisplay.Location = new System.Drawing.Point(307, 3);
             this.StarsDisplay.Name = "StarsDisplay";
             this.StarsDisplay.Size = new System.Drawing.Size(93, 35);
             this.StarsDisplay.Stars = 0F;
             this.StarsDisplay.TabIndex = 22;
             this.StarsDisplay.Text = "starsDisplay1";
-            // 
-            // HRCheck
-            // 
-            this.HRCheck.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.HRCheck.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.HRCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.HRCheck.Location = new System.Drawing.Point(295, 0);
-            this.HRCheck.Name = "HRCheck";
-            this.HRCheck.Size = new System.Drawing.Size(122, 24);
-            this.HRCheck.TabIndex = 20;
-            this.HRCheck.Text = "Emulate HR";
-            this.HRCheck.UseVisualStyleBackColor = true;
-            this.HRCheck.CheckedChanged += new System.EventHandler(this.HRCheck_CheckedChanged);
-            // 
-            // NoSpinnersCheck
-            // 
-            this.NoSpinnersCheck.DisabledColor = System.Drawing.Color.FromArgb(((int)(((byte)(136)))), ((int)(((byte)(134)))), ((int)(((byte)(144)))));
-            this.NoSpinnersCheck.ForeColor = System.Drawing.Color.FromArgb(((int)(((byte)(167)))), ((int)(((byte)(154)))), ((int)(((byte)(233)))));
-            this.NoSpinnersCheck.Location = new System.Drawing.Point(293, 99);
-            this.NoSpinnersCheck.Name = "NoSpinnersCheck";
-            this.NoSpinnersCheck.Size = new System.Drawing.Size(124, 24);
-            this.NoSpinnersCheck.TabIndex = 20;
-            this.NoSpinnersCheck.Text = "No Spinners";
-            this.NoSpinnersCheck.UseVisualStyleBackColor = true;
-            this.NoSpinnersCheck.CheckedChanged += new System.EventHandler(this.NoSpinnerCheckBox_CheckedChanged);
             // 
             // DeleteButton
             // 
