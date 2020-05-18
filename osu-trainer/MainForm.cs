@@ -82,7 +82,7 @@ namespace osu_trainer
             };
             checkControls = new List<OsuCheckBox>
             {
-                NoSpinnersCheck, ScaleARCheck, ScaleODCheck, ChangePitchCheck
+                NoSpinnersCheck, HRCheck, ScaleARCheck, ScaleODCheck, ChangePitchCheck
             };
 
             ApplyFonts();
@@ -139,7 +139,7 @@ namespace osu_trainer
             foreach (var check in checkControls)
                 check.Font = new Font(comforta, 9, FontStyle.Regular);
 
-            StarsDisplay.Font = new Font(comforta, 12, FontStyle.Bold);
+            StarsDisplay.Font = new Font(comforta, 16, FontStyle.Bold);
             AimLabel.Font = new Font(comforta, 9, FontStyle.Regular);
             SpeedLabel.Font = new Font(comforta, 9, FontStyle.Regular);
 
@@ -333,27 +333,34 @@ namespace osu_trainer
         {
             var enabled = editor.State != EditorState.NOT_READY;
             NoSpinnersCheck.Enabled = enabled;
+            HRCheck.Enabled = enabled;
             ChangePitchCheck.Enabled = enabled;
             ScaleODCheck.Enabled = enabled;
             ScaleARCheck.Enabled = enabled;
             NoSpinnersCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
+            HRCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
             ChangePitchCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
             ScaleODCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
             ScaleARCheck.ForeColor = enabled ? Colors.PaleBlue : Colors.Disabled;
 
             // change checked state without raising any events
-            NoSpinnersCheck.CheckedChanged -= NoSpinnerCheckBox_CheckedChanged;
+            NoSpinnersCheck.CheckedChanged  -= NoSpinnerCheckBox_CheckedChanged;
+            HRCheck.CheckedChanged          -= HRCheck_CheckedChanged;
             ChangePitchCheck.CheckedChanged -= ChangePitchButton_CheckedChanged;
-            ScaleODCheck.CheckedChanged -= ScaleODCheck_CheckedChanged;
-            ScaleARCheck.CheckedChanged -= ScaleARCheck_CheckedChanged;
-            NoSpinnersCheck.Checked = editor.NoSpinners;
-            ChangePitchCheck.Checked = editor.ChangePitch;
-            ScaleODCheck.Checked = editor.ScaleOD;
-            ScaleARCheck.Checked = editor.ScaleAR;
-            NoSpinnersCheck.CheckedChanged += NoSpinnerCheckBox_CheckedChanged;
+            ScaleODCheck.CheckedChanged     -= ScaleODCheck_CheckedChanged;
+            ScaleARCheck.CheckedChanged     -= ScaleARCheck_CheckedChanged;
+            
+            NoSpinnersCheck.Checked         = editor.NoSpinners;
+            HRCheck.Checked                 = editor.EmulateHardrock;
+            ChangePitchCheck.Checked        = editor.ChangePitch;
+            ScaleODCheck.Checked            = editor.ScaleOD;
+            ScaleARCheck.Checked            = editor.ScaleAR;
+
+            NoSpinnersCheck.CheckedChanged  += NoSpinnerCheckBox_CheckedChanged;
+            HRCheck.CheckedChanged          += HRCheck_CheckedChanged;
             ChangePitchCheck.CheckedChanged += ChangePitchButton_CheckedChanged;
-            ScaleODCheck.CheckedChanged += ScaleODCheck_CheckedChanged;
-            ScaleARCheck.CheckedChanged += ScaleARCheck_CheckedChanged;
+            ScaleODCheck.CheckedChanged     += ScaleODCheck_CheckedChanged;
+            ScaleARCheck.CheckedChanged     += ScaleARCheck_CheckedChanged;
         }
 
         private void ToggleHpCsArOdDisplay(object sender, EventArgs e)
@@ -822,5 +829,9 @@ namespace osu_trainer
             editor.SetBpmMultiplier(BpmSlider.Value);
         }
 
+        private void HRCheck_CheckedChanged(object sender, EventArgs e)
+        {
+            editor.ToggleHrEmulation();
+        }
     }
 }

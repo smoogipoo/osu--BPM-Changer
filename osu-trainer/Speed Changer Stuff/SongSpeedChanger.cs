@@ -33,15 +33,18 @@ namespace osu_trainer
             worker.ReportProgress(33);
 
             // stretch (or speed up) wav
+            decimal selectedMultiplier = (preDT ? compensatedMultiplier : multiplier);
+            decimal tempo = (selectedMultiplier - 1) * 100;
+
             decimal cents = (decimal)(1200.0 * Math.Log((double)multiplier) / Math.Log(2));
             decimal semitones = cents / 100.0M;
             Process soundstretch = new Process();
             soundstretch.StartInfo.FileName = Path.Combine("Speed Changer Stuff", "soundstretch.exe");
             if (changePitch)
-                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100} -pitch={semitones}";
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={tempo} -pitch={semitones}";
             else
-                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100}";
-            Console.WriteLine( $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={((preDT ? compensatedMultiplier : multiplier) - 1) * 100} -pitch={semitones}");
+                soundstretch.StartInfo.Arguments = $"\"{temp2}\" \"{temp3}\" -quick -naa -tempo={tempo}";
+            Console.WriteLine(soundstretch.StartInfo.Arguments);
             soundstretch.StartInfo.UseShellExecute = false;
             soundstretch.StartInfo.CreateNoWindow = true;
             soundstretch.Start();
