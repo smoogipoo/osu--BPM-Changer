@@ -144,8 +144,6 @@ namespace osu_trainer
             // Set metadata
             Beatmap exportBeatmap = new Beatmap(NewBeatmap);
             ModifyBeatmapMetadata(exportBeatmap, BpmMultiplier, ChangePitch, compensateForDT);
-            if (NoSpinners)
-                exportBeatmap.RemoveSpinners();
 
             // Slow down map by 1.5x
             if (compensateForDT)
@@ -155,6 +153,10 @@ namespace osu_trainer
                 decimal compensatedRate = (NewBeatmap.Bpm / OriginalBeatmap.Bpm) / 1.5M;
                 exportBeatmap.SetRate(compensatedRate);
             }
+
+            // remove spinners
+            if (NoSpinners)
+                exportBeatmap.RemoveSpinners();
 
             // Generate new mp3
             var audioFilePath = Path.Combine(JunUtils.GetBeatmapDirectoryName(OriginalBeatmap), exportBeatmap.AudioFilename);
@@ -359,6 +361,10 @@ namespace osu_trainer
                     if (ArIsLocked) NewBeatmap.ApproachRate = lockedAR;
                     if (OdIsLocked) NewBeatmap.OverallDifficulty = lockedOD;
                     if (BpmIsLocked) SetBpm(lockedBpm);
+
+                    // Apply Hardrock
+                    if (EmulateHardrock) NewBeatmap.CircleSize = OriginalBeatmap.CircleSize * 1.3M;
+                    if (EmulateHardrock) NewBeatmap.OverallDifficulty = JunUtils.Clamp(GetScaledOD() * 1.4M, 0M, 10M);
 
                     SetState(EditorState.READY);
                     RequestDiffCalc();
@@ -655,6 +661,7 @@ namespace osu_trainer
                 NewBeatmap.CircleSize = OriginalBeatmap.CircleSize;
                 NewBeatmap.OverallDifficulty = GetScaledOD();
             }
+            RequestDiffCalc();
             ControlsModified?.Invoke(this, EventArgs.Empty);
             BeatmapModified?.Invoke(this, EventArgs.Empty);
         }
@@ -764,8 +771,8 @@ namespace osu_trainer
 
             map.Version += HPCSAROD;
 
-            if (NoSpinners)
-                map.Version += " nospin";
+            //if (NoSpinners)
+            //    map.Version += " nospin";
 
             // Beatmap File Name
             string artist  = JunUtils.NormalizeText(map.Artist);

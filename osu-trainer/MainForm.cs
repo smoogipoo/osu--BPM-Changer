@@ -48,6 +48,7 @@ namespace osu_trainer
 
         private int beatmapFindFailCounter = 0;
         private bool? gameLoaded = null;
+        private bool mapSelectScreen = false;
 
         #region DEBUG
         private void Form1_Load(object sender, EventArgs e)
@@ -660,7 +661,7 @@ namespace osu_trainer
 
         private void BeatmapUpdateTimer_Tick(object sender, EventArgs e)
         {
-            if (gameLoaded == false || gameLoaded == null || editor.State == EditorState.GENERATING_BEATMAP)
+            if (gameLoaded == false || gameLoaded == null || !mapSelectScreen || editor.State == EditorState.GENERATING_BEATMAP)
                 return;
 
             // this can be cleaned up...
@@ -741,6 +742,12 @@ namespace osu_trainer
                     Properties.Settings.Default.Save();
                 }
             }
+            int status = 0;
+            osuReader.GetCurrentStatus(out status);
+            if (status == 5)
+                mapSelectScreen = true;
+            else
+                mapSelectScreen = false;
         }
 
         #endregion Timer events
