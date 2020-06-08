@@ -28,7 +28,7 @@ namespace osu_trainer
         EMPTY_MAP
     }
 
-    // note: this code suffers from possible race conditions due to async functions modified shared resources (OriginalBeatmap, NewBeatmap)
+    // note: this code suffers from possible race conditions due to async functions modifying shared resources (OriginalBeatmap, NewBeatmap)
     // however, enough mechanisms are put in place so that this doesn't really happen in during real usage
     // possible race condition:
     //
@@ -742,7 +742,7 @@ namespace osu_trainer
                 map.Version += $" {multiplier:0.##}x ({bpm}bpm)";
                 map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x withDT";
                 if (changePitch && Math.Abs(multiplier - 1M) > 0.001M)
-                    map.AudioFilename = $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
+                    map.AudioFilename += $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
                 map.AudioFilename += ".mp3";
             }
             else if (Math.Abs(multiplier - 1M) > 0.001M)
@@ -751,7 +751,7 @@ namespace osu_trainer
                 map.Version += $" {multiplier:0.##}x ({bpm}bpm)";
                 map.AudioFilename = $"{Path.GetFileNameWithoutExtension(map.AudioFilename)} {multiplier:0.000}x";
                 if (changePitch)
-                    map.AudioFilename = $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
+                    map.AudioFilename += $" (pitch {(multiplier < 1 ? "lowered" : "raised")})";
                 map.AudioFilename += ".mp3";
             }
 
