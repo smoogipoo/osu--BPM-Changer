@@ -954,7 +954,7 @@ namespace osu_trainer
             this.Margin = new System.Windows.Forms.Padding(5, 3, 5, 3);
             this.MaximizeBox = false;
             this.Name = "MainForm";
-            this.Text = "osu trainer v1.3";
+            this.Text = "osu trainer v1.3.1";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Panel3.ResumeLayout(false);
             this.Panel3.PerformLayout();
